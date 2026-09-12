@@ -1,9 +1,10 @@
 # Plan — Arranque de "IA en la Empresa" (nuevo proyecto, `iaenlaempresa/`)
 
 **Fecha:** 2026-09-08 (aprobado y ejecutado 2026-09-09)
-**Estado:** ✅ Ejecutado — ver `iaenlaempresa/plans/0001-mvp-pipeline.md` para el registro completo
-de qué se hizo realmente (incluida la paleta real extraída del logo/banner del canal, provista por
-el usuario durante la ejecución — no la propuesta placeholder de la sección 2 de este documento).
+**Estado:** ✅ Ejecutado — ver `libro-iaenlaempresa/plans/0001-mvp-pipeline.md` (repo renombrado de
+`iaenlaempresa/` a `libro-iaenlaempresa/` poco después del arranque) para el registro completo de
+qué se hizo realmente (incluida la paleta real extraída del logo/banner del canal, provista por el
+usuario durante la ejecución — no la propuesta placeholder de la sección 2 de este documento).
 
 ---
 

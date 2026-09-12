@@ -1,4 +1,4 @@
-# Plan — Arranque de "IA en la Empresa" (nuevo proyecto, `book-harness/iaenlaempresa/`)
+# Plan — Arranque de "IA en la Empresa" (nuevo proyecto, `iaenlaempresa/`)
 
 **Fecha:** 2026-09-08 (aprobado y ejecutado 2026-09-09)
 **Estado:** ✅ Ejecutado — ver `iaenlaempresa/plans/0001-mvp-pipeline.md` para el registro completo
@@ -40,7 +40,7 @@ el usuario durante la ejecución — no la propuesta placeholder de la sección 
 
 ## 1. Decisión de arquitectura (confirmada con el usuario)
 
-- **Proyecto nuevo e independiente**: `book-harness/iaenlaempresa/`, repo git propio (como
+- **Proyecto nuevo e independiente**: `iaenlaempresa/`, repo git propio (como
   `libro-de-panaderia/`, que ya convive como directorio hermano dentro de `book-harness/` sin ser
   parte del repo raíz de `book-harness`). NO es un libro dentro del sistema multi-libro de
   `libro-de-panaderia` (no vive en `libro-de-panaderia/books/`).
@@ -119,7 +119,7 @@ se justifica para 3 documentos de este tamaño (93 páginas totales, una sola ve
 
 ## 5. Pasos
 
-1. `book-harness/iaenlaempresa/` — copiar de `libro-de-panaderia`: `scripts/lib/*.py` (sin
+1. `iaenlaempresa/` — copiar de `libro-de-panaderia`: `scripts/lib/*.py` (sin
    cambios, es agnóstico de contenido), `scripts/build.py` (sin cambios), `Makefile`,
    `pyproject.toml`, `layouts/base.html` + `layouts/partials/page-rules.html` (sin cambios),
    `styles/tokens.css` + `styles/page-setup.css` + `styles/full-bleed.css` (estructurales, sin

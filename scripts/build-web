@@ -11,10 +11,13 @@
 
 const fs = require('fs');
 const path = require('path');
+const { renderDiagram } = require('./lib/render-diagram.js');
+const { conceptNodeId } = require('./lib/mindmap.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const IR_PATH = path.join(ROOT, 'dist', 'book-ir.json');
 const OUT_DIR = path.join(ROOT, 'dist', 'web');
+const MINDMAP_BUILD_DIR = path.join(ROOT, 'dist', '.build', 'mindmap');
 
 function escapeHtml(s) {
   return String(s)
@@ -52,6 +55,12 @@ th, td { border: 1px solid #ccc; padding: .35rem .6rem; text-align: left; }
 details.cda-details { margin: .5rem 0; }
 details.cda-details summary { cursor: pointer; font-weight: bold; }
 .cda-tag { font-size: .75rem; text-transform: uppercase; color: #666; }
+
+/* Mapa mental progresivo (planes/2026-08-24-mapa-mental-progresivo.md) — SVG incrustado inline
+   (nunca <img src="...svg">, para preservar los <a xlink:href> internos generados por Graphviz) */
+.cda-box.mindmap { border-color: #558022; background: #f6faf0; }
+.mindmap-svg { overflow-x: auto; }
+.mindmap-svg svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
 `;
 
 function renderList(items) {
@@ -231,6 +240,66 @@ function renderPracticeBox(rs) {
 </details>`;
 }
 
+/**
+ * Anchors de entidad al inicio del cuerpo de la página del capítulo (mismo patrón que los
+ * anchors `id="sN"` que ya existen por sección) — uno por cada entidad que el capítulo introduce
+ * o modifica, más los conceptos de glosario (kind: concept) que introduce. Son el destino real de
+ * los enlaces `URL` que Graphviz incrusta en el SVG del mapa mental (ver scripts/lib/dot-writer.js
+ * y Paso 2.5 del encargo de ejecución: no hay páginas de definición dedicadas por entidad en este
+ * alcance v0.1 — la "definición canónica" es, por ahora, el propio capítulo que la introduce).
+ */
+function renderEntityAnchors(ir, chapter) {
+  const ids = [];
+  const seen = new Set();
+  const push = (id) => {
+    if (id && !seen.has(id)) {
+      seen.add(id);
+      ids.push(id);
+    }
+  };
+  (chapter.contractsIntroduced || []).forEach(push);
+  (chapter.componentsIntroduced || []).forEach(push);
+  (chapter.contractsModified || []).forEach(push);
+  (ir.glossary || [])
+    .filter((t) => t.introduced_in === chapter.id && t.kind === 'concept')
+    .forEach((t) => push(conceptNodeId(t.term)));
+  if (!ids.length) return '';
+  return ids.map((id) => `<a id="${escapeHtml(id)}"></a>`).join('');
+}
+
+/**
+ * Renderiza (dot -Tsvg, vía el helper compartido render-diagram.js) el snapshot `.diagram` de un
+ * capítulo y devuelve el SVG como texto, listo para incrustar inline en el HTML.
+ */
+function renderMindMapSvg(diagramRelPath) {
+  const diagramPath = path.join(ROOT, diagramRelPath);
+  const base = path.basename(diagramRelPath, '.diagram');
+  const svgPath = path.join(MINDMAP_BUILD_DIR, `${base}.svg`);
+  renderDiagram(diagramPath, svgPath, 'svg');
+  return fs.readFileSync(svgPath, 'utf8');
+}
+
+/**
+ * El `.diagram` fuente usa URLs relativas a `dist/web/` (p.ej. "chapters/CH-00.html#C-001"),
+ * consistente con cómo las usa `mapa.html` (que vive en la raíz de dist/web/). Al incrustar el
+ * MISMO SVG dentro de una página de capítulo que ya vive en dist/web/chapters/, ese prefijo
+ * "chapters/" sobra y rompería el link — se reescribe aquí. Única excepción documentada al
+ * criterio de "un solo .diagram, una sola URL" (Paso 2.5 del encargo de ejecución).
+ */
+function rewriteSvgHrefsForChapterDir(svg) {
+  return svg.replace(/(xlink:href|href)="chapters\//g, '$1="');
+}
+
+function renderMindMapBlock(svg, label) {
+  return `<div class="cda-box mindmap">
+  <span class="cda-tag">Mapa mental</span>
+  <h3>${escapeHtml(label)}</h3>
+  <p>Los nodos son clicables y llevan a la sección del capítulo que introdujo esa entidad. Los
+  nodos con borde rojo son nuevos en este capítulo.</p>
+  <div class="mindmap-svg">${svg}</div>
+</div>`;
+}
+
 function renderChapterPage(ir, chapter) {
   const prev = chapter.previousChapter
     ? `<a href="${chapterFileName(chapter.previousChapter)}">&larr; ${escapeHtml(chapter.previousChapter)}</a>`
@@ -253,6 +322,14 @@ function renderChapterPage(ir, chapter) {
   const systemsLensBox = rs ? renderSystemsLensBox(rs) : '';
   const practiceBox = rs ? renderPracticeBox(rs) : '';
 
+  const entityAnchors = renderEntityAnchors(ir, chapter);
+  const mindMapBlock = chapter.mindMapDiagramPath
+    ? renderMindMapBlock(
+        rewriteSvgHrefsForChapterDir(renderMindMapSvg(chapter.mindMapDiagramPath)),
+        `Hasta ${chapter.id} — ${chapter.title}`
+      )
+    : '';
+
   return `<!doctype html>
 <html lang="es">
 <head>
@@ -263,10 +340,12 @@ function renderChapterPage(ir, chapter) {
 <body>
 <p><a href="index.html">&larr; ${escapeHtml(ir.metadata.title)}</a></p>
 <h1>${escapeHtml(chapter.id)} — ${escapeHtml(chapter.title)}</h1>
+${entityAnchors}
 <nav class="chapter-nav">${prev}${next}</nav>
 ${openingBox}
 ${sectionsHtml}
 ${systemsLensBox}
+${mindMapBlock}
 ${practiceBox}
 <nav class="chapter-nav">${prev}${next}</nav>
 </body>
@@ -291,10 +370,37 @@ function renderIndexPage(ir) {
 <body>
 <h1>${escapeHtml(ir.metadata.title)}</h1>
 <p>Versión ${escapeHtml(ir.metadata.version)} — book-harness (BH-v0.1)</p>
+<p><a href="mapa.html">Mapa mental completo del libro</a></p>
 <div class="toc">
 ${frontmatterToc}
 ${toc}
 </div>
+</body>
+</html>
+`;
+}
+
+/**
+ * Página global `dist/web/mapa.html` (plan §5): el mapa mental completo acumulado hasta el
+ * capítulo actual del libro (snapshot de `full-book.diagram`). A diferencia del bloque por
+ * capítulo, esta página vive en la raíz de dist/web/, así que los hrefs "chapters/CH-XX.html#..."
+ * del .diagram fuente son correctos TAL CUAL (no requieren el rewrite que sí necesita el bloque
+ * incrustado dentro de dist/web/chapters/*.html).
+ */
+function renderMapaPage(ir, svg) {
+  return `<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Mapa mental — ${escapeHtml(ir.metadata.title)}</title>
+<style>${BASE_CSS}</style>
+</head>
+<body>
+<p><a href="index.html">&larr; ${escapeHtml(ir.metadata.title)}</a></p>
+<h1>Mapa mental completo del libro</h1>
+<p>Todos los conceptos, contratos y componentes introducidos hasta el capítulo actual del libro.
+Los nodos son clicables y llevan a la sección del capítulo que introdujo cada entidad.</p>
+<div class="mindmap-svg">${svg}</div>
 </body>
 </html>
 `;
@@ -339,8 +445,13 @@ function main() {
     );
   }
 
+  if (ir.mindMapFullBookDiagramPath) {
+    const fullSvg = renderMindMapSvg(ir.mindMapFullBookDiagramPath);
+    fs.writeFileSync(path.join(OUT_DIR, 'mapa.html'), renderMapaPage(ir, fullSvg), 'utf8');
+  }
+
   console.log(`build-web: OK → ${path.relative(ROOT, OUT_DIR)}/`);
-  console.log(`  index.html + ${frontmatterPages.length} página(s) de frontmatter + ${ir.chapters.length} capítulo(s)`);
+  console.log(`  index.html + ${frontmatterPages.length} página(s) de frontmatter + ${ir.chapters.length} capítulo(s) + mapa.html`);
   process.exit(0);
 }
 

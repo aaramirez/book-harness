@@ -27,9 +27,26 @@ const { parseChapter } = require('./chapter-parser.js');
  *     references: List<Reference>
  *     contractsIntroduced: List<ContractId>
  *     componentsIntroduced: List<ComponentId>
+ *     contractsModified: List<ContractId>  # NUEVO — plan 2026-08-24-mapa-mental-progresivo.md;
+ *                                          # frontmatter.modifies_contracts, expuesto en ChapterIR
+ *                                          # para que build-web pueda anclar también las entidades
+ *                                          # MODIFICADAS por este capítulo (no solo introducidas)
+ *     mindMapDiagramPath: Text            # NUEVO — ruta relativa a la raíz del repo del snapshot
+ *                                          # `.diagram` acumulativo de este capítulo (fuente DOT
+ *                                          # generada por build-mind-map), p.ej.
+ *                                          # "diagrams/mindmap/chapter-00.diagram". BookIR guarda
+ *                                          # solo la REFERENCIA/ruta — no duplica la lógica del
+ *                                          # grafo (que vive en scripts/lib/mindmap.js), para
+ *                                          # mantener BookIR renderer-independent y liviano.
  *     retrievalSet: RetrievalSet          # NUEVO — plan
  *                                         # 2026-08-23-metodo-aprendizaje-activo-lector.md §3.1
  * END
+ *
+ * BookIR (top-level) gana además:
+ *     mindMapFullBookDiagramPath: Text    # "diagrams/mindmap/full-book.diagram" — el mapa mental
+ *                                          # completo del libro (snapshot del último capítulo),
+ *                                          # usado por build-web (dist/web/mapa.html) y build-pdf
+ *                                          # (apéndice final "Mapa Mental Completo del Libro").
  *
  * Ver BOOK_HARNESS_BUILD_INSTRUCTIONS(1).md §10. Renderer-independent: build-web y build-pdf
  * consumen exactamente el mismo BookIR (persistido en dist/book-ir.json por build-book-ir) y no
@@ -162,7 +179,11 @@ function extractDiagrams(body) {
   return diagrams;
 }
 
-function buildChapterIR(chapterEntry) {
+function pad2(n) {
+  return String(n).padStart(2, '0');
+}
+
+function buildChapterIR(chapterEntry, chapterIndex) {
   const full = path.join(reg.ROOT, 'book', chapterEntry.file);
   const raw = fs.readFileSync(full, 'utf8');
   const parsed = parseChapter(raw);
@@ -186,6 +207,8 @@ function buildChapterIR(chapterEntry) {
     references: [],
     contractsIntroduced: fm.introduces_contracts || [],
     componentsIntroduced: fm.introduces_components || [],
+    contractsModified: fm.modifies_contracts || [],
+    mindMapDiagramPath: `diagrams/mindmap/chapter-${pad2(chapterIndex)}.diagram`,
     retrievalSet: normalizeRetrievalSet(fm.retrieval_set),
   };
 }
@@ -204,10 +227,11 @@ function buildBookIR() {
       language: book.language,
     },
     frontmatter: reg.loadFrontmatter(),
-    chapters: chapters.map(buildChapterIR),
+    chapters: chapters.map((c, i) => buildChapterIR(c, i)),
     glossary,
     contracts,
     components,
+    mindMapFullBookDiagramPath: 'diagrams/mindmap/full-book.diagram',
   };
 }
 

@@ -6,6 +6,8 @@
  *
  *   validar (contracts, components, cada capítulo de book/book.yaml)
  *     → build-book-ir
+ *     → build-mind-map   (planes/2026-08-24-mapa-mental-progresivo.md — bloquea el build si falla,
+ *                          mismo patrón que el resto de la etapa de construcción)
  *     → build-web
  *     → build-pdf
  *
@@ -63,6 +65,7 @@ function main() {
   console.log('\n=== build-all: construcción ===');
   try {
     run('build-book-ir');
+    run('build-mind-map');
     run('build-web');
     run('build-pdf');
   } catch (e) {

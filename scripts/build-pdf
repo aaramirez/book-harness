@@ -15,10 +15,12 @@
 const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
+const { renderDiagram } = require('./lib/render-diagram.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const IR_PATH = path.join(ROOT, 'dist', 'book-ir.json');
 const BUILD_DIR = path.join(ROOT, 'dist', '.build');
+const MINDMAP_BUILD_DIR = path.join(BUILD_DIR, 'mindmap');
 const MD_PATH = path.join(BUILD_DIR, 'book.md');
 const PDF_PATH = path.join(ROOT, 'dist', 'book.pdf');
 
@@ -101,6 +103,27 @@ function frontmatterMarkdown(page) {
   return `# ${page.title}\n\n${page.body.trim()}\n\n`;
 }
 
+/**
+ * Página de diagrama vectorial al cierre de cada capítulo (plan §5 — "Diagrams as Source":
+ * `dot -Tpdf` produce un PDF vectorial que se incrusta con sintaxis Markdown de imagen; pandoc +
+ * xelatex ya soportan imágenes PDF como figura vectorial, sin rasterizar). Usa el mismo helper
+ * compartido (`render-diagram.js`) que build-web, para no duplicar la llamada a `dot`.
+ */
+function mindMapChapterMarkdown(chapter) {
+  if (!chapter.mindMapDiagramPath) return '';
+  const diagramPath = path.join(ROOT, chapter.mindMapDiagramPath);
+  const base = path.basename(chapter.mindMapDiagramPath, '.diagram');
+  const pdfPath = path.join(MINDMAP_BUILD_DIR, `${base}.pdf`);
+  renderDiagram(diagramPath, pdfPath, 'pdf');
+  // Ruta ABSOLUTA deliberada: pandoc resuelve las rutas de imagen de markdown relativas al cwd
+  // del proceso pandoc (no al directorio del propio .md), y build-pdf invoca pandoc desde la raíz
+  // del repo — una ruta relativa a dist/.build/ no resolvía (reproducido durante esta ejecución,
+  // ver Registro de ejecución del plan).
+  let out = '\\newpage\n\n## Mapa Mental hasta este Capítulo\n\n';
+  out += `![Mapa mental acumulado hasta ${chapter.id}](${pdfPath})\n\n`;
+  return out;
+}
+
 function chapterMarkdown(chapter) {
   const CDA_SECTION_NUMBERS = new Set([0, 20, 21]);
   let out = `# ${chapter.id} — ${chapter.title}\n\n`;
@@ -114,6 +137,7 @@ function chapterMarkdown(chapter) {
     out += systemsLensMarkdown(rs);
     out += repasoMarkdown(rs);
   }
+  out += mindMapChapterMarkdown(chapter);
   return out;
 }
 
@@ -140,6 +164,25 @@ function flashcardAppendixMarkdown(ir) {
   return out;
 }
 
+/**
+ * Apéndice final del libro: el mapa mental completo (snapshot del último capítulo — plan §5 y
+ * §7 "v0.1 sí incluye... mapa completo como apéndice"). Se coloca DESPUÉS del apéndice de
+ * flashcards (decisión de esta ejecución, ver Registro de ejecución del plan §9): las flashcards
+ * son la última pieza "accionable" del libro (repaso espaciado); el mapa completo cierra el libro
+ * como la vista de conjunto — el verdadero "panorama completo" solo tiene sentido como la última
+ * página, después de haber visto el detalle capítulo a capítulo y las tarjetas de repaso.
+ */
+function fullBookMindMapAppendixMarkdown(ir) {
+  if (!ir.mindMapFullBookDiagramPath) return '';
+  const diagramPath = path.join(ROOT, ir.mindMapFullBookDiagramPath);
+  const pdfPath = path.join(MINDMAP_BUILD_DIR, 'full-book.pdf');
+  renderDiagram(diagramPath, pdfPath, 'pdf');
+  let out = '\\newpage\n\n# Apéndice: Mapa Mental Completo del Libro\n\n';
+  out += 'El grafo completo de conceptos, contratos y componentes introducidos a lo largo de todo el libro.\n\n';
+  out += `![Mapa mental completo del libro](${pdfPath})\n\n`;
+  return out;
+}
+
 function buildMarkdown(ir) {
   const header = [
     `% ${ir.metadata.title}`,
@@ -152,8 +195,9 @@ function buildMarkdown(ir) {
     .join('\n');
   const chapters = ir.chapters.map(chapterMarkdown).join('\n\n');
   const appendix = flashcardAppendixMarkdown(ir);
+  const mindMapAppendix = fullBookMindMapAppendixMarkdown(ir);
   const chaptersBlock = frontmatter ? '\\newpage\n\n' + chapters : chapters;
-  return header + '\n' + frontmatter + '\n' + chaptersBlock + '\n\n' + appendix;
+  return header + '\n' + frontmatter + '\n' + chaptersBlock + '\n\n' + appendix + '\n\n' + mindMapAppendix;
 }
 
 function main() {

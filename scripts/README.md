@@ -16,7 +16,9 @@
   ./scripts/validate-chapter book/chapters/00-arquitectura-constitucion
   ./scripts/validate-contracts
   ./scripts/validate-components
+  ./scripts/validate-retrieval-set book/chapters/00-arquitectura-constitucion
   ./scripts/build-book-ir
+  ./scripts/build-mind-map   # planes/2026-08-24-mapa-mental-progresivo.md
   ./scripts/build-web
   ./scripts/build-pdf
   ./scripts/build-all        # pipeline end-to-end (Fase 7)
@@ -36,6 +38,19 @@
   bloques de pseudocódigo (` ```pseudocode `) para los validadores y para `build-book-ir`.
 - `registries.js` — carga y valida el esquema mínimo de `registry/contracts.yaml`,
   `registry/components.yaml`, `registry/glossary.yaml` y `book/book.yaml`.
+- `mindmap.js` — lógica pura (sin tocar disco salvo lectura) que calcula los snapshots
+  acumulativos de `BookMindMap` (`planes/2026-08-24-mapa-mental-progresivo.md`) a partir de los
+  registries + el frontmatter de cada capítulo.
+- `dot-writer.js` — serializa un snapshot de `BookMindMap` a texto Graphviz DOT.
+- `render-diagram.js` — helper compartido que invoca el binario `dot` (Graphviz) para convertir un
+  `.diagram` a SVG o PDF; usado por `build-web` y `build-pdf` para no duplicar la llamada.
+
+## Mapa mental progresivo (decisión del plan `2026-08-24-mapa-mental-progresivo.md`)
+
+Formato de `.diagram`: **Graphviz DOT** (binario `dot` v12.2.1 en `/usr/local/bin`). Los archivos
+en `diagrams/mindmap/*.diagram` son FUENTE (se comitean); los `.svg`/`.pdf` renderizados son
+artefactos de build (`dist/`, gitignorado). Ver el Registro de ejecución del plan (§9) para el
+detalle completo de decisiones de diseño.
 
 ## Motor de PDF (decisión §8.2 del plan)
 

@@ -1,0 +1,66 @@
+#!/usr/bin/env node
+'use strict';
+
+/**
+ * build-mind-map — genera el `BookMindMap` progresivo del libro (Fase 4 del plan
+ * `planes/2026-08-24-mapa-mental-progresivo.md`, junto a los demás validadores/generadores
+ * deterministas).
+ *
+ * INPUT:  registry/components.yaml, registry/contracts.yaml, registry/glossary.yaml,
+ *         book/book.yaml, frontmatter de cada capítulo (introduces/modifies) — ver
+ *         scripts/lib/mindmap.js.
+ * PROCESO: snapshot[N] = snapshot[N-1] + lo que el capítulo N introduce/modifica + las aristas
+ *          DEPENDS_ON/PRODUCES/CONSUMES que ya existan en ese punto ("no magic entities" aplicado
+ *          al grafo — falla con exit 1 si un capítulo referencia un nodo que no existe todavía).
+ * OUTPUT: diagrams/mindmap/chapter-<NN>.diagram (NN = índice posicional en book/book.yaml, no el
+ *         ChapterId crudo) + diagrams/mindmap/full-book.diagram (contenido real del último
+ *         snapshot, no un alias). Estos `.diagram` son FUENTE: se comitean al repo.
+ */
+
+const fs = require('fs');
+const path = require('path');
+const { buildMindMapSnapshots } = require('./lib/mindmap.js');
+const { writeDot } = require('./lib/dot-writer.js');
+
+const ROOT = path.resolve(__dirname, '..');
+const OUT_DIR = path.join(ROOT, 'diagrams', 'mindmap');
+
+function pad2(n) {
+  return String(n).padStart(2, '0');
+}
+
+function main() {
+  let result;
+  try {
+    result = buildMindMapSnapshots();
+  } catch (e) {
+    console.error('build-mind-map: FALLÓ');
+    console.error('  - ' + e.message);
+    process.exit(1);
+    return;
+  }
+
+  const { chapterSnapshots, fullBook } = result;
+
+  fs.mkdirSync(OUT_DIR, { recursive: true });
+
+  console.log('build-mind-map: escribiendo diagrams/mindmap/*.diagram (Graphviz DOT)');
+  for (const snap of chapterSnapshots) {
+    const fileName = `chapter-${pad2(snap.chapterIndex)}.diagram`;
+    const dot = writeDot(snap, {
+      title: `Mapa mental hasta ${snap.chapterId}`,
+      newNodeIds: snap.newNodeIds,
+    });
+    fs.writeFileSync(path.join(OUT_DIR, fileName), dot, 'utf8');
+    console.log(`  ${fileName}: ${snap.nodes.length} nodo(s), ${snap.edges.length} arista(s) (${snap.newNodeIds.length} nuevo(s) en este capítulo)`);
+  }
+
+  const fullDot = writeDot(fullBook, { title: 'Mapa mental completo del libro' });
+  fs.writeFileSync(path.join(OUT_DIR, 'full-book.diagram'), fullDot, 'utf8');
+  console.log(`  full-book.diagram: ${fullBook.nodes.length} nodo(s), ${fullBook.edges.length} arista(s)`);
+
+  console.log('build-mind-map: OK');
+  process.exit(0);
+}
+
+main();

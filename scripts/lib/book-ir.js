@@ -8,11 +8,16 @@ const { parseChapter } = require('./chapter-parser.js');
 /**
  * STRUCT BookIR
  *     metadata: BookMetadata
+ *     frontmatter: List<FrontmatterPage>   # NUEVO — book/frontmatter/*.md (preface,
+ *                                          # introduction); ver §"Frontmatter" más abajo
  *     chapters: List<ChapterIR>
  *     glossary: Glossary
  *     contracts: ContractRegistry
  *     components: ComponentRegistry
  * END
+ *
+ * STRUCT FrontmatterPage { id, title, body }   # texto libre, sin frontmatter YAML propio; no
+ *                                              # pasa por validate-chapter ni entra a registries.
  *
  * STRUCT ChapterIR
  *     id: ChapterId
@@ -198,6 +203,7 @@ function buildBookIR() {
       title: book.title,
       language: book.language,
     },
+    frontmatter: reg.loadFrontmatter(),
     chapters: chapters.map(buildChapterIR),
     glossary,
     contracts,

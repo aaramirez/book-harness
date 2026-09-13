@@ -349,3 +349,26 @@ multi-agente, y migración del propio Book Harness a los primitivos del harness 
 identificado durante esta ejecución: ADRs persistidos (`docs/adr/` vacío) y observabilidad de
 runs editoriales (qué agente propuso qué, cuántas iteraciones, costo) — ninguno de los dos estaba
 en el alcance explícito de BH-v0.1 pero quedan como huecos concretos para BH-v0.2+.
+
+### 11.6 Corrección posterior (2026-09-13): `book/frontmatter/*.md` no se renderizaba
+
+Al ejecutar después el plan complementario `2026-08-23-metodo-aprendizaje-activo-lector.md`
+(que agrega la nota "Cómo leer este libro" a `book/frontmatter/preface.md`), se detectó por
+inspección directa (grep sobre `scripts/`) que **ningún script leía `book/frontmatter/*.md`**:
+`preface.md`/`introduction.md` existían desde el bootstrap de §5 Fase 0 pero eran contenido
+huérfano, sin ruta de renderizado en Web ni PDF — un hueco real de esta ejecución, no de la
+extensión pedagógica.
+
+Corregido: `scripts/lib/registries.js` agrega `loadFrontmatter()` (orden editorial fijo
+`preface.md` → `introduction.md`, cada archivo como `{ id, title, body }` a partir de su primer
+`# Encabezado`); `BookIR` gana el campo `frontmatter: List<FrontmatterPage>`
+(`scripts/lib/book-ir.js`); `build-web` genera `dist/web/frontmatter/{preface,introduction}.html`
+enlazadas desde `index.html` y con navegación hacia el primer capítulo; `build-pdf` antepone
+ambas páginas (con salto de página) antes del primer capítulo. Verificado por extracción real de
+texto del PDF (`pypdf`) y por inspección de los `.html` generados — no solo por tamaño de
+archivo — que el contenido de ambos documentos aparece de verdad en las dos salidas.
+
+Estructuralmente el frontmatter queda deliberadamente simple (texto libre, sin frontmatter YAML
+propio, sin paso por `validate-chapter`) — es contenido editorial fijo, no arquitectónico, así
+que no le aplica el modelo de contratos/componentes/"no magic entities" que sí rige los
+capítulos.

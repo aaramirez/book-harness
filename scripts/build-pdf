@@ -93,6 +93,14 @@ function repasoMarkdown(rs) {
   return out;
 }
 
+/**
+ * Página de frontmatter (Prefacio / Introducción): texto libre, sin las cajas del Ciclo de
+ * Dominio Activo (retrievalSet vive solo en ChapterIR, no en FrontmatterPage).
+ */
+function frontmatterMarkdown(page) {
+  return `# ${page.title}\n\n${page.body.trim()}\n\n`;
+}
+
 function chapterMarkdown(chapter) {
   const CDA_SECTION_NUMBERS = new Set([0, 20, 21]);
   let out = `# ${chapter.id} — ${chapter.title}\n\n`;
@@ -139,9 +147,13 @@ function buildMarkdown(ir) {
     `% ${today()} — versión ${ir.metadata.version}`,
     '',
   ].join('\n');
+  const frontmatter = (ir.frontmatter || [])
+    .map((p, i) => (i === 0 ? frontmatterMarkdown(p) : '\\newpage\n\n' + frontmatterMarkdown(p)))
+    .join('\n');
   const chapters = ir.chapters.map(chapterMarkdown).join('\n\n');
   const appendix = flashcardAppendixMarkdown(ir);
-  return header + '\n' + chapters + '\n\n' + appendix;
+  const chaptersBlock = frontmatter ? '\\newpage\n\n' + chapters : chapters;
+  return header + '\n' + frontmatter + '\n' + chaptersBlock + '\n\n' + appendix;
 }
 
 function main() {

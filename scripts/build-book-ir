@@ -21,6 +21,7 @@ function main() {
   const outPath = path.join(distDir, 'book-ir.json');
   fs.writeFileSync(outPath, JSON.stringify(ir, null, 2) + '\n', 'utf8');
   console.log(`build-book-ir: OK → ${path.relative(ROOT, outPath)}`);
+  console.log(`  frontmatter: ${ir.frontmatter.length} página(s)`);
   console.log(`  capítulos: ${ir.chapters.length}`);
   console.log(`  contratos: ${ir.contracts.length}`);
   console.log(`  componentes: ${ir.components.length}`);

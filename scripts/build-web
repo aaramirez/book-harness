@@ -105,6 +105,40 @@ function chapterFileName(chapterId) {
   return `${chapterId}.html`;
 }
 
+function frontmatterFileName(pageId) {
+  return `${pageId}.html`;
+}
+
+/**
+ * Página de frontmatter (Prefacio / Introducción): texto libre vía renderMarkdownish, sin las
+ * cajas del Ciclo de Dominio Activo (esas son solo de capítulos — retrievalSet vive en
+ * ChapterIR, no en FrontmatterPage).
+ */
+function renderFrontmatterPage(ir, page, prevLink, nextLink) {
+  const prev = prevLink
+    ? `<a href="${prevLink.href}">&larr; ${escapeHtml(prevLink.label)}</a>`
+    : '<span class="disabled">&larr;</span>';
+  const next = nextLink
+    ? `<a href="${nextLink.href}">${escapeHtml(nextLink.label)} &rarr;</a>`
+    : '<span class="disabled">&rarr;</span>';
+  return `<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>${escapeHtml(page.title)} — ${escapeHtml(ir.metadata.title)}</title>
+<style>${BASE_CSS}</style>
+</head>
+<body>
+<p><a href="../index.html">&larr; ${escapeHtml(ir.metadata.title)}</a></p>
+<h1>${escapeHtml(page.title)}</h1>
+<nav class="chapter-nav">${prev}${next}</nav>
+${renderMarkdownish(page.body)}
+<nav class="chapter-nav">${prev}${next}</nav>
+</body>
+</html>
+`;
+}
+
 function flatten(text) {
   return String(text || '').replace(/\s+/g, ' ').trim();
 }
@@ -241,6 +275,9 @@ ${practiceBox}
 }
 
 function renderIndexPage(ir) {
+  const frontmatterToc = (ir.frontmatter || [])
+    .map((p) => `<a href="frontmatter/${frontmatterFileName(p.id)}">${escapeHtml(p.title)}</a>`)
+    .join('\n');
   const toc = ir.chapters
     .map((c) => `<a href="chapters/${chapterFileName(c.id)}">${escapeHtml(c.id)} — ${escapeHtml(c.title)}</a>`)
     .join('\n');
@@ -255,6 +292,7 @@ function renderIndexPage(ir) {
 <h1>${escapeHtml(ir.metadata.title)}</h1>
 <p>Versión ${escapeHtml(ir.metadata.version)} — book-harness (BH-v0.1)</p>
 <div class="toc">
+${frontmatterToc}
 ${toc}
 </div>
 </body>
@@ -270,7 +308,29 @@ function main() {
   const ir = JSON.parse(fs.readFileSync(IR_PATH, 'utf8'));
 
   fs.mkdirSync(path.join(OUT_DIR, 'chapters'), { recursive: true });
+  fs.mkdirSync(path.join(OUT_DIR, 'frontmatter'), { recursive: true });
   fs.writeFileSync(path.join(OUT_DIR, 'index.html'), renderIndexPage(ir), 'utf8');
+
+  const frontmatterPages = ir.frontmatter || [];
+  const firstChapter = ir.chapters[0];
+  frontmatterPages.forEach((page, i) => {
+    const prevPage = frontmatterPages[i - 1];
+    const nextPage = frontmatterPages[i + 1];
+    const prevLink = prevPage
+      ? { href: frontmatterFileName(prevPage.id), label: prevPage.title }
+      : null; // la primera página de frontmatter solo enlaza "atrás" al índice (arriba de la página)
+    const nextLink = nextPage
+      ? { href: frontmatterFileName(nextPage.id), label: nextPage.title }
+      : firstChapter
+        ? { href: `../chapters/${chapterFileName(firstChapter.id)}`, label: `${firstChapter.id} — ${firstChapter.title}` }
+        : null;
+    fs.writeFileSync(
+      path.join(OUT_DIR, 'frontmatter', frontmatterFileName(page.id)),
+      renderFrontmatterPage(ir, page, prevLink, nextLink),
+      'utf8'
+    );
+  });
+
   for (const chapter of ir.chapters) {
     fs.writeFileSync(
       path.join(OUT_DIR, 'chapters', chapterFileName(chapter.id)),
@@ -280,7 +340,7 @@ function main() {
   }
 
   console.log(`build-web: OK → ${path.relative(ROOT, OUT_DIR)}/`);
-  console.log(`  index.html + ${ir.chapters.length} capítulo(s)`);
+  console.log(`  index.html + ${frontmatterPages.length} página(s) de frontmatter + ${ir.chapters.length} capítulo(s)`);
   process.exit(0);
 }
 

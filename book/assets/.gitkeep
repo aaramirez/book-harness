@@ -1,0 +1,3 @@
+Assets de capítulos (imágenes, diagramas fuente) van aquí. Vacío en BH-v0.1: el capítulo piloto
+no usa assets binarios; los diagramas son texto ASCII embebido directamente en chapter.md (ver
+BOOK_HARNESS_BUILD_INSTRUCTIONS(1).md §13 "Diagrams as Source" — versión mínima para v0.1).

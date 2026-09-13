@@ -1,0 +1,135 @@
+# Contract Registry — book-harness
+#
+# Fuente de verdad canónica de contratos (estructuras de datos con nombre estable) introducidos
+# a lo largo del libro. Esquema exigido por REGLAS_LIBRO_AGENT_HARNESS(1).md §10:
+#
+#   id:                     C-XXX (correlativo, nunca se reutiliza)
+#   name:                   nombre canónico (PascalCase, en inglés)
+#   version:                versión del contrato (v1, v2, ...)
+#   introduced_in:          ChapterId (debe existir en book/book.yaml)
+#   current_definition:     bloque STRUCT/ENUM canónico vigente (pseudocódigo)
+#   used_by:                lista de ComponentId que consumen o producen este contrato
+#   modified_by:            lista de ChapterId que han modificado este contrato (vacío si ninguno)
+#   constitutional_impact:  lista de ArticleId (P-xx / INV-xx) relevantes
+#
+# Regla: un contrato solo puede aparecer aquí si el capítulo que lo introduce ya pasó
+# `validate-chapter`. Un capítulo NUNCA puede referenciar en pseudocódigo un contrato cuyo
+# `introduced_in` sea un capítulo posterior en `book/book.yaml` (validate-chapter lo rechaza).
+#
+# Estado al iniciar la Fase 1: vacío (solo este esquema). Poblado en la Fase 5 con los contratos
+# reales introducidos por el capítulo piloto (CH-00).
+
+contracts:
+  - id: C-001
+    name: AgentMessage
+    version: v1
+    introduced_in: CH-00
+    current_definition: |
+      STRUCT AgentMessage
+          id: MessageId
+          role: MessageRole
+          content: Value
+          timestamp: Timestamp
+      END
+    used_by: []
+    modified_by: []
+    constitutional_impact: [P-02, INV-02]
+
+  - id: C-002
+    name: AgentConfig
+    version: v1
+    introduced_in: CH-00
+    current_definition: |
+      STRUCT AgentConfig
+          agentId: AgentId
+          name: Text
+          budget: ExecutionBudget
+      END
+    used_by: []
+    modified_by: []
+    constitutional_impact: [P-06]
+
+  - id: C-003
+    name: AgentState
+    version: v1
+    introduced_in: CH-00
+    current_definition: |
+      STRUCT AgentState
+          runId: RunId
+          sessionId: SessionId
+          agentId: AgentId
+          status: AgentRunStatus
+          currentTurn: Integer
+      END
+    used_by: []
+    modified_by: []
+    constitutional_impact: [P-08, P-10, INV-12]
+
+  - id: C-004
+    name: ExecutionContext
+    version: v1
+    introduced_in: CH-00
+    current_definition: |
+      STRUCT ExecutionContext
+          runId: RunId
+          sessionId: SessionId
+          traceId: TraceId
+          budget: ExecutionBudget
+      END
+    used_by: []
+    modified_by: []
+    constitutional_impact: [P-01, P-14]
+
+  - id: C-010
+    name: AgentEvent
+    version: v1
+    introduced_in: CH-00
+    current_definition: |
+      STRUCT AgentEvent
+          eventId: EventId
+          eventType: AgentEventType
+          timestamp: Timestamp
+          runId: RunId
+          sessionId: SessionId
+          agentId: AgentId
+          traceId: TraceId
+          payload: Value
+      END
+    used_by: []
+    modified_by: []
+    constitutional_impact: [P-04, INV-18, INV-19]
+
+  - id: C-011
+    name: HarnessError
+    version: v1
+    introduced_in: CH-00
+    current_definition: |
+      STRUCT HarnessError
+          category: ErrorCategory
+          code: Text
+          message: Text
+          recoverable: Boolean
+          retryable: Boolean
+          metadata: Map<Text, Value>
+      END
+    used_by: []
+    modified_by: []
+    constitutional_impact: [INV-20]
+
+  - id: C-012
+    name: ExecutionBudget
+    version: v1
+    introduced_in: CH-00
+    current_definition: |
+      STRUCT ExecutionBudget
+          maxTurns: Integer
+          maxToolCalls: Integer
+          maxInputTokens: Integer
+          maxOutputTokens: Integer
+          maxCost: Number
+          maxRuntimeMs: Integer
+          maxConcurrentTools: Integer
+      END
+    used_by: []
+    modified_by: []
+    constitutional_impact: [P-10, INV-09]

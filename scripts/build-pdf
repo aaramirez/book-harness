@@ -1,0 +1,87 @@
+#!/usr/bin/env node
+'use strict';
+
+/**
+ * build-pdf — BookIR → dist/book.pdf vía pandoc (Fase 6 del plan, motor decidido en plan §8.2).
+ *
+ * Lee EXCLUSIVAMENTE dist/book-ir.json — el mismo BookIR que consume build-web — y no mantiene
+ * una copia independiente del contenido de los capítulos (BOOK_HARNESS_BUILD_INSTRUCTIONS(1).md
+ * §12: "The PDF renderer controls presentation only. It must not maintain an independent copy of
+ * chapter content.").
+ *
+ * pandoc instalado en el entorno es 1.19.2.4 (pre-2.0): usa `--latex-engine`, NO `--pdf-engine`.
+ */
+
+const fs = require('fs');
+const path = require('path');
+const { execFileSync } = require('child_process');
+
+const ROOT = path.resolve(__dirname, '..');
+const IR_PATH = path.join(ROOT, 'dist', 'book-ir.json');
+const BUILD_DIR = path.join(ROOT, 'dist', '.build');
+const MD_PATH = path.join(BUILD_DIR, 'book.md');
+const PDF_PATH = path.join(ROOT, 'dist', 'book.pdf');
+
+function today() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function chapterMarkdown(chapter) {
+  let out = `# ${chapter.id} — ${chapter.title}\n\n`;
+  for (const s of chapter.sections) {
+    out += `## ${s.n}. ${s.title}\n\n${s.content.trim()}\n\n`;
+  }
+  return out;
+}
+
+function buildMarkdown(ir) {
+  const header = [
+    `% ${ir.metadata.title}`,
+    '% book-harness (Book Production Harness)',
+    `% ${today()} — versión ${ir.metadata.version}`,
+    '',
+  ].join('\n');
+  const chapters = ir.chapters.map(chapterMarkdown).join('\n\n');
+  return header + '\n' + chapters;
+}
+
+function main() {
+  if (!fs.existsSync(IR_PATH)) {
+    console.error(`build-pdf: no existe ${path.relative(ROOT, IR_PATH)}. Correr build-book-ir primero.`);
+    process.exit(1);
+  }
+  const ir = JSON.parse(fs.readFileSync(IR_PATH, 'utf8'));
+
+  fs.mkdirSync(BUILD_DIR, { recursive: true });
+  const md = buildMarkdown(ir);
+  fs.writeFileSync(MD_PATH, md, 'utf8');
+
+  const args = [
+    MD_PATH,
+    '-o', PDF_PATH,
+    '--latex-engine=xelatex',
+    '-V', 'mainfont=Helvetica',
+    '-V', 'geometry:margin=1in',
+    '--toc',
+    '--toc-depth=2',
+    '--top-level-division=chapter',
+  ];
+
+  try {
+    execFileSync('pandoc', args, { stdio: 'inherit' });
+  } catch (e) {
+    console.error('build-pdf: pandoc falló:', e.message);
+    process.exit(1);
+  }
+
+  if (!fs.existsSync(PDF_PATH)) {
+    console.error('build-pdf: pandoc terminó pero dist/book.pdf no existe');
+    process.exit(1);
+  }
+
+  const stat = fs.statSync(PDF_PATH);
+  console.log(`build-pdf: OK → ${path.relative(ROOT, PDF_PATH)} (${stat.size} bytes)`);
+  process.exit(0);
+}
+
+main();

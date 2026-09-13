@@ -1,0 +1,76 @@
+#!/usr/bin/env node
+'use strict';
+
+/**
+ * validate-contracts — consistencia de registry/contracts.yaml (Fase 4 del plan).
+ *
+ * Verifica, para cada contrato:
+ *   - los 8 campos obligatorios de REGLAS_LIBRO_AGENT_HARNESS(1).md §10 están presentes
+ *   - el id sigue el formato C-NNN y es único
+ *   - introduced_in referencia un capítulo real de book/book.yaml
+ *   - modified_by solo referencia capítulos reales
+ *   - constitutional_impact solo referencia artículos reales de la Constitution
+ */
+
+const reg = require('./lib/registries.js');
+
+const REQUIRED_FIELDS = [
+  'id', 'name', 'version', 'introduced_in', 'current_definition', 'used_by', 'modified_by',
+  'constitutional_impact',
+];
+
+function main() {
+  const errors = [];
+  const { order } = reg.loadBook();
+  const contracts = reg.loadContracts();
+  const constitutionalArticleIds = reg.loadConstitutionArticleIds();
+
+  const seenIds = new Set();
+  for (const c of contracts) {
+    const label = c && c.id ? c.id : JSON.stringify(c);
+
+    for (const field of REQUIRED_FIELDS) {
+      if (!Object.prototype.hasOwnProperty.call(c, field) || c[field] === null || c[field] === undefined) {
+        errors.push(`Contrato ${label}: falta el campo obligatorio "${field}"`);
+      }
+    }
+    if (errors.length && !c.id) continue;
+
+    if (!/^C-\d{3}$/.test(c.id || '')) {
+      errors.push(`Contrato ${label}: id "${c.id}" no sigue el formato C-NNN`);
+    }
+    if (seenIds.has(c.id)) {
+      errors.push(`Contrato ${label}: id duplicado`);
+    }
+    seenIds.add(c.id);
+
+    if (c.introduced_in && reg.chapterIndex(order, c.introduced_in) === -1) {
+      errors.push(`Contrato ${label}: introduced_in "${c.introduced_in}" no existe en book/book.yaml`);
+    }
+    for (const ch of c.modified_by || []) {
+      if (reg.chapterIndex(order, ch) === -1) {
+        errors.push(`Contrato ${label}: modified_by referencia capítulo inexistente "${ch}"`);
+      }
+    }
+    for (const a of c.constitutional_impact || []) {
+      if (!constitutionalArticleIds.has(a)) {
+        errors.push(`Contrato ${label}: constitutional_impact referencia artículo inexistente "${a}"`);
+      }
+    }
+    if (typeof c.current_definition === 'string' && !/^(STRUCT|ENUM)\s+\w+/.test(c.current_definition.trim())) {
+      errors.push(`Contrato ${label}: current_definition debe empezar con STRUCT o ENUM`);
+    }
+  }
+
+  if (errors.length) {
+    console.error('validate-contracts: FALLÓ\n');
+    for (const e of errors) console.error('  - ' + e);
+    console.error(`\n${errors.length} error(es).`);
+    process.exit(1);
+  }
+
+  console.log(`validate-contracts: OK (${contracts.length} contrato(s))`);
+  process.exit(0);
+}
+
+main();

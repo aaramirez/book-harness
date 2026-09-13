@@ -1,0 +1,99 @@
+# Glossary Registry — book-harness
+#
+# Vocabulario técnico canónico del libro. Idioma del contenido: español, con el término técnico
+# preservado en inglés (decisión §8.3 del plan). Esquema:
+#
+#   term:           término canónico, en inglés cuando así lo dicta la convención del libro
+#   definition:     definición en español, una o dos frases
+#   introduced_in:  ChapterId donde se define por primera vez
+#   kind:           concept | contract | component | article
+#   ref:            ContractId o ComponentId o ArticleId relacionado, cuando aplique (opcional)
+
+terms:
+  - term: Harness
+    definition: >
+      Runtime gobernado que permite a sistemas probabilísticos (modelos) proponer decisiones
+      mientras mecanismos determinísticos controlan su ejecución, límites y consecuencias.
+    introduced_in: CH-00
+    kind: concept
+
+  - term: Architecture Constitution
+    definition: >
+      Documento rector que define los principios (P-xx), invariantes (INV-xx) y fronteras de
+      propiedad de componentes que gobiernan la evolución del arnés.
+    introduced_in: CH-00
+    kind: concept
+
+  - term: Deterministic Boundary
+    definition: >
+      Frontera explícita que separa lo que un modelo puede proponer (intención semántica) de lo
+      que el runtime determinístico decide y ejecuta (autorización, límites, estado).
+    introduced_in: CH-00
+    kind: concept
+
+  - term: Component Sovereignty
+    definition: >
+      Principio por el cual cada componente del runtime tiene una responsabilidad exclusiva y
+      fronteras explícitas de lo que NO posee, evitando que una decisión sea absorbida
+      silenciosamente por un dominio equivocado.
+    introduced_in: CH-00
+    kind: concept
+
+  - term: AgentMessage
+    definition: >
+      Contrato canónico e independiente de proveedor para representar un mensaje dentro del ciclo
+      cognitivo del agente.
+    introduced_in: CH-00
+    kind: contract
+    ref: C-001
+
+  - term: AgentConfig
+    definition: Configuración declarativa de un agente sobre el runtime compartido.
+    introduced_in: CH-00
+    kind: contract
+    ref: C-002
+
+  - term: AgentState
+    definition: >
+      Estado operativo de una ejecución (run) del agente, conceptualmente independiente del
+      estado persistente de la sesión (SessionState).
+    introduced_in: CH-00
+    kind: contract
+    ref: C-003
+
+  - term: ExecutionContext
+    definition: Contexto de ejecución que acompaña cada operación dentro de un run (runId, sessionId, traceId, budget).
+    introduced_in: CH-00
+    kind: contract
+    ref: C-004
+
+  - term: AgentEvent
+    definition: >
+      Envelope canónico de evento observable producido por cualquier acción significativa del
+      runtime.
+    introduced_in: CH-00
+    kind: contract
+    ref: C-010
+
+  - term: HarnessError
+    definition: >
+      Contrato de error clasificado (categoría, recuperabilidad, reintentabilidad) usado en lugar
+      de errores genéricos sin tipar.
+    introduced_in: CH-00
+    kind: contract
+    ref: C-011
+
+  - term: ExecutionBudget
+    definition: >
+      Conjunto explícito de límites operacionales (turnos, tool calls, tokens, costo, tiempo,
+      concurrencia) que acota toda ejecución de un agente.
+    introduced_in: CH-00
+    kind: contract
+    ref: C-012
+
+  - term: Probabilistic System
+    definition: >
+      Componente cuya salida (típicamente un modelo de lenguaje) es una propuesta razonada, no una
+      decisión operacional vinculante.
+    introduced_in: CH-00
+    kind: concept

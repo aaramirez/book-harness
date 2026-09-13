@@ -1,0 +1,18 @@
+# Manifiesto canónico del libro — book-harness
+#
+# El harness razona sobre el libro a través de esta estructura, no tratando el repositorio como
+# una colección arbitraria de Markdown (BOOK_HARNESS_BUILD_INSTRUCTIONS(1).md §4).
+#
+# `chapters` define el ORDEN canónico del libro. Ese orden es lo que usan los validadores para
+# decidir si un capítulo referencia un contrato/componente "futuro" (introduced_in posterior en
+# esta lista) — ver scripts/lib/registries.js.
+
+book:
+  id: como-construir-un-arnes
+  version: "0.1"
+  title: "¿Cómo construir un arnés?"
+  language: es
+
+chapters:
+  - id: CH-00
+    file: chapters/00-arquitectura-constitucion/chapter.md

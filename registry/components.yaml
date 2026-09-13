@@ -1,0 +1,34 @@
+# Component Registry — book-harness
+#
+# Fuente de verdad canónica de componentes de runtime introducidos a lo largo del libro.
+# Esquema exigido por REGLAS_LIBRO_AGENT_HARNESS(1).md §11:
+#
+#   id:                       CMP-XXX (correlativo, nunca se reutiliza)
+#   name:                     nombre canónico (PascalCase, en inglés)
+#   responsibility:           responsabilidad primaria (una frase)
+#   owns:                     lista de decisiones que este componente posee en exclusiva
+#   does_not_own:             lista de responsabilidades explícitamente excluidas
+#   dependencies:             lista de ComponentId de los que depende
+#   consumes:                 lista de ContractId que recibe como entrada
+#   produces:                 lista de ContractId que produce como salida
+#   introduced_in:            ChapterId (debe existir en book/book.yaml)
+#   constitutional_articles:  lista de ArticleId (P-xx / INV-xx) relevantes
+#
+# Regla: un componente solo puede aparecer aquí si el capítulo que lo introduce ya pasó
+# `validate-chapter`. Ningún pseudocódigo puede invocar un componente cuyo `introduced_in` sea
+# un capítulo posterior en `book/book.yaml` ("no magic entities", REGLAS_LIBRO §2).
+#
+# Estado actual: vacío. El capítulo piloto (CH-00, "La Constitución Arquitectónica de un Arnés")
+# es deliberadamente anterior a la introducción de cualquier componente de runtime: establece el
+# vocabulario y los contratos fundamentales (ver registry/contracts.yaml) pero NO instancia
+# AgentLoop, ModelGateway, ToolRuntime ni ningún otro componente de Article III todavía. El
+# capítulo 0 solo los menciona como "preview" en prosa (sin pseudocódigo ejecutable), lo cual está
+# permitido explícitamente por BOOK_HARNESS_BUILD_INSTRUCTIONS(1).md §22 regla 8 ("future concepts
+# ... unless explicitly marked as a preview"). Los validadores solo verifican entidades dentro de
+# bloques de pseudocódigo, no menciones en prosa — ver decisión de diseño en el Registro de
+# ejecución del plan.
+#
+# Se poblará a partir del capítulo que introduzca el primer componente real (fuera del alcance de
+# esta ejecución BH-v0.1, que solo cubre el capítulo piloto CH-00).
+
+components: []

@@ -1,0 +1,14 @@
+# Publishing policy — book-harness
+#
+# Regla mínima v0.1 (BOOK_HARNESS_BUILD_INSTRUCTIONS(1).md §16, §8): la pipeline de publicación
+# DEBE fallar (exit 1) ante cualquier error de validación estructural. scripts/build-all lee esta
+# policy antes de construir BookIR/Web/PDF.
+#
+# unresolved_validation_errors:
+#   deny   → build-all se detiene (exit 1) si validate-chapter, validate-contracts o
+#            validate-components fallan para cualquier capítulo listado en book/book.yaml.
+#   allow  → (no soportado en v0.1; solo existe como valor documentado para BH-v0.2+ cuando haya
+#            reviewers que puedan marcar hallazgos como "aceptados con excepción").
+
+publishing:
+  unresolved_validation_errors: deny

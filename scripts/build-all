@@ -1,0 +1,79 @@
+#!/usr/bin/env node
+'use strict';
+
+/**
+ * build-all — pipeline end-to-end (Fase 7 del plan):
+ *
+ *   validar (contracts, components, cada capítulo de book/book.yaml)
+ *     → build-book-ir
+ *     → build-web
+ *     → build-pdf
+ *
+ * Aplica policies/publishing.yaml (unresolved_validation_errors: deny): si cualquier validación
+ * falla, el pipeline se detiene con exit 1 SIN construir BookIR/Web/PDF.
+ */
+
+const path = require('path');
+const { execFileSync } = require('child_process');
+const yaml = require('./lib/yaml-lite.js');
+const fs = require('fs');
+const reg = require('./lib/registries.js');
+const { loadBookState } = require('./lib/book-state.js');
+
+function writeBookState(buildStatus) {
+  const state = loadBookState(buildStatus);
+  const distDir = path.join(ROOT, 'dist');
+  fs.mkdirSync(distDir, { recursive: true });
+  fs.writeFileSync(path.join(distDir, 'book-state.json'), JSON.stringify(state, null, 2) + '\n', 'utf8');
+}
+
+const ROOT = path.resolve(__dirname, '..');
+const SCRIPTS_DIR = __dirname;
+
+function run(scriptName, args = []) {
+  const scriptPath = path.join(SCRIPTS_DIR, scriptName);
+  console.log(`\n▶ ${scriptName} ${args.join(' ')}`.trim());
+  execFileSync(process.execPath, [scriptPath, ...args], { stdio: 'inherit', cwd: ROOT });
+}
+
+function main() {
+  const policy = yaml.parse(fs.readFileSync(path.join(ROOT, 'policies', 'publishing.yaml'), 'utf8'));
+  const denyOnErrors = policy.publishing && policy.publishing.unresolved_validation_errors === 'deny';
+
+  const { chapters } = reg.loadBook();
+
+  console.log('=== build-all: validación determinista ===');
+  try {
+    run('validate-contracts');
+    run('validate-components');
+    for (const ch of chapters) {
+      run('validate-chapter', [path.join('book', ch.file)]);
+    }
+  } catch (e) {
+    console.error('\nbuild-all: FALLÓ en la etapa de validación.');
+    writeBookState('failed_validation');
+    if (denyOnErrors) {
+      console.error('policies/publishing.yaml: unresolved_validation_errors = deny → build detenido.');
+      process.exit(1);
+    }
+    throw e;
+  }
+
+  console.log('\n=== build-all: construcción ===');
+  try {
+    run('build-book-ir');
+    run('build-web');
+    run('build-pdf');
+  } catch (e) {
+    console.error('\nbuild-all: FALLÓ en la etapa de construcción.');
+    writeBookState('failed_build');
+    process.exit(1);
+  }
+
+  writeBookState('built');
+  console.log('\n=== build-all: OK — validado, BookIR, Web y PDF generados desde la misma fuente canónica ===');
+  console.log('BookState persistido en dist/book-state.json');
+  process.exit(0);
+}
+
+main();

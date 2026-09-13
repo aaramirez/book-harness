@@ -1,0 +1,5 @@
+Architecture Decision Records del propio Book Harness (formato mínimo en
+constitution/ARCHITECTURE_CONSTITUTION.md, sección "Architecture Decision Records"). Vacío en
+BH-v0.1: ningún cambio arquitectónico de este repo ha requerido todavía un ADR formal — deuda
+intencional hacia BH-v0.2+ (persistencia de ADRs, ver plan de ejecución §7 y
+BOOK_HARNESS_BUILD_INSTRUCTIONS(1).md §22 regla 10).

@@ -1,7 +1,7 @@
 # Plan — Book Production Harness para "¿Cómo construir un arnés?"
 
 **Fecha:** 2026-08-23 (aprobado 2026-09-13)
-**Estado:** ✅ Aprobado — en ejecución
+**Estado:** ✅ Completado — BH-v0.1 ejecutado de punta a punta (ver §11)
 
 ---
 
@@ -200,3 +200,152 @@ BH-v1.0  Book Harness corriendo sobre el Generic Agent Harness
 ## 10. Siguiente paso
 
 Este plan queda en `/planes` para tu revisión. No se ha creado ningún archivo fuera de `planes/` todavía. Cuando lo apruebes (con o sin cambios a las decisiones abiertas de §8), ejecuto las Fases 0–8 en orden.
+
+---
+
+## 11. Registro de ejecución
+
+**Fecha de ejecución:** 2026-09-13.
+**Resultado:** BH-v0.1 completo — el capítulo piloto pasa validación y produce Web + PDF desde el mismo `BookIR`.
+
+### 11.1 Qué se creó
+
+Árbol completo en la raíz de `book-harness` (sin prefijo `arnes-kb/`, según §8.5):
+
+```text
+constitution/ARCHITECTURE_CONSTITUTION.md
+book/book.yaml
+book/frontmatter/{preface,introduction}.md
+book/chapters/00-arquitectura-constitucion/chapter.md
+book/appendices/glossary.md
+book/assets/.gitkeep
+registry/{contracts,components,glossary}.yaml
+agents/{book-architect,chapter-author}.md
+skills/{write-technical-chapter,define-contract,define-component,write-pseudocode,analyze-constitutional-impact}/SKILL.md
+policies/publishing.yaml
+scripts/README.md
+scripts/{validate-chapter,validate-contracts,validate-components,build-book-ir,build-web,build-pdf,build-all}
+scripts/lib/{yaml-lite,chapter-parser,registries,book-ir,book-state}.js
+evals/.gitkeep
+docs/adr/.gitkeep
+dist/{book-ir.json,book-state.json,book.pdf,web/}   (generado por build-all; ver .gitignore)
+```
+
+### 11.2 Decisiones de diseño no 100% especificadas en el plan, tomadas durante la implementación
+
+1. **Formato de los registries y del frontmatter de capítulo**: el plan pide YAML pero no dicta un
+   parser. Runtime = Node.js plano sin dependencias npm (decisión §8.1), así que se escribió un
+   parser YAML de subconjunto propio (`scripts/lib/yaml-lite.js`): mappings/secuencias por
+   indentación, listas en línea `[a,b,c]`, escalares con/sin comillas y **block scalars** `|`
+   (literal) / `>` (folded) — necesarios para que `current_definition` en `contracts.yaml` guarde
+   un `STRUCT`/`ENUM` legible en varias líneas. No soporta anchors, tags ni flow maps: es
+   deliberadamente mínimo y auditable, no un YAML completo.
+2. **Qué entidades introduce el capítulo piloto**: el plan solo decía "capítulo 0, Constitución
+   Arquitectónica". Se decidió que CH-00 introduce **7 contratos de datos fundamentales**
+   (`C-001 AgentMessage`, `C-002 AgentConfig`, `C-003 AgentState`, `C-004 ExecutionContext`,
+   `C-010 AgentEvent`, `C-011 HarnessError`, `C-012 ExecutionBudget` — IDs tomados de la tabla
+   canónica de `REGLAS_LIBRO_AGENT_HARNESS(1).md` §10) pero **cero componentes de runtime**:
+   `AgentLoop`, `ModelGateway`, `ToolRuntime`, etc. se mencionan solo como tabla de "Preview — no
+   introducido en este capítulo" (permitido explícitamente por
+   `BOOK_HARNESS_BUILD_INSTRUCTIONS(1).md` §22 regla 8), nunca dentro de un bloque de
+   pseudocódigo. `registry/components.yaml` queda vacío tras esta ejecución; el primer componente
+   real llegará en un capítulo futuro fuera de este alcance.
+3. **Alcance de la validación "no magic entities"**: los validadores solo inspeccionan entidades
+   dentro de bloques ` ```pseudocode ` (no menciones en prosa), y lo hacen **en orden dentro del
+   capítulo** (un `STRUCT` solo está disponible para los bloques que le siguen), combinado con un
+   set de "siempre disponibles" (primitivos de la gramática + identificadores fundamentales de
+   `REGLAS_LIBRO` §3.1) y con lo ya registrado por capítulos **estrictamente anteriores** en
+   `book/book.yaml`. Esto es una interpretación operacional razonable de una regla que el
+   documento rector deja en prosa ("no magic entities", "no dump the whole book") — se documenta
+   aquí por si un futuro capítulo la encuentra demasiado (o poco) estricta.
+4. **`BookState` explícito como artefacto separado de `BookIR`**: el documento rector define
+   ambos (§5 y §10) pero el plan no distinguía si había que materializar los dos. Se implementó
+   `scripts/lib/book-state.js` + `dist/book-state.json` (con `dependencies: null` y `adrs: []`
+   marcados explícitamente como pendientes, no omitidos) además de `dist/book-ir.json`, para que
+   "BookState is explicit" (Definition of Done) no dependa de inferir el estado a partir del IR
+   de renderizado.
+5. **`dist/` no se versiona**: se agregó `dist/` a `.gitignore` (mismo criterio que
+   `libro-de-panaderia/.gitignore` con su `build/`) — son artefactos regenerables con
+   `./scripts/build-all`, no fuente canónica.
+6. **Motor de PDF, sintaxis real**: `pandoc` instalado es 1.19.2.4 (pre-2.0): usa
+   `--latex-engine=xelatex`, no `--pdf-engine` (que no existe en esa versión). Se confirmó
+   `xelatex`/`pdflatex` disponibles vía TeX Live del sistema.
+
+### 11.3 Resultado de correr el pipeline end-to-end (Fase 7)
+
+Comando: `./scripts/build-all` (desde la raíz de `book-harness`, con `dist/` borrado antes para
+probar un build limpio):
+
+```text
+=== build-all: validación determinista ===
+▶ validate-contracts
+validate-contracts: OK (7 contrato(s))
+▶ validate-components
+validate-components: OK (0 componente(s))
+▶ validate-chapter book/chapters/00-arquitectura-constitucion/chapter.md
+validate-chapter: OK (.../chapter.md)
+  secciones: 19/19
+  bloques pseudocode: 12
+  contratos introducidos: 7
+  componentes introducidos: 0
+
+=== build-all: construcción ===
+▶ build-book-ir
+build-book-ir: OK → dist/book-ir.json
+  capítulos: 1 / contratos: 7 / componentes: 0 / términos de glosario: 12
+▶ build-web
+build-web: OK → dist/web/ (index.html + 1 capítulo)
+▶ build-pdf
+build-pdf: OK → dist/book.pdf (77630 bytes, PDF 1.5 válido)
+
+=== build-all: OK — validado, BookIR, Web y PDF generados desde la misma fuente canónica ===
+BookState persistido en dist/book-state.json
+```
+
+Exit code: `0`.
+
+**Pruebas negativas** (para confirmar que los validadores no son un "pase simulado"):
+- Se inyectó una entidad inexistente (`NotARealType()`) en una copia del capítulo →
+  `validate-chapter` la detectó y salió con `exit 1`.
+- Se borró el campo `version` de un contrato en `registry/contracts.yaml` → `validate-contracts`
+  y, en cadena, `./scripts/build-all` fallaron limpiamente con `exit 1` **sin** llegar a construir
+  `BookIR`/Web/PDF (`policies/publishing.yaml: unresolved_validation_errors = deny`), y
+  `dist/book-state.json` quedó con `buildStatus: "failed_validation"`. Al restaurar el archivo,
+  `build-all` volvió a pasar limpio.
+
+**Web y PDF desde el mismo BookIR**: ambos `build-web` y `build-pdf` leen exclusivamente
+`dist/book-ir.json` (nunca vuelven a parsear `book/chapters/*.md`), confirmado por inspección de
+código y por el contenido de `dist/web/chapters/CH-00.html` (pseudocódigo, secciones y acentos en
+español se renderizan correctamente) y de `dist/book.pdf` (PDF 1.5 válido, 77 KB, generado sin
+errores por `pandoc`/`xelatex`).
+
+### 11.4 Definition of Done (BOOK_HARNESS_BUILD_INSTRUCTIONS(1).md §23) — restringido a BH-v0.1
+
+- ✅ Canonical source exists. — `book/book.yaml` + `book/chapters/00-arquitectura-constitucion/chapter.md`.
+- ✅ Book structure is machine-readable. — `book/book.yaml` parseado por `scripts/lib/registries.js`.
+- ✅ BookState is explicit. — `scripts/lib/book-state.js` → `dist/book-state.json`.
+- ✅ Contracts and components are registered. — `registry/contracts.yaml` (7), `registry/components.yaml` (0, correctamente vacío: CH-00 no introduce componentes).
+- ✅ Chapter dependencies are validated. — `validate-chapter` rechaza referencias a entidades de capítulos futuros y a entidades no definidas aún dentro del propio capítulo (probado con inyección de entidad inexistente). El grafo de dependencias *automático* (`ArchitectureDependencyGraph` completo) es BH-v0.3 — ver ⬜ más abajo.
+- ✅ Agents use controlled context. — `agents/book-architect.md` / `agents/chapter-author.md` definen explícitamente el Chapter Brief y prohíben pasar el libro completo.
+- ✅ Skills encode reusable procedures. — 5 skills en `skills/`, cada una con pasos/checklist/plantilla concretos (no solo un prompt).
+- ✅ Deterministic quality gates exist. — `validate-chapter` / `validate-contracts` / `validate-components`, con `exit 1` real verificado en pruebas negativas.
+- ⬜ Architectural changes can require human approval. — Fuera de alcance de BH-v0.1 (plan §7: "policies de aprobación humana" quedan para BH-v0.4/v0.5). `agents/book-architect.md` documenta narrativamente la regla ("no aprueba automáticamente cambios fundamentales") pero no hay `policies/architecture.yaml` ni workflow `WAITING_FOR_HUMAN` persistido.
+- ✅ BookIR is renderer-independent. — `scripts/lib/book-ir.js` + `dist/book-ir.json`; ni `build-web` ni `build-pdf` vuelven a tocar `book/chapters/*.md`.
+- ✅ Web and PDF derive from the same BookIR. — Verificado por código e inspección de artefactos (§11.3).
+- ✅ Cross-chapter terminology is consistent. — Consistencia verificada dentro del alcance de 1 capítulo (PC-05 aplicado vía nombres de registry); la prueba real de consistencia *entre* capítulos solo será observable cuando exista un CH-01 (fuera de este alcance).
+- ✅ Pseudocode references only defined entities. — Escaneo "no magic entities" en `validate-chapter`, probado en positivo y negativo.
+- ⬜ Architecture evolution is traceable through ADRs. — `docs/adr/` vacío; deuda intencional (BH-v0.2+).
+- ⬜ Editorial runs are observable. — `dist/book-state.json` registra `buildStatus` y estado por capítulo, pero no hay historial persistido de runs, costos ni iteraciones de agentes; deuda intencional (alineado con el roadmap BH-v0.5 / enterprise amendment §25 del documento rector).
+- ⬜ Evals can measure chapter quality. — `evals/` vacío; explícitamente fuera de alcance (BH-v0.6, plan §7).
+- ✅ One command/pipeline can build the complete book. — `./scripts/build-all`, probado en limpio y en fallo.
+
+### 11.5 Deuda intencional hacia BH-v0.2+
+
+Coincide con lo ya declarado como fuera de alcance en §7 de este plan: reviewers técnico/
+pedagógico/consistencia, `ArchitectureDependencyGraph` automático + policies de aprobación
+arquitectónica con HITL persistente, evals/scorecards, extensiones/automatización/orquestación
+multi-agente, y migración del propio Book Harness a los primitivos del harness genérico
+(`AgentLoop`, `ContextEngine`, etc. — principio de self-hosting, BH-v1.0). A esto se suma,
+identificado durante esta ejecución: ADRs persistidos (`docs/adr/` vacío) y observabilidad de
+runs editoriales (qué agente propuso qué, cuántas iteraciones, costo) — ninguno de los dos estaba
+en el alcance explícito de BH-v0.1 pero quedan como huecos concretos para BH-v0.2+.

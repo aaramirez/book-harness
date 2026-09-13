@@ -1,0 +1,258 @@
+#!/usr/bin/env node
+'use strict';
+
+/**
+ * validate-chapter — validador determinista de un capítulo (Fase 4 del plan).
+ *
+ * Uso:
+ *   ./scripts/validate-chapter book/chapters/00-arquitectura-constitucion
+ *   ./scripts/validate-chapter book/chapters/00-arquitectura-constitucion/chapter.md
+ *
+ * Checklist mínimo exigido por BOOK_HARNESS_BUILD_INSTRUCTIONS(1).md §8:
+ *   chapter metadata exists
+ *   referenced contracts exist
+ *   referenced components exist
+ *   no future component is referenced
+ *   required chapter sections exist
+ *   Constitutional Impact exists
+ *   Current Architecture exists
+ *   Architecture After This Chapter exists
+ *   failure semantics are documented
+ *   introduced entities are registered
+ *   modified entities are declared
+ *
+ * Sale con código 1 ante CUALQUIER error de validación estructural real.
+ */
+
+const fs = require('fs');
+const path = require('path');
+const { parseChapter, REQUIRED_SECTIONS } = require('./lib/chapter-parser.js');
+const reg = require('./lib/registries.js');
+
+const ALWAYS_AVAILABLE = new Set([
+  // primitivos de la gramática canónica (REGLAS_LIBRO_AGENT_HARNESS(1).md §4)
+  'Text', 'Integer', 'Number', 'Boolean', 'Value', 'Map', 'List', 'Optional', 'Any', 'Void',
+  // identificadores fundamentales del metamodelo común (REGLAS_LIBRO_AGENT_HARNESS(1).md §3.1)
+  'AgentId', 'SessionId', 'RunId', 'TurnId', 'ToolCallId', 'CapabilityId', 'EventId', 'TraceId',
+  'Timestamp',
+]);
+
+function fail(errors) {
+  console.error('validate-chapter: FALLÓ\n');
+  for (const e of errors) console.error('  - ' + e);
+  console.error(`\n${errors.length} error(es).`);
+  process.exit(1);
+}
+
+function main() {
+  const arg = process.argv[2];
+  if (!arg) {
+    console.error('Uso: validate-chapter <ruta-al-directorio-o-chapter.md>');
+    process.exit(1);
+  }
+  const errors = [];
+
+  let chapterFile = path.resolve(arg);
+  if (fs.statSync(chapterFile).isDirectory()) {
+    chapterFile = path.join(chapterFile, 'chapter.md');
+  }
+  if (!fs.existsSync(chapterFile)) {
+    fail([`No existe el archivo de capítulo: ${chapterFile}`]);
+  }
+
+  const raw = fs.readFileSync(chapterFile, 'utf8');
+  let parsed;
+  try {
+    parsed = parseChapter(raw);
+  } catch (e) {
+    fail(['No se pudo parsear el capítulo: ' + e.message]);
+    return;
+  }
+
+  const { frontmatter: fm, sections, pseudocodeBlocks } = parsed;
+
+  // 1. chapter metadata exists
+  const requiredFmKeys = [
+    'id', 'title', 'starting_version', 'ending_version', 'introduces_components',
+    'introduces_contracts', 'modifies_contracts', 'constitutional_articles',
+    'previous_chapter', 'next_chapter',
+  ];
+  for (const k of requiredFmKeys) {
+    if (!Object.prototype.hasOwnProperty.call(fm, k)) {
+      errors.push(`Frontmatter: falta la clave obligatoria "${k}"`);
+    }
+  }
+  if (errors.length) fail(errors);
+
+  const { book, chapters, order } = reg.loadBook();
+  const chapterEntry = chapters.find((c) => c.id === fm.id);
+  if (!chapterEntry) {
+    errors.push(`El id de frontmatter "${fm.id}" no existe en book/book.yaml`);
+  } else {
+    const expectedAbs = path.join(reg.ROOT, 'book', chapterEntry.file);
+    if (path.resolve(expectedAbs) !== path.resolve(chapterFile)) {
+      errors.push(
+        `book/book.yaml declara CH="${fm.id}" en "${chapterEntry.file}", pero el archivo ` +
+        `validado es "${path.relative(reg.ROOT, chapterFile)}"`
+      );
+    }
+  }
+  const currentIndex = reg.chapterIndex(order, fm.id);
+
+  // 2. required chapter sections exist, en el orden correcto, incluyendo Current Architecture,
+  //    Constitutional Impact y Architecture After This Chapter explícitamente.
+  for (const req of REQUIRED_SECTIONS) {
+    const found = sections.find((s) => s.n === req.n);
+    if (!found) {
+      errors.push(`Falta la sección obligatoria ${req.n}. (${req.en})`);
+      continue;
+    }
+    if (!found.titleEn || found.titleEn.toLowerCase() !== req.en.toLowerCase()) {
+      errors.push(
+        `La sección ${req.n} debe declarar su nombre en inglés entre paréntesis como ` +
+        `"(${req.en})" — encontrado: "${found.titleRaw}"`
+      );
+    }
+    if (!found.content || found.content.trim().length < 10) {
+      errors.push(`La sección ${req.n}. (${req.en}) está vacía o es demasiado corta`);
+    }
+  }
+
+  // 3. Constitutional Impact contiene P-xx/INV-xx reales
+  const constitutionalArticleIds = reg.loadConstitutionArticleIds();
+  const impactSection = sections.find((s) => s.n === 4);
+  if (impactSection) {
+    const tokens = impactSection.content.match(/\b(P-\d{2}|INV-E\d{2}|INV-\d{2})\b/g) || [];
+    if (tokens.length === 0) {
+      errors.push('La sección 4. (Constitutional Impact) no referencia ningún P-xx / INV-xx real');
+    }
+    for (const t of tokens) {
+      if (!constitutionalArticleIds.has(t)) {
+        errors.push(`La sección 4. (Constitutional Impact) referencia "${t}", que no existe en constitution/ARCHITECTURE_CONSTITUTION.md`);
+      }
+    }
+  }
+
+  // frontmatter.constitutional_articles debe existir realmente
+  for (const a of fm.constitutional_articles || []) {
+    if (!constitutionalArticleIds.has(a)) {
+      errors.push(`Frontmatter constitutional_articles referencia "${a}", que no existe en la Constitution`);
+    }
+  }
+
+  // 4. Failure semantics documentado (sección 13) — ya cubierto por el check de longitud, pero
+  //    además exigimos que mencione ErrorCategory o HarnessError explícitamente.
+  const failureSection = sections.find((s) => s.n === 13);
+  if (failureSection && !/ErrorCategory|HarnessError/.test(failureSection.content)) {
+    errors.push('La sección 13. (Failure Semantics) debe referenciar ErrorCategory o HarnessError');
+  }
+
+  // 5. Contratos y componentes: introducidos deben existir en el registry con introduced_in ==
+  //    este capítulo; modificados deben existir con este capítulo en su modified_by.
+  const contracts = reg.loadContracts();
+  const components = reg.loadComponents();
+  const contractsById = new Map(contracts.map((c) => [c.id, c]));
+  const componentsById = new Map(components.map((c) => [c.id, c]));
+
+  for (const cid of fm.introduces_contracts || []) {
+    const c = contractsById.get(cid);
+    if (!c) {
+      errors.push(`introduces_contracts declara "${cid}" pero no existe en registry/contracts.yaml`);
+    } else if (c.introduced_in !== fm.id) {
+      errors.push(`registry/contracts.yaml dice que "${cid}" fue introducido en "${c.introduced_in}", no en "${fm.id}"`);
+    }
+  }
+  for (const cid of fm.introduces_components || []) {
+    const c = componentsById.get(cid);
+    if (!c) {
+      errors.push(`introduces_components declara "${cid}" pero no existe en registry/components.yaml`);
+    } else if (c.introduced_in !== fm.id) {
+      errors.push(`registry/components.yaml dice que "${cid}" fue introducido en "${c.introduced_in}", no en "${fm.id}"`);
+    }
+  }
+  for (const cid of fm.modifies_contracts || []) {
+    const c = contractsById.get(cid);
+    if (!c) {
+      errors.push(`modifies_contracts declara "${cid}" pero no existe en registry/contracts.yaml`);
+    } else if (!(c.modified_by || []).includes(fm.id)) {
+      errors.push(`registry/contracts.yaml para "${cid}" no incluye "${fm.id}" en modified_by`);
+    }
+  }
+
+  // 6. No magic entities: escaneo de bloques ```pseudocode``` en orden, con disponibilidad
+  //    acumulativa. Referencias a contratos/componentes de capítulos ESTRICTAMENTE anteriores
+  //    están siempre disponibles; los de este mismo capítulo solo lo están una vez definidos
+  //    (STRUCT/ENUM/INTERFACE/...) más arriba en el propio capítulo.
+  const registryAvailable = new Set();
+  for (const c of contracts) {
+    const idx = reg.chapterIndex(order, c.introduced_in);
+    if (idx !== -1 && idx < currentIndex) registryAvailable.add(c.name);
+  }
+  for (const c of components) {
+    const idx = reg.chapterIndex(order, c.introduced_in);
+    if (idx !== -1 && idx < currentIndex) registryAvailable.add(c.name);
+  }
+
+  // identificadores declarados en tablas markdown "| `Nombre` | ... |" del cuerpo (p.ej. la
+  // tabla de identificadores fundamentales de la sección "New Data Structures").
+  const tableIdRe = /^\|\s*`([A-Z][A-Za-z0-9]*)`/gm;
+  let tm;
+  const available = new Set(ALWAYS_AVAILABLE);
+  for (const s of registryAvailable) available.add(s);
+  while ((tm = tableIdRe.exec(parsed.body)) !== null) {
+    available.add(tm[1]);
+  }
+
+  const declHeadRe = /^(STRUCT|ENUM|INTERFACE|FUNCTION|COMPONENT|IMPLEMENTATION)\s+(\w+)/;
+  const candidateRe = /\b[A-Z][A-Za-z0-9]*\b/g;
+  const definedThisChapter = new Set();
+
+  for (const block of pseudocodeBlocks) {
+    const headMatch = block.match(declHeadRe);
+    const declared = headMatch ? headMatch[2] : null;
+    if (declared) {
+      available.add(declared);
+      definedThisChapter.add(declared);
+    }
+    // Quitar contenido de strings literales ("...") para no confundir palabras dentro de
+    // mensajes de error/documentación con entidades del pseudocódigo.
+    const blockWithoutStrings = block.replace(/"[^"]*"/g, '""');
+
+    let cm;
+    candidateRe.lastIndex = 0;
+    while ((cm = candidateRe.exec(blockWithoutStrings)) !== null) {
+      const word = cm[0];
+      if (word === word.toUpperCase()) continue; // ALL_CAPS: keyword o literal de enum
+      if (!available.has(word)) {
+        errors.push(`Entidad no definida ("no magic entities") en bloque de pseudocódigo: "${word}"`);
+        available.add(word); // evita repetir el mismo error por cada ocurrencia
+      }
+    }
+  }
+
+  // Consistencia: todo contrato/componente que el frontmatter dice introducir debe corresponder
+  // a algo que el pseudocódigo del capítulo realmente define.
+  for (const cid of fm.introduces_contracts || []) {
+    const c = contractsById.get(cid);
+    if (c && !definedThisChapter.has(c.name)) {
+      errors.push(`"${cid}" (${c.name}) está en introduces_contracts pero no hay ningún STRUCT/ENUM "${c.name}" en el pseudocódigo de este capítulo`);
+    }
+  }
+  for (const cid of fm.introduces_components || []) {
+    const c = componentsById.get(cid);
+    if (c && !definedThisChapter.has(c.name)) {
+      errors.push(`"${cid}" (${c.name}) está en introduces_components pero no hay ningún COMPONENT/INTERFACE "${c.name}" en el pseudocódigo de este capítulo`);
+    }
+  }
+
+  if (errors.length) fail(errors);
+
+  console.log(`validate-chapter: OK (${chapterFile})`);
+  console.log(`  secciones: ${sections.length}/19`);
+  console.log(`  bloques pseudocode: ${pseudocodeBlocks.length}`);
+  console.log(`  contratos introducidos: ${(fm.introduces_contracts || []).length}`);
+  console.log(`  componentes introducidos: ${(fm.introduces_components || []).length}`);
+  process.exit(0);
+}
+
+main();

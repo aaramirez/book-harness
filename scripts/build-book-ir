@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+'use strict';
+
+/**
+ * build-book-ir — parsea book/ + registry/ y produce dist/book-ir.json (Fase 6 del plan).
+ *
+ * BookIR es renderer-independent: build-web y build-pdf leen exclusivamente este archivo, nunca
+ * vuelven a parsear book/chapters/*.md por su cuenta (BOOK_HARNESS_BUILD_INSTRUCTIONS(1).md §10).
+ */
+
+const fs = require('fs');
+const path = require('path');
+const { buildBookIR } = require('./lib/book-ir.js');
+
+const ROOT = path.resolve(__dirname, '..');
+
+function main() {
+  const ir = buildBookIR();
+  const distDir = path.join(ROOT, 'dist');
+  fs.mkdirSync(distDir, { recursive: true });
+  const outPath = path.join(distDir, 'book-ir.json');
+  fs.writeFileSync(outPath, JSON.stringify(ir, null, 2) + '\n', 'utf8');
+  console.log(`build-book-ir: OK → ${path.relative(ROOT, outPath)}`);
+  console.log(`  capítulos: ${ir.chapters.length}`);
+  console.log(`  contratos: ${ir.contracts.length}`);
+  console.log(`  componentes: ${ir.components.length}`);
+  console.log(`  términos de glosario: ${ir.glossary.length}`);
+  process.exit(0);
+}
+
+main();

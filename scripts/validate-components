@@ -1,0 +1,82 @@
+#!/usr/bin/env node
+'use strict';
+
+/**
+ * validate-components — consistencia de registry/components.yaml (Fase 4 del plan).
+ *
+ * Verifica, para cada componente:
+ *   - los 10 campos obligatorios de REGLAS_LIBRO_AGENT_HARNESS(1).md §11 están presentes
+ *     (incluido "does_not_own", que debe declararse aunque sea lista vacía)
+ *   - el id sigue el formato CMP-NNN y es único
+ *   - introduced_in referencia un capítulo real de book/book.yaml
+ *   - dependencies solo referencia otros componentes existentes (no auto-dependencia)
+ *   - consumes / produces solo referencian contratos existentes
+ *   - constitutional_articles solo referencia artículos reales de la Constitution
+ */
+
+const reg = require('./lib/registries.js');
+
+const REQUIRED_FIELDS = [
+  'id', 'name', 'responsibility', 'owns', 'does_not_own', 'dependencies', 'consumes', 'produces',
+  'introduced_in', 'constitutional_articles',
+];
+
+function main() {
+  const errors = [];
+  const { order } = reg.loadBook();
+  const components = reg.loadComponents();
+  const contracts = reg.loadContracts();
+  const constitutionalArticleIds = reg.loadConstitutionArticleIds();
+
+  const componentIds = new Set(components.map((c) => c.id));
+  const contractIds = new Set(contracts.map((c) => c.id));
+
+  const seenIds = new Set();
+  for (const c of components) {
+    const label = c && c.id ? c.id : JSON.stringify(c);
+
+    for (const field of REQUIRED_FIELDS) {
+      if (!Object.prototype.hasOwnProperty.call(c, field) || c[field] === null || c[field] === undefined) {
+        errors.push(`Componente ${label}: falta el campo obligatorio "${field}"`);
+      }
+    }
+    if (!c.id) continue;
+
+    if (!/^CMP-\d{3}$/.test(c.id)) {
+      errors.push(`Componente ${label}: id "${c.id}" no sigue el formato CMP-NNN`);
+    }
+    if (seenIds.has(c.id)) errors.push(`Componente ${label}: id duplicado`);
+    seenIds.add(c.id);
+
+    if (c.introduced_in && reg.chapterIndex(order, c.introduced_in) === -1) {
+      errors.push(`Componente ${label}: introduced_in "${c.introduced_in}" no existe en book/book.yaml`);
+    }
+    for (const dep of c.dependencies || []) {
+      if (dep === c.id) errors.push(`Componente ${label}: no puede depender de sí mismo`);
+      else if (!componentIds.has(dep)) errors.push(`Componente ${label}: dependencies referencia componente inexistente "${dep}"`);
+    }
+    for (const ref of c.consumes || []) {
+      if (!contractIds.has(ref)) errors.push(`Componente ${label}: consumes referencia contrato inexistente "${ref}"`);
+    }
+    for (const ref of c.produces || []) {
+      if (!contractIds.has(ref)) errors.push(`Componente ${label}: produces referencia contrato inexistente "${ref}"`);
+    }
+    for (const a of c.constitutional_articles || []) {
+      if (!constitutionalArticleIds.has(a)) {
+        errors.push(`Componente ${label}: constitutional_articles referencia artículo inexistente "${a}"`);
+      }
+    }
+  }
+
+  if (errors.length) {
+    console.error('validate-components: FALLÓ\n');
+    for (const e of errors) console.error('  - ' + e);
+    console.error(`\n${errors.length} error(es).`);
+    process.exit(1);
+  }
+
+  console.log(`validate-components: OK (${components.length} componente(s))`);
+  process.exit(0);
+}
+
+main();

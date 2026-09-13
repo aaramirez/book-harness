@@ -1,0 +1,164 @@
+#!/usr/bin/env node
+'use strict';
+
+/**
+ * build-web — BookIR → HTML mínimo con navegación anterior/siguiente (Fase 6 del plan).
+ *
+ * Lee EXCLUSIVAMENTE dist/book-ir.json (debe existir; correr build-book-ir antes). No vuelve a
+ * parsear book/chapters/*.md — así Web y PDF quedan garantizados como dos renderizados del mismo
+ * modelo validado (BOOK_HARNESS_BUILD_INSTRUCTIONS(1).md §2, §11).
+ */
+
+const fs = require('fs');
+const path = require('path');
+
+const ROOT = path.resolve(__dirname, '..');
+const IR_PATH = path.join(ROOT, 'dist', 'book-ir.json');
+const OUT_DIR = path.join(ROOT, 'dist', 'web');
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+const BASE_CSS = `
+body { font-family: Georgia, 'Times New Roman', serif; max-width: 780px; margin: 0 auto;
+       padding: 2rem 1.25rem 4rem; line-height: 1.55; color: #1a1a1a; background: #fffdf8; }
+h1, h2 { font-family: -apple-system, Helvetica, Arial, sans-serif; }
+h2 { border-bottom: 1px solid #ddd; padding-bottom: .25rem; margin-top: 2.5rem; }
+code, pre { font-family: 'SFMono-Regular', Menlo, Consolas, monospace; }
+pre { background: #f4f1ea; padding: .85rem 1rem; overflow-x: auto; border-radius: 4px;
+      font-size: .88rem; }
+nav.chapter-nav { display: flex; justify-content: space-between; margin: 2.5rem 0;
+                  font-family: -apple-system, Helvetica, Arial, sans-serif; }
+nav.chapter-nav a { text-decoration: none; }
+nav.chapter-nav span.disabled { color: #999; }
+table { border-collapse: collapse; margin: 1rem 0; }
+th, td { border: 1px solid #ccc; padding: .35rem .6rem; text-align: left; }
+.toc a { display: block; padding: .25rem 0; }
+`;
+
+function renderMarkdownish(text) {
+  // Renderer mínimo: preserva bloques ```...``` como <pre>, tablas markdown como <table>,
+  // el resto como párrafos. Suficiente para el capítulo piloto de BH-v0.1 (sin ambición de
+  // soportar Markdown arbitrario).
+  const lines = text.split('\n');
+  let html = '';
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (line.startsWith('```')) {
+      const buf = [];
+      i++;
+      while (i < lines.length && !lines[i].startsWith('```')) {
+        buf.push(lines[i]);
+        i++;
+      }
+      i++; // saltar la línea de cierre ```
+      html += `<pre><code>${escapeHtml(buf.join('\n'))}</code></pre>\n`;
+      continue;
+    }
+    if (line.startsWith('|')) {
+      const rows = [];
+      while (i < lines.length && lines[i].startsWith('|')) {
+        rows.push(lines[i]);
+        i++;
+      }
+      const cellsOf = (r) => r.split('|').slice(1, -1).map((c) => c.trim());
+      const header = cellsOf(rows[0]);
+      const bodyRows = rows.slice(2).map(cellsOf); // rows[1] es el separador "---"
+      html += '<table><thead><tr>' +
+        header.map((c) => `<th>${escapeHtml(c)}</th>`).join('') +
+        '</tr></thead><tbody>' +
+        bodyRows.map((r) => '<tr>' + r.map((c) => `<td>${escapeHtml(c)}</td>`).join('') + '</tr>').join('') +
+        '</tbody></table>\n';
+      continue;
+    }
+    if (line.trim() === '') { html += '\n'; i++; continue; }
+    html += `<p>${escapeHtml(line)}</p>\n`;
+    i++;
+  }
+  return html;
+}
+
+function chapterFileName(chapterId) {
+  return `${chapterId}.html`;
+}
+
+function renderChapterPage(ir, chapter) {
+  const prev = chapter.previousChapter
+    ? `<a href="${chapterFileName(chapter.previousChapter)}">&larr; ${escapeHtml(chapter.previousChapter)}</a>`
+    : '<span class="disabled">&larr; (sin capítulo anterior)</span>';
+  const next = chapter.nextChapter
+    ? `<a href="${chapterFileName(chapter.nextChapter)}">${escapeHtml(chapter.nextChapter)} &rarr;</a>`
+    : '<span class="disabled">(sin capítulo siguiente todavía) &rarr;</span>';
+
+  const sectionsHtml = chapter.sections
+    .map((s) => `<h2 id="s${s.n}">${s.n}. ${escapeHtml(s.title)}</h2>\n${renderMarkdownish(s.content)}`)
+    .join('\n');
+
+  return `<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>${escapeHtml(chapter.title)} — ${escapeHtml(ir.metadata.title)}</title>
+<style>${BASE_CSS}</style>
+</head>
+<body>
+<p><a href="index.html">&larr; ${escapeHtml(ir.metadata.title)}</a></p>
+<h1>${escapeHtml(chapter.id)} — ${escapeHtml(chapter.title)}</h1>
+<nav class="chapter-nav">${prev}${next}</nav>
+${sectionsHtml}
+<nav class="chapter-nav">${prev}${next}</nav>
+</body>
+</html>
+`;
+}
+
+function renderIndexPage(ir) {
+  const toc = ir.chapters
+    .map((c) => `<a href="chapters/${chapterFileName(c.id)}">${escapeHtml(c.id)} — ${escapeHtml(c.title)}</a>`)
+    .join('\n');
+  return `<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>${escapeHtml(ir.metadata.title)}</title>
+<style>${BASE_CSS}</style>
+</head>
+<body>
+<h1>${escapeHtml(ir.metadata.title)}</h1>
+<p>Versión ${escapeHtml(ir.metadata.version)} — book-harness (BH-v0.1)</p>
+<div class="toc">
+${toc}
+</div>
+</body>
+</html>
+`;
+}
+
+function main() {
+  if (!fs.existsSync(IR_PATH)) {
+    console.error(`build-web: no existe ${path.relative(ROOT, IR_PATH)}. Correr build-book-ir primero.`);
+    process.exit(1);
+  }
+  const ir = JSON.parse(fs.readFileSync(IR_PATH, 'utf8'));
+
+  fs.mkdirSync(path.join(OUT_DIR, 'chapters'), { recursive: true });
+  fs.writeFileSync(path.join(OUT_DIR, 'index.html'), renderIndexPage(ir), 'utf8');
+  for (const chapter of ir.chapters) {
+    fs.writeFileSync(
+      path.join(OUT_DIR, 'chapters', chapterFileName(chapter.id)),
+      renderChapterPage(ir, chapter),
+      'utf8'
+    );
+  }
+
+  console.log(`build-web: OK → ${path.relative(ROOT, OUT_DIR)}/`);
+  console.log(`  index.html + ${ir.chapters.length} capítulo(s)`);
+  process.exit(0);
+}
+
+main();

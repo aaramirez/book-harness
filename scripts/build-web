@@ -38,7 +38,25 @@ nav.chapter-nav span.disabled { color: #999; }
 table { border-collapse: collapse; margin: 1rem 0; }
 th, td { border: 1px solid #ccc; padding: .35rem .6rem; text-align: left; }
 .toc a { display: block; padding: .25rem 0; }
+
+/* Ciclo de Dominio Activo (CDA) — bloques estáticos, sin lógica de calendario interactivo
+   (ver planes/2026-08-23-metodo-aprendizaje-activo-lector.md §3.4 / §5) */
+.cda-box { font-family: -apple-system, Helvetica, Arial, sans-serif; border: 2px solid #2a5;
+           background: #f2fbf4; border-radius: 6px; padding: 1rem 1.25rem; margin: 1.5rem 0; }
+.cda-box h3 { margin-top: 0; font-size: 1rem; text-transform: uppercase; letter-spacing: .04em;
+              color: #226; }
+.cda-box.systems-lens { border-color: #a56; background: #fbf3f1; }
+.cda-box.practice { border-color: #558; background: #f1f3fb; }
+.cda-box ol, .cda-box ul { padding-left: 1.25rem; }
+.cda-box .cda-sub { font-weight: bold; margin: .9rem 0 .25rem; }
+details.cda-details { margin: .5rem 0; }
+details.cda-details summary { cursor: pointer; font-weight: bold; }
+.cda-tag { font-size: .75rem; text-transform: uppercase; color: #666; }
 `;
+
+function renderList(items) {
+  return '<ol>' + items.map((t) => `<li>${escapeHtml(t)}</li>`).join('') + '</ol>';
+}
 
 function renderMarkdownish(text) {
   // Renderer mínimo: preserva bloques ```...``` como <pre>, tablas markdown como <table>,
@@ -87,6 +105,98 @@ function chapterFileName(chapterId) {
   return `${chapterId}.html`;
 }
 
+function flatten(text) {
+  return String(text || '').replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Caja de apertura (Sección 0 — Preguntas Guía): expectedOutcome + skeleton + guidingQuestions,
+ * SIN respuestas. Se renderiza ANTES de la sección 1 (plan §3.4).
+ */
+function renderOpeningBox(rs) {
+  const skeleton = rs.skeleton || {};
+  const guidingQuestions = rs.guidingQuestions || [];
+  return `<div class="cda-box opening">
+  <span class="cda-tag">Antes de leer</span>
+  <h3>Resultado esperado</h3>
+  <p>${escapeHtml(flatten(rs.expectedOutcome && rs.expectedOutcome.text))}</p>
+  <h3>Esqueleto de este capítulo</h3>
+  ${renderList((skeleton.sectionTitles || []).map(flatten))}
+  <p><em>Contratos que se van a introducir:</em> ${escapeHtml((skeleton.contractsToBeIntroduced || []).join(', ') || '(ninguno)')}<br>
+  <em>Componentes que se van a introducir:</em> ${escapeHtml((skeleton.componentsToBeIntroduced || []).join(', ') || '(ninguno)')}</p>
+  <h3>Preguntas guía</h3>
+  <p>Respóndelas de memoria al terminar el capítulo (Sección 21 — Recordar), sin volver a mirar atrás.</p>
+  ${renderList(guidingQuestions.map((q) => flatten(q.text)))}
+</div>`;
+}
+
+/**
+ * Bloque "Lente de Sistemas" (Sección 20): al cierre del cuerpo del capítulo (plan §3.4).
+ */
+function renderSystemsLensBox(rs) {
+  const sl = rs.systemsLens || {};
+  const loops = [];
+  if (sl.reinforcingLoop) loops.push(`<li><strong>Bucle de refuerzo (espiral):</strong> ${escapeHtml(flatten(sl.reinforcingLoop))}</li>`);
+  if (sl.balancingLoop) loops.push(`<li><strong>Bucle de equilibrio (estabiliza):</strong> ${escapeHtml(flatten(sl.balancingLoop))}</li>`);
+  return `<div class="cda-box systems-lens">
+  <span class="cda-tag">Releyendo con la Lente de Sistemas</span>
+  <h3>El Iceberg</h3>
+  <ol>
+    <li><strong>Hecho visible:</strong> ${escapeHtml(flatten(sl.icebergVisibleFact))}</li>
+    <li><strong>Patrones que se repiten:</strong> ${escapeHtml(flatten(sl.icebergPatterns))}</li>
+    <li><strong>Estructuras / reglas / incentivos:</strong> ${escapeHtml(flatten(sl.icebergStructures))}</li>
+    <li><strong>Modelos mentales:</strong> ${escapeHtml(flatten(sl.icebergMentalModels))}</li>
+  </ol>
+  ${loops.length ? `<h3>Bucles de retroalimentación</h3><ul>${loops.join('')}</ul>` : ''}
+  <h3>Punto de apalancamiento</h3>
+  <p>${escapeHtml(flatten(sl.leveragePoint))}</p>
+</div>`;
+}
+
+/**
+ * Bloque plegable "Practica lo que aprendiste" (Sección 21): Recordar / Explicar / Conectar /
+ * Espaciar / Calibrar (plan §3.4). SIN lógica de calendario interactivo (v0.2+).
+ */
+function renderPracticeBox(rs) {
+  const recall = rs.recallQuestions || [];
+  const explain = rs.explainPrompts || [];
+  const interleaved = rs.interleavedQuestions || [];
+  const flashcards = rs.flashcards || [];
+  const calibration = rs.calibrationPairs || [];
+
+  const recallHtml = renderList(recall.map((q) => flatten(q.text)));
+  const explainHtml = renderList(explain.map((p) => flatten(p.text)));
+  const connectHtml = interleaved.length
+    ? renderList(interleaved.map((q) => flatten(q.text)))
+    : `<p><em>${escapeHtml(flatten(rs.interleavingException) || 'Este capítulo no tiene capítulo anterior con el cual conectar.')}</em></p>`;
+  const flashcardsHtml = flashcards.length
+    ? '<ul>' + flashcards.map((f) => `<li><details class="cda-details"><summary>${escapeHtml(flatten(f.front))}</summary><p>${escapeHtml(flatten(f.back))}</p><p class="cda-tag">fuente: ${escapeHtml(f.sourceEntity)} — repaso: ${escapeHtml(f.reviewStage)}</p></details></li>`).join('') + '</ul>'
+    : '<p>(sin tarjetas)</p>';
+  const calibrationHtml = calibration.length
+    ? renderList(calibration.map((c) => `Antes de ver la respuesta de "${c.recallQuestion}": ¿tu confianza era ${c.confidenceLevels.join(' / ')}?`))
+    : '';
+
+  return `<details class="cda-details" open>
+<summary>Practica lo que aprendiste</summary>
+<div class="cda-box practice">
+  <p class="cda-sub">Recordar</p>
+  <p>Vuelve a las preguntas guía de la Sección 0 y respóndelas de memoria, sin mirar atrás:</p>
+  ${recallHtml}
+  <p class="cda-sub">Explicar</p>
+  <p>Explica en voz alta, con palabras simples, como si hablaras con alguien sin contexto técnico:</p>
+  ${explainHtml}
+  <p class="cda-sub">Conectar</p>
+  ${connectHtml}
+  <p class="cda-sub">Espaciar</p>
+  <p>Tarjetas de repaso de este capítulo (curva de Ebbinghaus: día 1 / día 3 / día 7 / día 21):</p>
+  ${flashcardsHtml}
+  <p class="cda-sub">Calibrar</p>
+  <p><em>Adición propia del método, no citada de las fuentes originales.</em> Antes de revisar cada respuesta, califica tu confianza:</p>
+  ${calibrationHtml}
+</div>
+</details>`;
+}
+
 function renderChapterPage(ir, chapter) {
   const prev = chapter.previousChapter
     ? `<a href="${chapterFileName(chapter.previousChapter)}">&larr; ${escapeHtml(chapter.previousChapter)}</a>`
@@ -95,9 +205,19 @@ function renderChapterPage(ir, chapter) {
     ? `<a href="${chapterFileName(chapter.nextChapter)}">${escapeHtml(chapter.nextChapter)} &rarr;</a>`
     : '<span class="disabled">(sin capítulo siguiente todavía) &rarr;</span>';
 
+  // Secciones 0/20/21 (Ciclo de Dominio Activo) se renderizan como bloques estructurados desde
+  // retrievalSet, no con el renderer genérico de prosa — evita duplicar el mismo contenido dos
+  // veces (una vez como prosa libre, otra como caja) (plan §3.4).
+  const CDA_SECTION_NUMBERS = new Set([0, 20, 21]);
   const sectionsHtml = chapter.sections
+    .filter((s) => !CDA_SECTION_NUMBERS.has(s.n))
     .map((s) => `<h2 id="s${s.n}">${s.n}. ${escapeHtml(s.title)}</h2>\n${renderMarkdownish(s.content)}`)
     .join('\n');
+
+  const rs = chapter.retrievalSet;
+  const openingBox = rs ? renderOpeningBox(rs) : '';
+  const systemsLensBox = rs ? renderSystemsLensBox(rs) : '';
+  const practiceBox = rs ? renderPracticeBox(rs) : '';
 
   return `<!doctype html>
 <html lang="es">
@@ -110,7 +230,10 @@ function renderChapterPage(ir, chapter) {
 <p><a href="index.html">&larr; ${escapeHtml(ir.metadata.title)}</a></p>
 <h1>${escapeHtml(chapter.id)} — ${escapeHtml(chapter.title)}</h1>
 <nav class="chapter-nav">${prev}${next}</nav>
+${openingBox}
 ${sectionsHtml}
+${systemsLensBox}
+${practiceBox}
 <nav class="chapter-nav">${prev}${next}</nav>
 </body>
 </html>

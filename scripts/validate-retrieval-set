@@ -1,0 +1,276 @@
+#!/usr/bin/env node
+'use strict';
+
+/**
+ * validate-retrieval-set — validador determinista del RetrievalSet (Ciclo de Dominio Activo)
+ * de un capítulo. Ver planes/2026-08-23-metodo-aprendizaje-activo-lector.md §3.3.
+ *
+ * Uso:
+ *   ./scripts/validate-retrieval-set book/chapters/00-arquitectura-constitucion
+ *   ./scripts/validate-retrieval-set book/chapters/00-arquitectura-constitucion/chapter.md
+ *
+ * Checklist (§3.3 del plan de método activo — 10 chequeos):
+ *   [1]  expectedOutcome existe y está redactado como capacidad (heurística: verbo de acción).
+ *   [2]  skeleton.componentsToBeIntroduced / contractsToBeIntroduced coinciden exactamente con
+ *        introduces_components / introduces_contracts del frontmatter.
+ *   [3]  Existen entre 3 y 5 guidingQuestions (si el capítulo no es el capítulo 0).
+ *   [4]  Ninguna guidingQuestion contiene un nombre canónico introducido por ESTE capítulo.
+ *   [5]  Todo guidingQuestion.answeredBy apunta a una recallQuestion que existe.
+ *   [6]  systemsLens.leveragePoint no está vacío y referencia una entidad introducida aquí.
+ *   [7]  Cada contrato/componente introducido tiene >= 1 flashcard asociada.
+ *   [8]  Ninguna recallQuestion / explainPrompt referencia una entidad no introducida todavía.
+ *   [9]  Existe >= 1 interleavedQuestion si el capítulo no es el capítulo 0 (o
+ *        interleavingException documentada si no hay capítulo anterior).
+ *   [10] Toda flashcard nueva tiene reviewStage = DAY_1 al crearse.
+ *
+ * Sale con código 1 ante CUALQUIER error de validación estructural real. Mismo estilo/severidad
+ * que scripts/validate-chapter (policies/publishing.yaml: unresolved_validation_errors = deny).
+ */
+
+const fs = require('fs');
+const path = require('path');
+const { parseChapter } = require('./lib/chapter-parser.js');
+const { normalizeRetrievalSet } = require('./lib/book-ir.js');
+const reg = require('./lib/registries.js');
+
+const ACTION_VERB_RE = /\b(decidir|construir|diagnosticar|distinguir|clasificar|diseñar|evaluar|justificar|identificar|elegir|argumentar|explicar|verificar|auditar|detectar|reconocer|formular|defender)\w*\b/i;
+
+function fail(errors) {
+  console.error('validate-retrieval-set: FALLÓ\n');
+  for (const e of errors) console.error('  - ' + e);
+  console.error(`\n${errors.length} error(es).`);
+  process.exit(1);
+}
+
+function main() {
+  const arg = process.argv[2];
+  if (!arg) {
+    console.error('Uso: validate-retrieval-set <ruta-al-directorio-o-chapter.md>');
+    process.exit(1);
+  }
+
+  let chapterFile = path.resolve(arg);
+  if (fs.statSync(chapterFile).isDirectory()) {
+    chapterFile = path.join(chapterFile, 'chapter.md');
+  }
+  if (!fs.existsSync(chapterFile)) {
+    fail([`No existe el archivo de capítulo: ${chapterFile}`]);
+  }
+
+  const raw = fs.readFileSync(chapterFile, 'utf8');
+  let parsed;
+  try {
+    parsed = parseChapter(raw);
+  } catch (e) {
+    fail(['No se pudo parsear el capítulo: ' + e.message]);
+    return;
+  }
+
+  const { frontmatter: fm } = parsed;
+  const errors = [];
+
+  if (!fm.retrieval_set || typeof fm.retrieval_set !== 'object') {
+    fail([`Frontmatter: falta el bloque obligatorio "retrieval_set" (chapter.md de ${fm.id || chapterFile})`]);
+    return;
+  }
+
+  const { book, chapters, order } = reg.loadBook();
+  const contracts = reg.loadContracts();
+  const components = reg.loadComponents();
+  const contractsById = new Map(contracts.map((c) => [c.id, c]));
+  const componentsById = new Map(components.map((c) => [c.id, c]));
+  const currentIndex = reg.chapterIndex(order, fm.id);
+  const isChapterZero = fm.id === 'CH-00' || currentIndex === 0;
+
+  // Normaliza el retrieval_set del frontmatter con la MISMA función que usa book-ir.js (import
+  // compartido, no una reimplementación) — pero sin construir el BookIR del libro completo: un
+  // capítulo roto en otra parte del libro no debe impedir validar el retrieval set de este.
+  let retrievalSet;
+  try {
+    retrievalSet = normalizeRetrievalSet(fm.retrieval_set);
+  } catch (e) {
+    fail(['No se pudo normalizar retrieval_set: ' + e.message]);
+    return;
+  }
+
+  const introContracts = fm.introduces_contracts || [];
+  const introComponents = fm.introduces_components || [];
+
+  // Nombres canónicos (PascalCase) introducidos por ESTE capítulo — para los chequeos 4 y 6.
+  const introducedNames = [];
+  for (const cid of introContracts) {
+    const c = contractsById.get(cid);
+    if (c) introducedNames.push({ id: cid, name: c.name });
+  }
+  for (const cid of introComponents) {
+    const c = componentsById.get(cid);
+    if (c) introducedNames.push({ id: cid, name: c.name });
+  }
+
+  // ---- [1] expectedOutcome existe y es una capacidad ----------------------------------------
+  const eo = retrievalSet.expectedOutcome;
+  if (!eo || !eo.text || eo.text.trim().length < 10) {
+    errors.push('retrievalSet.expectedOutcome falta o es demasiado corto');
+  } else if (!ACTION_VERB_RE.test(eo.text)) {
+    errors.push(
+      'retrievalSet.expectedOutcome no parece redactado como capacidad (falta un verbo de ' +
+      'acción tipo decidir/construir/diagnosticar/explicar/...): "' + eo.text.slice(0, 80) + '..."'
+    );
+  }
+
+  // ---- [2] skeleton coincide exactamente con introduces_* ------------------------------------
+  const sameSet = (a, b) => {
+    const sa = new Set(a || []);
+    const sb = new Set(b || []);
+    if (sa.size !== sb.size) return false;
+    for (const x of sa) if (!sb.has(x)) return false;
+    return true;
+  };
+  const sk = retrievalSet.skeleton || {};
+  if (!sameSet(sk.contractsToBeIntroduced, introContracts)) {
+    errors.push(
+      `retrievalSet.skeleton.contractsToBeIntroduced [${(sk.contractsToBeIntroduced || []).join(', ')}] ` +
+      `no coincide con frontmatter.introduces_contracts [${introContracts.join(', ')}]`
+    );
+  }
+  if (!sameSet(sk.componentsToBeIntroduced, introComponents)) {
+    errors.push(
+      `retrievalSet.skeleton.componentsToBeIntroduced [${(sk.componentsToBeIntroduced || []).join(', ')}] ` +
+      `no coincide con frontmatter.introduces_components [${introComponents.join(', ')}]`
+    );
+  }
+
+  // ---- [3] 3-5 guidingQuestions (si no es capítulo 0) ----------------------------------------
+  const gqs = retrievalSet.guidingQuestions || [];
+  if (!isChapterZero) {
+    if (gqs.length < 3 || gqs.length > 5) {
+      errors.push(`retrievalSet.guidingQuestions tiene ${gqs.length} pregunta(s); se esperan entre 3 y 5`);
+    }
+  }
+
+  // ---- [4] ninguna guidingQuestion usa un nombre canónico de este capítulo -------------------
+  for (const gq of gqs) {
+    for (const { name } of introducedNames) {
+      const re = new RegExp('\\b' + name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b');
+      if (re.test(gq.text || '')) {
+        errors.push(
+          `retrievalSet.guidingQuestions[${gq.id}] contiene el nombre canónico "${name}", que ` +
+          `este mismo capítulo introduce — las preguntas guía deben usar lenguaje de problema`
+        );
+      }
+    }
+  }
+
+  // ---- [5] guidingQuestion.answeredBy apunta a una recallQuestion real -----------------------
+  const rqIds = new Set((retrievalSet.recallQuestions || []).map((q) => q.id));
+  for (const gq of gqs) {
+    if (!gq.answeredBy || !rqIds.has(gq.answeredBy)) {
+      errors.push(
+        `retrievalSet.guidingQuestions[${gq.id}].answeredBy = "${gq.answeredBy}" no apunta a ` +
+        `ninguna recallQuestion existente en el mismo RetrievalSet`
+      );
+    }
+  }
+
+  // ---- [6] systemsLens.leveragePoint no vacío y referencia entidad de este capítulo ----------
+  const sl = retrievalSet.systemsLens || {};
+  if (!sl.leveragePoint || sl.leveragePoint.trim().length === 0) {
+    errors.push('retrievalSet.systemsLens.leveragePoint está vacío');
+  } else if (introducedNames.length > 0) {
+    const mentionsIntroduced = introducedNames.some(
+      ({ id, name }) => sl.leveragePoint.includes(id) || sl.leveragePoint.includes(name)
+    );
+    if (!mentionsIntroduced) {
+      errors.push(
+        'retrievalSet.systemsLens.leveragePoint no menciona (por id o por nombre) ningún ' +
+        'contrato/componente introducido en este capítulo'
+      );
+    }
+  }
+
+  // ---- [7] cada contrato/componente introducido tiene >= 1 flashcard ------------------------
+  const flashcards = retrievalSet.flashcards || [];
+  const flashcardsBySource = new Map();
+  for (const f of flashcards) {
+    if (!flashcardsBySource.has(f.sourceEntity)) flashcardsBySource.set(f.sourceEntity, []);
+    flashcardsBySource.get(f.sourceEntity).push(f);
+  }
+  for (const cid of introContracts) {
+    if (!flashcardsBySource.has(cid) || flashcardsBySource.get(cid).length === 0) {
+      errors.push(`El contrato "${cid}" está en introduces_contracts pero no tiene ninguna flashcard con sourceEntity = "${cid}"`);
+    }
+  }
+  for (const cid of introComponents) {
+    if (!flashcardsBySource.has(cid) || flashcardsBySource.get(cid).length === 0) {
+      errors.push(`El componente "${cid}" está en introduces_components pero no tiene ninguna flashcard con sourceEntity = "${cid}"`);
+    }
+  }
+
+  // ---- [8] recallQuestion/explainPrompt no referencian entidades futuras --------------------
+  const allNames = [];
+  for (const c of contracts) allNames.push({ name: c.name, chapterId: c.introduced_in });
+  for (const c of components) allNames.push({ name: c.name, chapterId: c.introduced_in });
+
+  function checkNotFuture(text, label) {
+    if (!text) return;
+    const candidateRe = /\b[A-Z][A-Za-z0-9]*\b/g;
+    let m;
+    while ((m = candidateRe.exec(text)) !== null) {
+      const word = m[0];
+      const known = allNames.find((n) => n.name === word);
+      if (!known) continue;
+      const idx = reg.chapterIndex(order, known.chapterId);
+      if (idx !== -1 && idx > currentIndex) {
+        errors.push(`${label} referencia "${word}", introducido en "${known.chapterId}" (posterior a "${fm.id}") — entidad no introducida todavía`);
+      }
+    }
+  }
+  for (const rq of retrievalSet.recallQuestions || []) {
+    checkNotFuture(rq.text, `retrievalSet.recallQuestions[${rq.id}]`);
+  }
+  for (const ep of retrievalSet.explainPrompts || []) {
+    checkNotFuture(ep.text, `retrievalSet.explainPrompts[${ep.id}]`);
+    if (ep.targetEntity && (contractsById.has(ep.targetEntity) || componentsById.has(ep.targetEntity))) {
+      const entry = contractsById.get(ep.targetEntity) || componentsById.get(ep.targetEntity);
+      const idx = reg.chapterIndex(order, entry.introduced_in);
+      if (idx !== -1 && idx > currentIndex) {
+        errors.push(`retrievalSet.explainPrompts[${ep.id}].targetEntity = "${ep.targetEntity}" no está introducido todavía en "${fm.id}"`);
+      }
+    }
+  }
+
+  // ---- [9] >= 1 interleavedQuestion si no es capítulo 0 (o excepción documentada) -----------
+  const iqs = retrievalSet.interleavedQuestions || [];
+  if (!isChapterZero && iqs.length === 0) {
+    errors.push(
+      'retrievalSet.interleavedQuestions está vacío y este capítulo no es el capítulo 0 — se ' +
+      'requiere al menos 1 pregunta de interleaving con un capítulo anterior'
+    );
+  }
+  if (isChapterZero && iqs.length === 0 && !retrievalSet.interleavingException) {
+    errors.push(
+      'retrievalSet.interleavedQuestions está vacío en el capítulo 0 pero no se documentó ' +
+      'retrievalSet.interleavingException explicando por qué (no se exime silenciosamente)'
+    );
+  }
+
+  // ---- [10] toda flashcard nueva tiene reviewStage = DAY_1 -----------------------------------
+  for (const f of flashcards) {
+    if (f.reviewStage !== 'DAY_1') {
+      errors.push(`retrievalSet.flashcards[${f.id}].reviewStage = "${f.reviewStage}", debe ser "DAY_1" al crearse`);
+    }
+  }
+
+  if (errors.length) fail(errors);
+
+  console.log(`validate-retrieval-set: OK (${chapterFile})`);
+  console.log(`  guidingQuestions: ${gqs.length}`);
+  console.log(`  recallQuestions: ${(retrievalSet.recallQuestions || []).length}`);
+  console.log(`  explainPrompts: ${(retrievalSet.explainPrompts || []).length}`);
+  console.log(`  interleavedQuestions: ${iqs.length}${isChapterZero && iqs.length === 0 ? ' (exención capítulo 0, documentada)' : ''}`);
+  console.log(`  flashcards: ${flashcards.length}`);
+  console.log(`  calibrationPairs: ${(retrievalSet.calibrationPairs || []).length}`);
+  process.exit(0);
+}
+
+main();

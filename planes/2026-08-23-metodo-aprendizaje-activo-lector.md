@@ -1,7 +1,7 @@
 # Plan — Método de Aprendizaje Activo para el lector del libro
 
 **Fecha:** 2026-08-23 (revisado con transcripciones reales; aprobado 2026-09-13)
-**Estado:** ✅ Aprobado — pendiente de ejecución (después del plan base)
+**Estado:** ✅ Completado — ver §8 (ejecutado 2026-09-13)
 **Depende de:** `2026-08-23-book-harness-como-construir-un-arnes.md` (este documento lo complementa, no lo reemplaza)
 
 ---
@@ -444,3 +444,217 @@ El último punto no es automatizable por completo en v0.1; se deja como criterio
 ## 7. Siguiente paso
 
 Este documento queda en `/planes` junto al plan base, ya corregido con las transcripciones reales. Si lo apruebas, la Fase 3/4/6 del plan base (`2026-08-23-book-harness-como-construir-un-arnes.md`) se ejecutan incorporando ya las extensiones de este documento (§3), en vez de hacerlo en una segunda pasada.
+
+---
+
+## 8. Registro de ejecución
+
+**Fecha de ejecución:** 2026-09-13 (segunda pasada, retrofit sobre BH-v0.1 ya commiteado en
+`3e2575b`).
+**Resultado:** el Ciclo de Dominio Activo (CDA) queda incorporado al modelo del harness y al
+capítulo piloto (`CH-00`). `./scripts/build-all` corre en verde con el validador nuevo integrado.
+
+### 8.1 Qué se creó
+
+```text
+skills/design-retrieval-practice/SKILL.md
+scripts/validate-retrieval-set
+```
+
+### 8.2 Qué se modificó
+
+```text
+scripts/lib/book-ir.js                                    (STRUCT RetrievalSet + normalizeRetrievalSet + ChapterIR.retrievalSet)
+scripts/build-all                                          (validate-retrieval-set por capítulo, antes de construir)
+scripts/build-book-ir                                      (log de conteo de flashcards)
+scripts/build-web                                          (caja de apertura / Lente de Sistemas / Practica lo que aprendiste)
+scripts/build-pdf                                          (idem para PDF + apéndice final de flashcards + -f markdown+raw_tex)
+book/chapters/00-arquitectura-constitucion/chapter.md       (retrieval_set: en frontmatter + secciones 0/20/21)
+book/frontmatter/preface.md                                (nota "Cómo leer este libro")
+planes/2026-08-23-metodo-aprendizaje-activo-lector.md       (este registro)
+```
+
+### 8.3 Decisiones de diseño no 100% especificadas en el plan, tomadas durante la implementación
+
+1. **Dónde vive el `RetrievalSet` fuente**: el plan (§3.1) define el STRUCT pero no dice dónde se
+   autoriza. Se decidió seguir el mismo principio ya usado para contratos/componentes:
+   frontmatter/registry = fuente estructurada, prosa del capítulo = presentación legible de esos
+   mismos datos. Se agregó un bloque `retrieval_set:` al frontmatter YAML de `chapter.md`
+   (parseado por el mismo `yaml-lite.js` que ya procesa el resto del frontmatter — sin tocar su
+   código, solo usando mappings/secuencias/block scalars que ya soporta). Las secciones 0, 20 y
+   21 del cuerpo del capítulo son prosa escrita a mano para coincidir con esos datos, no
+   generadas automáticamente a partir de ellos — igual que la sección 7 ("New Contracts") ya
+   repetía en prosa lo que también vive en `registry/contracts.yaml`.
+2. **Structs no completamente especificados en el plan**: §3.1 define en detalle
+   `ExpectedOutcome`, `ChapterSkeleton`, `GuidingQuestion`, `SystemsLensBlock`, `Flashcard` y
+   `ReviewStage`, pero solo menciona `RecallQuestion`, `ExplainPrompt`, `InterleavedQuestion` y
+   `CalibrationPair` como `List<...>` sin especificar sus campos. Se diseñaron como:
+   `RecallQuestion{id,text}`, `ExplainPrompt{id,text,targetEntity}`,
+   `InterleavedQuestion{id,text,currentChapterEntities,priorChapterEntities,priorChapter}`,
+   `CalibrationPair{id,recallQuestion,confidenceLevels}` — documentado en el comentario de
+   cabecera de `scripts/lib/book-ir.js`.
+3. **Campo `interleavingException` (extensión no pedida por el STRUCT del plan)**: se agregó a
+   `RetrievalSet` un campo de texto opcional para documentar, cuando un capítulo no tiene
+   capítulo anterior (como `CH-00`), por qué `interleavedQuestions` queda vacío — en vez de
+   inventar un capítulo previo falso (instrucción explícita del encargo de esta ejecución).
+   `validate-retrieval-set` exige que este campo exista cuando el capítulo es el capítulo 0 y
+   `interleavedQuestions` está vacío — no permite el vacío silencioso.
+4. **Regla 7 (`explainPrompts` sobre "Owns"/"Does NOT own") adaptada para `CH-00`**: el capítulo
+   piloto no introduce ningún componente (`registry/components.yaml` sigue vacío), así que no
+   existe una ficha con `owns`/`does_not_own` real de la cual derivar el prompt. Se aplicó la
+   misma lógica al límite constitucional más cercano disponible: el límite
+   Probabilístico/Determinístico (Article XII, "qué decide el modelo y qué nunca decide") y al
+   límite de responsabilidad de `HarnessError` (clasifica el fallo, pero no decide el reintento).
+   `targetEntity` acepta texto libre para este caso (no solo `ContractId`/`ComponentId`),
+   documentado en la skill y en `scripts/lib/book-ir.js`.
+5. **Render Web/PDF: secciones 0/20/21 no se duplican**. En vez de renderizar la prosa genérica
+   de las secciones 0/20/21 Y además una caja estructurada con los mismos datos, `build-web` y
+   `build-pdf` excluyen explícitamente esos tres números de sección del recorrido genérico de
+   secciones y los reemplazan por bloques construidos desde `chapter.retrievalSet` — evita mostrar
+   el mismo contenido dos veces con dos formatos distintos.
+6. **PDF: extensión de lector `raw_tex` y bug de entorno con `---`**. El pandoc 1.19.2.4 instalado
+   no pasa `\newpage` a LaTeX salvo que el reader tenga la extensión `raw_tex` habilitada
+   (`-f markdown+raw_tex`, agregado a `scripts/build-pdf`). Durante la prueba se encontró además
+   un bug preexistente del entorno pandoc/xelatex: un separador markdown `---` (thematic break)
+   falla al compilar (`! Missing number, treated as zero` / `\linethickness` indefinido),
+   reproducido de forma aislada con un `.md` mínimo sin ningún contenido de este plan — no es un
+   bug introducido por esta ejecución. Se evitó generando el apéndice de flashcards sin
+   separadores `---` (usando solo espaciado en blanco entre tarjetas).
+7. **Frontmatter elegido para "Cómo leer este libro"**: `book/frontmatter/preface.md` (no
+   `introduction.md`) — el prefacio ya habla del libro y de su propia forma de producción;
+   `introduction.md` está dedicado al mapa de contenido técnico ("Qué vas a construir"). Se
+   documenta además, por inspección de código, que `book/frontmatter/{preface,introduction}.md`
+   **no están conectados a `BookIR`/Web/PDF en absoluto** en BH-v0.1 (ni `book-ir.js` ni
+   `build-web`/`build-pdf` los leen) — brecha preexistente del harness base, no introducida ni
+   corregida por esta ejecución (fuera del alcance pedido: solo se pidió agregar la nota al
+   archivo correcto, no conectar el frontmatter al pipeline).
+8. **`validate-retrieval-set` no depende de construir el `BookIR` completo del libro**: para no
+   acoplar la validación de un capítulo a que todos los demás capítulos del libro estén bien
+   formados, se exportó `normalizeRetrievalSet` desde `scripts/lib/book-ir.js` y el validador la
+   usa directamente sobre el frontmatter ya parseado de un solo capítulo, en vez de invocar
+   `buildBookIR()` (que itera `book/book.yaml` completo).
+9. **Conteo de chequeos**: el encargo de esta ejecución habla de "9 chequeos" para
+   `validate-retrieval-set`, pero la lista real de §3.3 enumera 10 viñetas distintas. Se
+   implementaron las 10, sin omitir ninguna.
+
+### 8.4 Resultado real del pipeline (build limpio)
+
+Comando: `rm -rf dist && ./scripts/build-all` (raíz del repo):
+
+```text
+=== build-all: validación determinista ===
+▶ validate-contracts
+validate-contracts: OK (7 contrato(s))
+▶ validate-components
+validate-components: OK (0 componente(s))
+▶ validate-chapter book/chapters/00-arquitectura-constitucion/chapter.md
+validate-chapter: OK (.../chapter.md)
+  secciones: 22/19
+  bloques pseudocode: 12
+  contratos introducidos: 7
+  componentes introducidos: 0
+▶ validate-retrieval-set book/chapters/00-arquitectura-constitucion/chapter.md
+validate-retrieval-set: OK (.../chapter.md)
+  guidingQuestions: 5
+  recallQuestions: 5
+  explainPrompts: 2
+  interleavedQuestions: 0 (exención capítulo 0, documentada)
+  flashcards: 7
+  calibrationPairs: 5
+
+=== build-all: construcción ===
+▶ build-book-ir
+build-book-ir: OK → dist/book-ir.json
+  capítulos: 1 / contratos: 7 / componentes: 0 / términos de glosario: 12
+  flashcards (retrievalSet): 7
+▶ build-web
+build-web: OK → dist/web/ (index.html + 1 capítulo)
+▶ build-pdf
+build-pdf: OK → dist/book.pdf (94644 bytes)
+
+=== build-all: OK — validado, BookIR, Web y PDF generados desde la misma fuente canónica ===
+BookState persistido en dist/book-state.json
+```
+
+Exit code: `0`.
+
+**Pruebas negativas** (en copias/temporales, restauradas después):
+
+- Se insertó el nombre canónico `AgentMessage` (introducido por `CH-00`) dentro de una
+  `guidingQuestion` real del frontmatter → `validate-retrieval-set` falló señalando exactamente
+  esa pregunta, y `./scripts/build-all` se detuvo en la etapa de validación con
+  `exit 1` **sin** llegar a `build-book-ir`/`build-web`/`build-pdf` (confirmado: tras el fallo,
+  `dist/` solo contenía `book-state.json` con `buildStatus` de fallo — ningún `book-ir.json`,
+  `web/` ni `book.pdf`). Al restaurar el archivo original, `build-all` volvió a pasar limpio con
+  `exit 0`.
+- Se eliminó la única flashcard con `source_entity: C-012` (`ExecutionBudget`, contrato
+  introducido por este capítulo) de una copia del capítulo → `validate-retrieval-set` falló con
+  `El contrato "C-012" está en introduces_contracts pero no tiene ninguna flashcard con
+  sourceEntity = "C-012"` y `exit 1`.
+
+**Inspección de artefactos generados** (no solo del Markdown fuente):
+
+- `dist/web/chapters/CH-00.html`: contiene la caja `<div class="cda-box opening">` con
+  Resultado esperado / Esqueleto / Preguntas guía antes de la sección 1, el bloque
+  `<div class="cda-box systems-lens">` después de la sección 19, y el `<details>` plegable
+  "Practica lo que aprendiste" con Recordar/Explicar/Conectar/Espaciar/Calibrar al final —
+  confirmado por grep sobre el HTML generado, no sobre `chapter.md`.
+- `dist/book.pdf`: 20 páginas (antes: 1 sin CDA sería menos); se confirmó por extracción de
+  texto del PDF (no del Markdown intermedio) la presencia de "Resultado esperado", "Preguntas
+  guía", "Lente de Sistemas", "Repaso" y "Apéndice" — es decir, las secciones CDA llegan
+  realmente renderizadas al PDF final, con salto de página real (`\newpage` vía
+  `-f markdown+raw_tex`) antes de "Lente de Sistemas", antes de "Repaso" y antes del apéndice.
+
+### 8.5 Contraste contra el criterio de éxito real (§6 del plan)
+
+```text
+[✅] El lector puede decir, antes de leer, qué va a poder HACER al terminar el capítulo
+     (expectedOutcome) — Sección 0 del capítulo + caja de apertura en Web/PDF.
+[✅] Las preguntas guía son respondibles solo en lenguaje de problema — verificado
+     automáticamente (validate-retrieval-set chequeo 4: ninguna guidingQuestion contiene un
+     nombre canónico introducido por este capítulo) y por revisión editorial del contenido real.
+[✅] Cada pregunta guía tiene su contraparte de recuerdo al final, con la misma pregunta de
+     fondo — guidingQuestion.answeredBy → recallQuestion, 5/5, verificado por el chequeo 5.
+[✅] El lector puede ubicar el capítulo en las cuatro capas del iceberg y nombrar al menos un
+     bucle — systemsLens completo con icebergVisibleFact/Patterns/Structures/MentalModels +
+     reinforcingLoop + balancingLoop, ambos presentes (no solo uno).
+[✅] Cada componente/contrato introducido tiene una flashcard — 7/7 contratos cubiertos
+     (0 componentes en este capítulo), verificado por el chequeo 7 y probado en negativo.
+[✅] Existe al menos una pregunta que fuerza a explicar un límite ("Does NOT own") — 2
+     explainPrompts, adaptados (ver §8.3.4) porque CH-00 no introduce componentes con ficha
+     Owns/Does NOT own todavía.
+[⚠️] Existe al menos una pregunta de interleaving con un capítulo anterior no consecutivo — NO
+     se cumple para CH-00 específicamente, y no puede cumplirse honestamente: es el primer
+     capítulo del libro, no existe un capítulo anterior real. Documentado explícitamente como
+     excepción (retrievalSet.interleavingException) en vez de inventar un capítulo falso, tal
+     como pedía el encargo de esta ejecución. validate-retrieval-set exime esta regla solo para
+     el capítulo 0; se cumplirá de forma real a partir de CH-01.
+[⬜] El lector nunca puede responder copiando texto literal de la página anterior — el propio
+     plan (§6, último punto) declara esto explícitamente NO automatizable en v0.1; queda como
+     criterio de revisión editorial humana hasta que exista un reviewer dedicado (BH-v0.2+).
+```
+
+6 de 8 cumplidos en automático + revisión editorial, 1 exención documentada (estructural, no
+evitable en el primer capítulo del libro) y 1 explícitamente fuera de alcance de v0.1 según el
+propio plan.
+
+### 8.6 Deuda intencional hacia v0.2+ (según §5 del propio plan)
+
+Sin cambios respecto a lo ya declarado en el plan — se re-confirma que ninguno de estos tres
+puntos se implementó, tal como estaba decidido:
+
+- Vista `/repaso` interactiva con `ReviewStage` persistido por lector — necesita
+  `SessionManager`/persistencia, que no existe hasta que el harness migre a primitivos genéricos.
+- Auditoría del `RetrievalSet`/Lente de Sistemas por un `Pedagogical Reviewer Agent` dedicado.
+- Exportación de flashcards a una app externa de repetición espaciada (Anki u otra).
+
+A esto se suma, identificado durante esta ejecución:
+
+- `book/frontmatter/{preface,introduction}.md` siguen sin conectarse a `BookIR`/Web/PDF (§8.3.7)
+  — no es parte del alcance de este plan, pero es una brecha real del harness base que un futuro
+  incremento debería cerrar si se espera que el prefacio (con su nueva nota "Cómo leer este
+  libro") llegue a los lectores de la edición Web/PDF, no solo a quien lee el repositorio.
+- La vista `/repaso` (fuera de v0.1) también implica, cuando se construya, decidir cómo el
+  lector marca una flashcard como repasada y cómo eso mueve su `reviewStage` — el modelo de
+  datos ya lo soporta (`ReviewStage` enum completo), pero no hay ningún mecanismo de escritura
+  todavía, ni siquiera manual.

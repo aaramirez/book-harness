@@ -26,10 +26,108 @@ function today() {
   return new Date().toISOString().slice(0, 10);
 }
 
+function flatten(text) {
+  return String(text || '').replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Página de apertura del capítulo (Ciclo de Dominio Activo, Sección 0 — Preguntas Guía):
+ * expectedOutcome + skeleton + guidingQuestions, SIN respuestas (plan §3.4).
+ */
+function openingBoxMarkdown(rs) {
+  const sk = rs.skeleton || {};
+  let out = '> **Antes de leer**\n>\n';
+  out += `> **Resultado esperado.** ${flatten(rs.expectedOutcome && rs.expectedOutcome.text)}\n>\n`;
+  out += '> **Esqueleto de este capítulo.**\n>\n';
+  for (const t of sk.sectionTitles || []) out += `> - ${flatten(t)}\n`;
+  out += `>\n> Contratos que se van a introducir: ${(sk.contractsToBeIntroduced || []).join(', ') || '(ninguno)'}. `;
+  out += `Componentes que se van a introducir: ${(sk.componentsToBeIntroduced || []).join(', ') || '(ninguno)'}.\n>\n`;
+  out += '> **Preguntas guía** (respóndelas de memoria en la página de Repaso, sin volver a mirar atrás):\n>\n';
+  (rs.guidingQuestions || []).forEach((q, i) => {
+    out += `> ${i + 1}. ${flatten(q.text)}\n`;
+  });
+  return out + '\n';
+}
+
+/**
+ * Página "Lente de Sistemas" (Sección 20), antes del cierre del capítulo (plan §3.4).
+ */
+function systemsLensMarkdown(rs) {
+  const sl = rs.systemsLens || {};
+  let out = '\\newpage\n\n## Lente de Sistemas\n\n';
+  out += '_Releyendo la arquitectura de este capítulo con el marco Iceberg / Bucles de retroalimentación / Punto de apalancamiento (Dinámica de Sistemas, Forrester/Meadows)._\n\n';
+  out += '### El Iceberg\n\n';
+  out += `1. **Hecho visible:** ${flatten(sl.icebergVisibleFact)}\n`;
+  out += `2. **Patrones que se repiten:** ${flatten(sl.icebergPatterns)}\n`;
+  out += `3. **Estructuras / reglas / incentivos:** ${flatten(sl.icebergStructures)}\n`;
+  out += `4. **Modelos mentales:** ${flatten(sl.icebergMentalModels)}\n\n`;
+  if (sl.reinforcingLoop || sl.balancingLoop) {
+    out += '### Bucles de retroalimentación\n\n';
+    if (sl.reinforcingLoop) out += `- **Bucle de refuerzo (espiral):** ${flatten(sl.reinforcingLoop)}\n`;
+    if (sl.balancingLoop) out += `- **Bucle de equilibrio (estabiliza):** ${flatten(sl.balancingLoop)}\n`;
+    out += '\n';
+  }
+  out += `### Punto de apalancamiento\n\n${flatten(sl.leveragePoint)}\n\n`;
+  return out;
+}
+
+/**
+ * Página "Repaso" al final del capítulo: preguntas de recuerdo sin respuesta, explicar,
+ * conectar y calibrar (Sección 21). Las flashcards con respuesta van al apéndice del libro,
+ * no aquí (plan §3.4).
+ */
+function repasoMarkdown(rs) {
+  let out = '\\newpage\n\n## Repaso\n\n';
+  out += '### Recordar\n\nVuelve a la caja de apertura de este capítulo y respóndelas de memoria, sin mirar atrás:\n\n';
+  (rs.recallQuestions || []).forEach((q, i) => { out += `${i + 1}. ${flatten(q.text)}\n`; });
+  out += '\n### Explicar\n\n';
+  (rs.explainPrompts || []).forEach((p, i) => { out += `${i + 1}. ${flatten(p.text)}\n`; });
+  out += '\n### Conectar\n\n';
+  if ((rs.interleavedQuestions || []).length) {
+    rs.interleavedQuestions.forEach((q, i) => { out += `${i + 1}. ${flatten(q.text)}\n`; });
+  } else {
+    out += `_${flatten(rs.interleavingException) || 'Este capítulo no tiene capítulo anterior con el cual conectar.'}_\n`;
+  }
+  out += '\n### Espaciar\n\nLas tarjetas de repaso de este capítulo entran hoy en `DAY_1` (curva de Ebbinghaus: día 1 / 3 / 7 / 21). Ver el apéndice de tarjetas al final del libro.\n\n';
+  out += '### Calibrar\n\n_Adición propia del método, no citada de las fuentes originales._ Antes de revisar cada respuesta, califica tu confianza — Alta / Media / Baja — y solo entonces compárala con el texto del capítulo.\n\n';
+  return out;
+}
+
 function chapterMarkdown(chapter) {
+  const CDA_SECTION_NUMBERS = new Set([0, 20, 21]);
   let out = `# ${chapter.id} — ${chapter.title}\n\n`;
+  const rs = chapter.retrievalSet;
+  if (rs) out += openingBoxMarkdown(rs);
   for (const s of chapter.sections) {
+    if (CDA_SECTION_NUMBERS.has(s.n)) continue;
     out += `## ${s.n}. ${s.title}\n\n${s.content.trim()}\n\n`;
+  }
+  if (rs) {
+    out += systemsLensMarkdown(rs);
+    out += repasoMarkdown(rs);
+  }
+  return out;
+}
+
+/**
+ * Apéndice final del libro: todas las flashcards de todos los capítulos, agrupadas por
+ * capítulo, CON su respuesta (plan §3.4 — "un apéndice final con todas las flashcards
+ * agrupadas"; a diferencia de la página de Repaso por capítulo, que no revela respuestas).
+ */
+function flashcardAppendixMarkdown(ir) {
+  let out = '\\newpage\n\n# Apéndice: Tarjetas de Repaso\n\n';
+  out += 'Todas las flashcards del libro, agrupadas por capítulo. Cada una nace en `reviewStage = DAY_1` y se repasa con recuperación activa en los días 1, 3, 7 y 21 (curva de Ebbinghaus).\n\n';
+  for (const chapter of ir.chapters) {
+    const flashcards = (chapter.retrievalSet && chapter.retrievalSet.flashcards) || [];
+    if (!flashcards.length) continue;
+    out += `## ${chapter.id} — ${chapter.title}\n\n`;
+    // Nota: se evita deliberadamente el separador markdown "---" (thematic break) entre
+    // tarjetas — el entorno pandoc 1.19.2.4/xelatex instalado no puede compilarlo
+    // (\linethickness indefinido en el template LaTeX por defecto; reproducido de forma
+    // aislada durante esta ejecución, ver Registro de ejecución del plan).
+    for (const f of flashcards) {
+      out += `**${flatten(f.front)}**\n\n${flatten(f.back)}\n\n_(fuente: ${f.sourceEntity} — repaso inicial: ${f.reviewStage})_\n\n`;
+    }
   }
   return out;
 }
@@ -42,7 +140,8 @@ function buildMarkdown(ir) {
     '',
   ].join('\n');
   const chapters = ir.chapters.map(chapterMarkdown).join('\n\n');
-  return header + '\n' + chapters;
+  const appendix = flashcardAppendixMarkdown(ir);
+  return header + '\n' + chapters + '\n\n' + appendix;
 }
 
 function main() {
@@ -58,6 +157,7 @@ function main() {
 
   const args = [
     MD_PATH,
+    '-f', 'markdown+raw_tex',
     '-o', PDF_PATH,
     '--latex-engine=xelatex',
     '-V', 'mainfont=Helvetica',

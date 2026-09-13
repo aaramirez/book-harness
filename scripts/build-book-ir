@@ -25,6 +25,8 @@ function main() {
   console.log(`  contratos: ${ir.contracts.length}`);
   console.log(`  componentes: ${ir.components.length}`);
   console.log(`  términos de glosario: ${ir.glossary.length}`);
+  const totalFlashcards = ir.chapters.reduce((n, c) => n + (c.retrievalSet.flashcards || []).length, 0);
+  console.log(`  flashcards (retrievalSet): ${totalFlashcards}`);
   process.exit(0);
 }
 

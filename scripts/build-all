@@ -48,6 +48,7 @@ function main() {
     run('validate-components');
     for (const ch of chapters) {
       run('validate-chapter', [path.join('book', ch.file)]);
+      run('validate-retrieval-set', [path.join('book', ch.file)]);
     }
   } catch (e) {
     console.error('\nbuild-all: FALLÓ en la etapa de validación.');

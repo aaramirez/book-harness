@@ -1,7 +1,7 @@
 # Plan — Book Production Harness para "¿Cómo construir un arnés?"
 
-**Fecha:** 2026-08-23
-**Estado:** 🟡 Borrador para revisión — no ejecutar todavía
+**Fecha:** 2026-08-23 (aprobado 2026-09-13)
+**Estado:** ✅ Aprobado — en ejecución
 
 ---
 
@@ -170,13 +170,13 @@ Chequear explícitamente contra la lista de la sección 23 del documento rector,
 
 ---
 
-## 8. Decisiones abiertas para revisión antes de ejecutar
+## 8. Decisiones (resueltas al aprobar, 2026-09-13)
 
-1. **Runtime de los scripts deterministas**: Node.js sin dependencias (rápido de correr con Bash, cero setup) vs. un stack con dependencias (p. ej. TypeScript + un motor de render Markdown/PDF más robusto). Propuesta: Node.js plano para v0.1, revisar en BH-v0.2 si hace falta más.
-2. **Motor de PDF**: `pandoc` si está disponible en el entorno, o un renderer propio minimalista en v0.1 (sin diseño editorial todavía). Confirmar si `pandoc`/`wkhtmltopdf`/similar ya está instalado o si hay que asumir su ausencia.
-3. **Idioma del contenido**: dado que el libro se titula en español pero todo el material de referencia y vocabulario canónico (`AgentLoop`, `ToolRuntime`, etc.) está en inglés — ¿el capítulo piloto se escribe en español con términos técnicos en inglés (como hace este mismo plan), o completamente en inglés?
-4. **Capítulo piloto**: confirmar que el capítulo 0 propuesto (Constitución Arquitectónica) es el punto de partida correcto, o si prefieres otro capítulo como prueba end-to-end.
-5. **Ubicación**: confirmar que todo esto vive en la raíz de `arnes-kb` (mismo repo que `reference/`) y no en un repo/carpeta nuevo separado.
+1. **Runtime de los scripts deterministas**: Node.js plano (v22.11.0 disponible en el entorno) — sin dependencias, sin setup.
+2. **Motor de PDF**: `pandoc` (v1.19.2.4, disponible en el entorno) — se usa para v0.1, sin diseño editorial todavía.
+3. **Idioma del contenido**: español, con vocabulario técnico canónico en inglés (`AgentLoop`, `ToolRuntime`, etc.) — mismo criterio que este plan.
+4. **Capítulo piloto**: capítulo 0, "La Constitución Arquitectónica de un Arnés" — confirmado.
+5. **Ubicación**: raíz de **este mismo repo** (`book-harness`) — no un repo/carpeta `arnes-kb` separado. Tras la limpieza del 2026-09-13, este repo quedó dedicado en exclusiva al libro del arnés, así que el árbol de §4 se crea directamente acá (sin el prefijo `arnes-kb/`).
 
 ---
 

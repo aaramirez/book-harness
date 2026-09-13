@@ -1,7 +1,7 @@
 # Plan — Método de Aprendizaje Activo para el lector del libro
 
-**Fecha:** 2026-08-23 (revisado con transcripciones reales)
-**Estado:** 🟡 Borrador para revisión — no ejecutar todavía
+**Fecha:** 2026-08-23 (revisado con transcripciones reales; aprobado 2026-09-13)
+**Estado:** ✅ Aprobado — pendiente de ejecución (después del plan base)
 **Depende de:** `2026-08-23-book-harness-como-construir-un-arnes.md` (este documento lo complementa, no lo reemplaza)
 
 ---

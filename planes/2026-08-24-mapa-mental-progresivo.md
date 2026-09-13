@@ -1,7 +1,7 @@
 # Plan — Mapa mental progresivo del libro
 
-**Fecha:** 2026-08-24
-**Estado:** 🟡 Borrador para revisión — no ejecutar todavía
+**Fecha:** 2026-08-24 (aprobado 2026-09-13)
+**Estado:** ✅ Aprobado — pendiente de ejecución (después del plan base y del método de aprendizaje)
 **Depende de:**
 - `2026-08-23-book-harness-como-construir-un-arnes.md` (plan base)
 - `2026-08-23-metodo-aprendizaje-activo-lector.md` (método de aprendizaje — este documento se conecta directamente con "Esqueleto", "Conectar" y "Lente de Sistemas")

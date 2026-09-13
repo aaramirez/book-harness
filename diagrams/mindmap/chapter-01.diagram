@@ -3,7 +3,7 @@ digraph BookMindMap {
   size="6.5,9"; ratio=compress;
   node [fontname="Helvetica", fontsize=11, style=filled, target="_top"];
   edge [fontname="Helvetica", fontsize=9];
-  labelloc="t"; fontsize=14; fontname="Helvetica-Bold"; label="Mapa mental completo del libro";
+  labelloc="t"; fontsize=14; fontname="Helvetica-Bold"; label="Mapa mental hasta CH-01";
   "CH-00" [label="La Constitución Arquitectónica de un Arnés", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-00.html", style="filled,bold"];
   "C-001" [label="AgentMessage", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-00.html#C-001", style="filled"];
   "C-002" [label="AgentConfig", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-00.html#C-002", style="filled"];
@@ -17,12 +17,12 @@ digraph BookMindMap {
   "CONCEPT-deterministic-boundary" [label="Deterministic Boundary", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-00.html#CONCEPT-deterministic-boundary", style="filled"];
   "CONCEPT-component-sovereignty" [label="Component Sovereignty", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-00.html#CONCEPT-component-sovereignty", style="filled"];
   "CONCEPT-probabilistic-system" [label="Probabilistic System", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-00.html#CONCEPT-probabilistic-system", style="filled"];
-  "CH-01" [label="El Agent Loop y el Ciclo de Ejecución Cognitiva", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-01.html", style="filled,bold"];
-  "C-013" [label="AgentRunStatus", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-01.html#C-013", style="filled"];
-  "CMP-001" [label="AgentLoop", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-01.html#CMP-001", style="filled,rounded"];
-  "CONCEPT-turn" [label="Turn", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-01.html#CONCEPT-turn", style="filled"];
-  "CONCEPT-agent-run" [label="Agent Run", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-01.html#CONCEPT-agent-run", style="filled"];
-  "CONCEPT-decision-ownership" [label="Decision Ownership", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-01.html#CONCEPT-decision-ownership", style="filled"];
+  "CH-01" [label="El Agent Loop y el Ciclo de Ejecución Cognitiva", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-01.html", style="filled,bold", penwidth=3, color="#d62728"];
+  "C-013" [label="AgentRunStatus", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-01.html#C-013", style="filled,bold", penwidth=3, color="#d62728"];
+  "CMP-001" [label="AgentLoop", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-01.html#CMP-001", style="filled,rounded,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-turn" [label="Turn", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-01.html#CONCEPT-turn", style="filled,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-agent-run" [label="Agent Run", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-01.html#CONCEPT-agent-run", style="filled,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-decision-ownership" [label="Decision Ownership", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-01.html#CONCEPT-decision-ownership", style="filled,bold", penwidth=3, color="#d62728"];
   "CH-00" -> "C-001" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-002" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-003" [label="INTRODUCES", color="#2a5fa5", style="bold"];

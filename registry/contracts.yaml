@@ -45,7 +45,7 @@ contracts:
           name: Text
           budget: ExecutionBudget
       END
-    used_by: []
+    used_by: [CMP-001]
     modified_by: []
     constitutional_impact: [P-06]
 
@@ -61,7 +61,7 @@ contracts:
           status: AgentRunStatus
           currentTurn: Integer
       END
-    used_by: []
+    used_by: [CMP-001]
     modified_by: []
     constitutional_impact: [P-08, P-10, INV-12]
 
@@ -76,7 +76,7 @@ contracts:
           traceId: TraceId
           budget: ExecutionBudget
       END
-    used_by: []
+    used_by: [CMP-001]
     modified_by: []
     constitutional_impact: [P-01, P-14]
 
@@ -95,7 +95,7 @@ contracts:
           traceId: TraceId
           payload: Value
       END
-    used_by: []
+    used_by: [CMP-001]
     modified_by: []
     constitutional_impact: [P-04, INV-18, INV-19]
 
@@ -112,7 +112,7 @@ contracts:
           retryable: Boolean
           metadata: Map<Text, Value>
       END
-    used_by: []
+    used_by: [CMP-001]
     modified_by: []
     constitutional_impact: [INV-20]
 
@@ -133,3 +133,31 @@ contracts:
     used_by: []
     modified_by: []
     constitutional_impact: [P-10, INV-09]
+
+  # C-013 (no C-005..C-009): esos cinco ids quedan reservados por convención editorial para
+  # ContextSnapshot/ModelRequest/ModelResponse/ToolCall/ToolResult (ver
+  # reference/md/REGLAS_LIBRO_AGENT_HARNESS(1).md §10, ejemplo de numeración), los cinco
+  # contratos que CH-00 §6 ya anunció como "Unchanged / Not yet introduced" y que llegarán con
+  # ModelGateway/ContextEngine/ToolRuntime en un capítulo posterior — no en este. Ver decisión de
+  # diseño en planes/2026-09-13-capitulo-01-agent-loop.md.
+  - id: C-013
+    name: AgentRunStatus
+    version: v1
+    introduced_in: CH-01
+    current_definition: |
+      ENUM AgentRunStatus
+          CREATED
+          INITIALIZING
+          RUNNING
+          WAITING_FOR_MODEL
+          WAITING_FOR_TOOL
+          WAITING_FOR_HUMAN
+          PAUSED
+          COMPLETED
+          FAILED
+          CANCELLED
+          EXPIRED
+      END
+    used_by: [CMP-001]
+    modified_by: []
+    constitutional_impact: [P-10, INV-08, INV-09]

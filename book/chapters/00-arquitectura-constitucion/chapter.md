@@ -8,7 +8,7 @@ introduces_contracts: [C-001, C-002, C-003, C-004, C-010, C-011, C-012]
 modifies_contracts: []
 constitutional_articles: [P-01, P-02, P-03, P-04, P-05, P-06, P-07, P-08, P-09, P-10, P-11, P-12, P-13, P-14, P-15, INV-01, INV-02, INV-03, INV-04, INV-05, INV-06, INV-07, INV-08, INV-09, INV-10, INV-11, INV-12, INV-13, INV-14, INV-15, INV-16, INV-17, INV-18, INV-19, INV-20]
 previous_chapter: null
-next_chapter: null
+next_chapter: CH-01
 retrieval_set:
   expected_outcome:
     id: EO-CH00
@@ -871,13 +871,15 @@ Components (registry/components.yaml)
 
 El problema natural del próximo capítulo: ¿cómo ejecuta el harness un turno real del ciclo
 cognitivo (`Model → Harness → External World` de §10, pero con un componente real en el medio)?
-Eso requiere introducir `AgentCore`/`AgentLoop` — el primer componente de Article III que deja de
-ser preview (§8) para tener ficha arquitectónica, `INTERFACE` y pseudocódigo propios.
+Eso requiere introducir `AgentLoop` — el primer componente de Article III que deja de ser preview
+(§8) para tener ficha arquitectónica y pseudocódigo propios.
 
-Ese capítulo (`CH-01`, fuera del alcance de esta ejecución BH-v0.1) es el primer lugar donde
-`registry/components.yaml` deja de estar vacío. `next_chapter` queda en `null` en el frontmatter
-de este capítulo porque, en este momento del libro, `CH-01` todavía no existe como archivo — solo
-como el problema que motivará su escritura.
+**Actualización posterior a esta ejecución (BH-v0.1, retrofit):** ese capítulo ya existe —
+`CH-01`, "El Agent Loop y el Ciclo de Ejecución Cognitiva"
+(`book/chapters/01-agent-loop/chapter.md`) — y es el primer lugar donde
+`registry/components.yaml` deja de estar vacío (`CMP-001 AgentLoop`). `next_chapter` en el
+frontmatter de este capítulo pasó de `null` a `CH-01` en consecuencia. Ver
+`planes/2026-09-13-capitulo-01-agent-loop.md` para el registro de esa ejecución.
 
 ## 20. Lente de Sistemas (Systems Lens)
 

@@ -18,17 +18,35 @@
 # `validate-chapter`. Ningún pseudocódigo puede invocar un componente cuyo `introduced_in` sea
 # un capítulo posterior en `book/book.yaml` ("no magic entities", REGLAS_LIBRO §2).
 #
-# Estado actual: vacío. El capítulo piloto (CH-00, "La Constitución Arquitectónica de un Arnés")
-# es deliberadamente anterior a la introducción de cualquier componente de runtime: establece el
-# vocabulario y los contratos fundamentales (ver registry/contracts.yaml) pero NO instancia
-# AgentLoop, ModelGateway, ToolRuntime ni ningún otro componente de Article III todavía. El
-# capítulo 0 solo los menciona como "preview" en prosa (sin pseudocódigo ejecutable), lo cual está
-# permitido explícitamente por BOOK_HARNESS_BUILD_INSTRUCTIONS(1).md §22 regla 8 ("future concepts
-# ... unless explicitly marked as a preview"). Los validadores solo verifican entidades dentro de
-# bloques de pseudocódigo, no menciones en prosa — ver decisión de diseño en el Registro de
-# ejecución del plan.
-#
-# Se poblará a partir del capítulo que introduzca el primer componente real (fuera del alcance de
-# esta ejecución BH-v0.1, que solo cubre el capítulo piloto CH-00).
+# Historial: vacío hasta CH-00 (capítulo piloto, solo contratos — ver registry/contracts.yaml).
+# CH-01 ("El Agent Loop y el Ciclo de Ejecución Cognitiva") introduce el primer componente real
+# del libro, CMP-001 AgentLoop, con ficha literal contra constitution/ARCHITECTURE_CONSTITUTION.md
+# Article III (sección "AgentLoop") y Article IV (Decision Ownership). Ver decisión de diseño en
+# planes/2026-09-13-capitulo-01-agent-loop.md.
 
-components: []
+components:
+  - id: CMP-001
+    name: AgentLoop
+    responsibility: >
+      Coordinar el turn lifecycle de una ejecución cognitiva (el ciclo model → action →
+      observation), decidir si otro turno de razonamiento debe ocurrir y producir la transición
+      de AgentRunStatus y el AgentEvent correspondientes — sin ejecutar directamente ningún side
+      effect.
+    owns:
+      - turn lifecycle
+      - "model → action → observation cycle (la decisión de continuar el ciclo, no su ejecución)"
+      - continuation
+      - completion
+      - coordinación de la ejecución cognitiva
+    does_not_own:
+      - autorización
+      - rendering
+      - almacenamiento concreto
+      - APIs específicas de proveedores
+      - "operational continuation (budgets / cancelación / deadlines — Article IV asigna esta decisión a ExecutionController, preview, no introducido en este capítulo)"
+      - "ejecución de una tool call aprobada (ToolRuntime, preview, no introducido en este capítulo)"
+    dependencies: []
+    consumes: [C-002, C-003, C-004, C-013]
+    produces: [C-003, C-010, C-011, C-013]
+    introduced_in: CH-01
+    constitutional_articles: [P-10, P-12, P-13, INV-08, INV-09, INV-16, INV-17, INV-18, INV-19]

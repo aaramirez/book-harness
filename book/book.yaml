@@ -16,3 +16,5 @@ book:
 chapters:
   - id: CH-00
     file: chapters/00-arquitectura-constitucion/chapter.md
+  - id: CH-01
+    file: chapters/01-agent-loop/chapter.md

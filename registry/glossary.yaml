@@ -97,3 +97,45 @@ terms:
       decisión operacional vinculante.
     introduced_in: CH-00
     kind: concept
+
+  - term: AgentRunStatus
+    definition: >
+      Enum que representa el lifecycle completo de una ejecución (AgentRun): los estados por los
+      que puede pasar, desde CREATED hasta un estado terminal (COMPLETED, FAILED, CANCELLED o
+      EXPIRED).
+    introduced_in: CH-01
+    kind: contract
+    ref: C-013
+
+  - term: AgentLoop
+    definition: >
+      Componente que coordina el turn lifecycle de una ejecución cognitiva — decide si otro turno
+      de razonamiento debe ocurrir y produce la transición de estado resultante — sin ejecutar
+      directamente ningún side effect ni decidir autorización.
+    introduced_in: CH-01
+    kind: component
+    ref: CMP-001
+
+  - term: Turn
+    definition: >
+      Una iteración completa del ciclo model → action → observation dentro de un AgentRun: el
+      modelo propone, AgentLoop decide si esa propuesta implica otro turno, una tool call o el fin
+      de la ejecución.
+    introduced_in: CH-01
+    kind: concept
+
+  - term: Agent Run
+    definition: >
+      Una ejecución concreta de un agente (identificada por RunId), cuyo progreso se representa en
+      AgentState y cuyo lifecycle completo describe AgentRunStatus.
+    introduced_in: CH-01
+    kind: concept
+
+  - term: Decision Ownership
+    definition: >
+      Principio (Article IV de la Constitution) por el cual cada decisión arquitectónica tiene un
+      dueño único y nombrado — p. ej. AgentLoop decide "¿debe ocurrir otro turno?", nunca "¿puede
+      el run continuar operacionalmente?" (ExecutionController) ni "¿está permitida esta acción?"
+      (PolicyEngine).
+    introduced_in: CH-01
+    kind: concept

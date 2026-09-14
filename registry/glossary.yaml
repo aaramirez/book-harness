@@ -325,3 +325,53 @@ terms:
       interpreta como autorización implícita.
     introduced_in: CH-05
     kind: concept
+
+  - term: HumanInteractionService
+    definition: >
+      Componente que representa una solicitud de intervención humana a partir de una
+      PolicyDecision con outcome = require_approval, la persiste mientras está pendiente, recibe
+      su resolución y deja disponible la información que permitiría reanudar la ejecución — sin
+      decidir si esa aprobación se requiere, sin transportar la interacción por ningún canal
+      concreto, sin ejecutar la acción una vez resuelta y sin decidir si el turno debe continuar.
+    introduced_in: CH-06
+    kind: component
+    ref: CMP-006
+
+  - term: Human Interaction Request
+    definition: >
+      La solicitud persistida de una intervención humana pendiente — tipo (approval/input/review/
+      decision), referencia al ToolCall que la motivó (reutilizando la correlación de
+      PolicyDecision.callId) y estado (pendiente/resuelta) — contrato canónico
+      HumanInteractionRequest, formalizado en CH-06, deliberadamente sin ningún campo de canal
+      (INV-14).
+    introduced_in: CH-06
+    kind: contract
+    ref: C-015
+
+  - term: Human Interaction Resolution
+    definition: >
+      El resultado que un humano produjo al resolver una HumanInteractionRequest — un outcome de
+      tres estados (aprobado/rechazado/valor provisto, nunca un Boolean), el valor provisto cuando
+      aplica, y quién resolvió (para INV-19) — contrato canónico HumanInteractionResolution,
+      formalizado en CH-06, lo que hace posible el paso "Resolution → Resume" de Article VIII.
+    introduced_in: CH-06
+    kind: contract
+    ref: C-016
+
+  - term: Channel Adapter
+    definition: >
+      La pieza (concepto de infraestructura de borde, no un componente de Article III) que
+      transportaría una HumanInteractionRequest hacia un canal concreto (TUI, Web, Slack, Teams,
+      Mobile, Email, API — Article VIII) y traería de vuelta la respuesta cruda del humano. Nunca
+      decide el significado de esa respuesta (Human Interaction Rule); ese significado lo define y
+      persiste el runtime, no la interfaz (P-11).
+    introduced_in: CH-06
+    kind: concept
+
+  - term: Human-in-the-loop
+    definition: >
+      La capacidad general del runtime de pausar una ejecución para que un humano intervenga antes
+      de continuar — Article VIII la declara explícitamente como "una capacidad del runtime, no de
+      la TUI"; HumanInteractionService (CH-06) es su primera materialización real en este libro.
+    introduced_in: CH-06
+    kind: concept

@@ -76,7 +76,7 @@ contracts:
           traceId: TraceId
           budget: ExecutionBudget
       END
-    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005]
+    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005, CMP-006]
     modified_by: []
     constitutional_impact: [P-01, P-14]
 
@@ -179,7 +179,7 @@ contracts:
           traceId: TraceId
           payload: Value
       END
-    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005]
+    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005, CMP-006]
     modified_by: []
     constitutional_impact: [P-04, INV-18, INV-19]
 
@@ -196,7 +196,7 @@ contracts:
           retryable: Boolean
           metadata: Map<Text, Value>
       END
-    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005]
+    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005, CMP-006]
     modified_by: []
     constitutional_impact: [INV-20]
 
@@ -264,6 +264,44 @@ contracts:
           reason: Optional<HarnessError>
           decidedAt: Timestamp
       END
-    used_by: [CMP-005]
+    used_by: [CMP-005, CMP-006]
     modified_by: []
     constitutional_impact: [P-05, P-13, INV-06, INV-15, INV-19]
+
+  # C-015/C-016 (HumanInteractionRequest/HumanInteractionResolution): segundo y tercer id
+  # verdaderamente NUEVO del libro (el correlativo continúa después de C-014, CH-05 — ningún id
+  # quedaba reservado desde CH-01 §7). Ver decisión de diseño en
+  # planes/2026-09-14-capitulo-06-human-interaction-service.md: el primer par solicitud/resolución
+  # que representa y resuelve una PolicyDecision con outcome = REQUIRE_APPROVAL (CH-05),
+  # deliberadamente sin ningún campo de canal (INV-14, Article VIII Human Interaction Rule).
+  - id: C-015
+    name: HumanInteractionRequest
+    version: v1
+    introduced_in: CH-06
+    current_definition: |
+      STRUCT HumanInteractionRequest
+          id: HumanInteractionRequestId
+          type: HumanInteractionType
+          callId: ToolCallId
+          status: HumanInteractionStatus
+          requestedAt: Timestamp
+      END
+    used_by: [CMP-006]
+    modified_by: []
+    constitutional_impact: [INV-14, INV-15, INV-18, INV-19]
+
+  - id: C-016
+    name: HumanInteractionResolution
+    version: v1
+    introduced_in: CH-06
+    current_definition: |
+      STRUCT HumanInteractionResolution
+          requestId: HumanInteractionRequestId
+          outcome: HumanInteractionOutcome
+          value: Optional<Value>
+          resolvedBy: ActorId
+          resolvedAt: Timestamp
+      END
+    used_by: [CMP-006]
+    modified_by: []
+    constitutional_impact: [INV-14, INV-15, INV-18, INV-19]

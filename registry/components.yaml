@@ -35,6 +35,10 @@
 # CH-05 ("PolicyEngine y la Frontera de Autorización") introduce el quinto, CMP-005 PolicyEngine,
 # con ficha literal contra Article III (sección "PolicyEngine") y Article IV. Ver decisión de
 # diseño en planes/2026-09-14-capitulo-05-policy-engine.md.
+# CH-06 ("HumanInteractionService y la Reanudación de una Ejecución Pausada") introduce el sexto,
+# CMP-006 HumanInteractionService, con ficha literal contra Article III (sección
+# "HumanInteractionService") y Article IV. Ver decisión de diseño en
+# planes/2026-09-14-capitulo-06-human-interaction-service.md.
 
 components:
   - id: CMP-001
@@ -165,3 +169,27 @@ components:
     produces: [C-010, C-011, C-014]
     introduced_in: CH-05
     constitutional_articles: [P-05, P-13, INV-04, INV-06, INV-15, INV-18, INV-19, INV-20]
+
+  - id: CMP-006
+    name: HumanInteractionService
+    responsibility: >
+      Representar una solicitud de intervención humana a partir de una PolicyDecision con
+      outcome = REQUIRE_APPROVAL, persistirla mientras está pendiente, recibir su resolución y
+      dejar disponible la información que permitiría reanudar la ejecución — sin decidir si esa
+      aprobación se requiere, sin transportar la interacción por ningún canal concreto, sin
+      ejecutar la acción una vez resuelta y sin decidir si el turno debe continuar.
+    owns:
+      - "representar solicitudes humanas"
+      - "persistir interacciones pendientes"
+      - "recibir resoluciones"
+      - "permitir reanudación"
+    does_not_own:
+      - "decidir SI una acción requiere aprobación humana (PolicyEngine, CMP-005, ya introducido en CH-05 — esa decisión ya se tomó cuando PolicyDecision.outcome = REQUIRE_APPROVAL; este componente solo recibe esa señal)"
+      - "transportar la interacción a través de un canal concreto — TUI/Web/Slack/Teams/Mobile/Email/API (Channel Adapter, Article VIII/P-11 — concepto de infraestructura de borde, no un componente propio de Article III / del registry)"
+      - "ejecutar la acción una vez resuelta (ToolRuntime, CMP-002, ya introducido en CH-02 — Article IV: \"ToolRuntime → How should an approved action be executed?\")"
+      - "decidir si otro turno de razonamiento debe ocurrir o si la ejecución debe reanudarse operacionalmente (AgentLoop, CMP-001, ya introducido en CH-01)"
+    dependencies: []
+    consumes: [C-004, C-014]
+    produces: [C-010, C-011, C-015, C-016]
+    introduced_in: CH-06
+    constitutional_articles: [P-11, INV-14, INV-15, INV-18, INV-19, INV-20]

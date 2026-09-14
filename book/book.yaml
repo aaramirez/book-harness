@@ -40,3 +40,5 @@ chapters:
     file: chapters/11-agent-core/chapter.md
   - id: CH-12
     file: chapters/12-integracion-camino-feliz/chapter.md
+  - id: CH-13
+    file: chapters/13-integracion-caminos-de-gobierno/chapter.md

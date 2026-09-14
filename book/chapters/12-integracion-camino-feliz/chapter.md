@@ -8,7 +8,7 @@ introduces_contracts: []
 modifies_contracts: []
 constitutional_articles: [P-04, P-05, P-10, P-12, P-13, INV-06, INV-07, INV-08, INV-09, INV-18, INV-19, INV-20]
 previous_chapter: CH-11
-next_chapter: null
+next_chapter: CH-13
 retrieval_set:
   expected_outcome:
     id: EO-CH12

@@ -372,3 +372,25 @@ Estructuralmente el frontmatter queda deliberadamente simple (texto libre, sin f
 propio, sin paso por `validate-chapter`) — es contenido editorial fijo, no arquitectónico, así
 que no le aplica el modelo de contratos/componentes/"no magic entities" que sí rige los
 capítulos.
+
+### 11.7 Cierre de la cadena de escritura de contenido curado a mano (2026-09-14)
+
+Entre el bootstrap de este plan (§5, un único capítulo piloto, BH-v0.1) y el 2026-09-14, el
+contenido curado a mano del libro avanzó de **1 capítulo piloto** a **14 capítulos reales**
+(`CH-00`..`CH-13`): los once componentes de Article III, cada uno con su propio capítulo
+(`CH-01`..`CH-11`), y dos capítulos de integración que conectan esos once componentes entre sí con
+datos reales fluyendo de uno a otro — `CH-12` (el camino feliz, `allow`/`continue`, de un
+`AgentRun` completo) y `CH-13` (los tres caminos de gobierno que `CH-12` dejó explícitamente
+pendientes: `PolicyDecision.outcome = DENY`, `PolicyDecision.outcome = REQUIRE_APPROVAL` →
+`HumanInteractionService` → resolución → reanudación, y `ExecutionDecision.outcome = STOP`/
+`CANCELLED` → terminación real hacia `FAILED`/`CANCELLED`/`EXPIRED`). Con `CH-13`, cada uno de los
+once estados de `AgentRunStatus` (C-013) ha sido, al menos una vez, el resultado real de algún
+pseudocódigo de este libro — ninguno queda ya como un valor del `ENUM` declarado sin ejecución.
+
+Cada uno de los catorce capítulos tiene su propio plan de ejecución, con sus propias decisiones de
+diseño y su propia evidencia de verificación: `planes/2026-08-23-book-harness-como-construir-un-arnes.md`
+(este documento, CH-00/bootstrap), y `planes/2026-09-1{3,4}-capitulo-0{0..9}-*.md` /
+`planes/2026-09-1{3,4}-capitulo-1{0,1,2,3}-*.md` (`CH-01`..`CH-13`, uno por archivo). Este
+documento base no se reescribe para reflejar ese avance en detalle — cada plan individual es la
+fuente de verdad de su propio incremento; esta nota solo deja constancia, en el registro de
+ejecución del plan que originó la cadena, de hasta dónde llegó.

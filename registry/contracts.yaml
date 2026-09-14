@@ -61,7 +61,7 @@ contracts:
           status: AgentRunStatus
           currentTurn: Integer
       END
-    used_by: [CMP-001, CMP-004, CMP-007]
+    used_by: [CMP-001, CMP-004, CMP-007, CMP-010]
     modified_by: []
     constitutional_impact: [P-08, P-10, INV-12]
 
@@ -76,7 +76,7 @@ contracts:
           traceId: TraceId
           budget: ExecutionBudget
       END
-    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005, CMP-006, CMP-007, CMP-008]
+    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005, CMP-006, CMP-007, CMP-008, CMP-010]
     modified_by: []
     constitutional_impact: [P-01, P-14]
 
@@ -379,3 +379,31 @@ contracts:
     used_by: [CMP-009]
     modified_by: []
     constitutional_impact: [P-04, P-12, INV-18, INV-19]
+
+  # C-020 (SessionState): séptimo id verdaderamente NUEVO del libro (el correlativo continúa
+  # después de C-019, CH-09 — ningún id quedaba reservado desde CH-01 §7). Ver decisión de diseño en
+  # planes/2026-09-14-capitulo-10-session-manager.md: a diferencia de C-014..C-019, este contrato
+  # formaliza un nombre que la Constitution ya citaba desde su primera versión adoptada (P-08,
+  # INV-12: "AgentState y SessionState permanecen conceptualmente independientes") sin que ningún
+  # capítulo lo hubiera registrado todavía — el mismo patrón que AgentRunStatus (C-013) resolvió en
+  # CH-01, pero aplicado aquí a un STRUCT en vez de a un ENUM. Representa la historia persistida de
+  # una sesión (qué RunId le pertenecen, desde qué SessionCheckpoint —embebido, sin contrato C-XXX
+  # propio, mismo patrón que ContextBlock/ExecutionUsage/EventFilter— puede reconstruirse, y su
+  # linaje opcional de ramificación) — nunca el estado operativo de una ejecución en curso, que sigue
+  # siendo AgentState (C-003), propiedad exclusiva de AgentLoop.
+  - id: C-020
+    name: SessionState
+    version: v1
+    introduced_in: CH-10
+    current_definition: |
+      STRUCT SessionState
+          sessionId: SessionId
+          runIds: List<RunId>
+          latestCheckpoint: SessionCheckpoint
+          parentCheckpointId: Optional<SessionCheckpointId>
+          createdAt: Timestamp
+          updatedAt: Timestamp
+      END
+    used_by: [CMP-010]
+    modified_by: []
+    constitutional_impact: [P-08, P-23, INV-12, INV-13]

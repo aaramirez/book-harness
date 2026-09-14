@@ -34,3 +34,5 @@ chapters:
     file: chapters/08-capability-registry/chapter.md
   - id: CH-09
     file: chapters/09-event-bus/chapter.md
+  - id: CH-10
+    file: chapters/10-session-manager/chapter.md

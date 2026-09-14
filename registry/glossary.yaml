@@ -522,3 +522,63 @@ terms:
       ExecutionUsage (CH-07).
     introduced_in: CH-09
     kind: concept
+
+  - term: SessionManager
+    definition: >
+      Componente que persiste y actualiza la historia de una sesión mediante checkpoints construidos
+      a partir de un AgentState ya producido por una ejecución existente, reconstruye un SessionState
+      completo desde un checkpoint ya persistido, y crea una rama nueva de sesión a partir de un
+      checkpoint existente — sin poseer el estado operativo de la ejecución en curso, sin persistir
+      las solicitudes de interacción humana que HumanInteractionService ya persiste por su cuenta,
+      sin decidir continuación de turno y sin distribuir eventos. Responde, por primera vez con
+      código real, la pregunta de Article IV: "What execution history and checkpoints persist?".
+    introduced_in: CH-10
+    kind: component
+    ref: CMP-010
+
+  - term: SessionState
+    definition: >
+      La historia persistida de una sesión — qué RunId le pertenecen, desde qué SessionCheckpoint
+      puede reconstruirse, y su linaje opcional de ramificación — contrato canónico SessionState,
+      formalizado en CH-10 sobre C-020, el nombre que P-08/INV-12 ya usaban desde la primera versión
+      de la Constitution adoptada por este libro, sin contrato registrado hasta este capítulo. Nunca
+      sustituye a AgentState (C-003) como fuente de verdad de una ejecución en curso — INV-12 exige
+      que ambos permanezcan conceptualmente independientes.
+    introduced_in: CH-10
+    kind: contract
+    ref: C-020
+
+  - term: Session
+    definition: >
+      La historia continua de un agente, que puede abarcar múltiples AgentRun a lo largo del tiempo
+      — ya nombrada desde CH-00 (SessionId, embebido en AgentState/ExecutionContext), pero sin que
+      ningún contrato representara, hasta CH-10, su historia persistida como un todo distinto de
+      cualquier ejecución individual.
+    introduced_in: CH-10
+    kind: concept
+
+  - term: Checkpoint
+    definition: >
+      El punto persistido desde el cual una sesión puede reconstruirse — modelado como
+      SessionCheckpoint, un STRUCT embebido dentro de SessionState sin contrato C-XXX propio (mismo
+      patrón que ContextBlock, CH-04, o ExecutionUsage, CH-07). Cada checkpoint embebe una copia
+      inmutable de un AgentState ya producido, nunca una referencia mutable a la ejecución activa.
+    introduced_in: CH-10
+    kind: concept
+
+  - term: Branching
+    definition: >
+      La capacidad de que una sesión retome su historia desde un checkpoint que no es,
+      necesariamente, el último de su propia línea — abriendo una nueva rama en vez de continuar
+      linealmente. Modelada mediante SessionState.parentCheckpointId (Optional): NULL cuando no hubo
+      ninguna ramificación, poblado con el id del checkpoint de origen cuando sí la hubo.
+    introduced_in: CH-10
+    kind: concept
+
+  - term: Session Reconstruction
+    definition: >
+      El tramo determinístico, exigido literalmente por INV-13, en el que se reconstruye un
+      SessionState completo a partir, exclusivamente, de un SessionCheckpoint ya persistido — sin
+      necesitar ningún proceso en memoria que hubiera sobrevivido desde que ese checkpoint se creó.
+    introduced_in: CH-10
+    kind: concept

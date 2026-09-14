@@ -375,3 +375,57 @@ terms:
       la TUI"; HumanInteractionService (CH-06) es su primera materialización real en este libro.
     introduced_in: CH-06
     kind: concept
+
+  - term: ExecutionController
+    definition: >
+      Componente que evalúa si un AgentRun puede continuar operacionalmente contra su
+      ExecutionBudget — turnos, tool calls, tokens, costo, runtime y concurrencia — o si fue
+      cancelado explícitamente, produciendo una ExecutionDecision de tres resultados posibles
+      (continue/stop/cancelled) con el uso actual siempre trazable — sin decidir si otro turno de
+      razonamiento cognitivo debe ocurrir, sin ejecutar tools, sin evaluar policy y sin invocar al
+      modelo. Le da, por primera vez, cumplimiento real a ExecutionBudget (C-012), citado desde
+      CH-00 sin que ningún componente lo exigiera hasta este capítulo.
+    introduced_in: CH-07
+    kind: component
+    ref: CMP-007
+
+  - term: Execution Decision
+    definition: >
+      El resultado normalizado de que ExecutionController evalúe si un AgentRun puede continuar —
+      un outcome de tres estados (continue/stop/cancelled, nunca un Boolean), la razón estructurada
+      cuando se detiene por presupuesto, un HarnessError trazable (categoría BUDGET o
+      CANCELLATION) y el uso actual contra el que se evaluó — contrato canónico ExecutionDecision,
+      formalizado en CH-07 sobre C-017, el cuarto id verdaderamente nuevo del libro (no reservado
+      desde CH-01).
+    introduced_in: CH-07
+    kind: contract
+    ref: C-017
+
+  - term: Operational Continuation
+    definition: >
+      La pregunta "¿puede el run continuar operacionalmente?" (Article IV) — distinta de la
+      continuación cognitiva que AgentLoop posee ("¿debe ocurrir otro turno de razonamiento?"):
+      operational continuation mira los límites del ExecutionBudget y la cancelación explícita,
+      nunca si el modelo terminó de razonar. Responsabilidad exclusiva de ExecutionController.
+    introduced_in: CH-07
+    kind: concept
+
+  - term: Execution Usage
+    definition: >
+      El uso actual de un AgentRun contra las dimensiones de su ExecutionBudget que AgentState no
+      trackea (tool calls, tokens de entrada y salida, costo, runtime transcurrido y concurrencia
+      de tools en vuelo — AgentState solo trackea currentTurn). Modelado como ExecutionUsage, un
+      STRUCT embebido dentro de ExecutionDecision sin contrato C-XXX propio — el mismo patrón que
+      RawToolCallProposal (CH-03) o ContextBlock (CH-04).
+    introduced_in: CH-07
+    kind: concept
+
+  - term: Default Stop (Fail-Safe de Ejecución)
+    definition: >
+      La regla de diseño por la cual evaluateExecutionContinuation detiene la ejecución
+      (outcome = STOP o CANCELLED) en cuanto cualquier dimensión del ExecutionBudget se excede o
+      se solicitó cancelación explícita — nunca permite continuar "por si acaso" ni delega esa
+      decisión al modelo (Article IX, Budget Rule: "el modelo nunca es la única autoridad para
+      determinar cuándo debe detenerse una ejecución").
+    introduced_in: CH-07
+    kind: concept

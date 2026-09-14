@@ -3,7 +3,7 @@ digraph BookMindMap {
   size="6.5,9"; ratio=compress;
   node [fontname="Helvetica", fontsize=11, style=filled, target="_top"];
   edge [fontname="Helvetica", fontsize=9];
-  labelloc="t"; fontsize=14; fontname="Helvetica-Bold"; label="Mapa mental completo del libro";
+  labelloc="t"; fontsize=14; fontname="Helvetica-Bold"; label="Mapa mental hasta CH-07";
   "CH-00" [label="La Constitución Arquitectónica de un Arnés", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-00.html", style="filled,bold"];
   "C-001" [label="AgentMessage", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-00.html#C-001", style="filled"];
   "C-002" [label="AgentConfig", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-00.html#C-002", style="filled"];
@@ -53,12 +53,12 @@ digraph BookMindMap {
   "CMP-006" [label="HumanInteractionService", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-06.html#CMP-006", style="filled,rounded"];
   "CONCEPT-channel-adapter" [label="Channel Adapter", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-06.html#CONCEPT-channel-adapter", style="filled"];
   "CONCEPT-human-in-the-loop" [label="Human-in-the-loop", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-06.html#CONCEPT-human-in-the-loop", style="filled"];
-  "CH-07" [label="ExecutionController y los Límites Operacionales de una Ejecución", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-07.html", style="filled,bold"];
-  "C-017" [label="ExecutionDecision", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-07.html#C-017", style="filled"];
-  "CMP-007" [label="ExecutionController", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-07.html#CMP-007", style="filled,rounded"];
-  "CONCEPT-operational-continuation" [label="Operational Continuation", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-07.html#CONCEPT-operational-continuation", style="filled"];
-  "CONCEPT-execution-usage" [label="Execution Usage", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-07.html#CONCEPT-execution-usage", style="filled"];
-  "CONCEPT-default-stop-fail-safe-de-ejecucion" [label="Default Stop (Fail-Safe de Ejecución)", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-07.html#CONCEPT-default-stop-fail-safe-de-ejecucion", style="filled"];
+  "CH-07" [label="ExecutionController y los Límites Operacionales de una Ejecución", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-07.html", style="filled,bold", penwidth=3, color="#d62728"];
+  "C-017" [label="ExecutionDecision", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-07.html#C-017", style="filled,bold", penwidth=3, color="#d62728"];
+  "CMP-007" [label="ExecutionController", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-07.html#CMP-007", style="filled,rounded,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-operational-continuation" [label="Operational Continuation", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-07.html#CONCEPT-operational-continuation", style="filled,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-execution-usage" [label="Execution Usage", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-07.html#CONCEPT-execution-usage", style="filled,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-default-stop-fail-safe-de-ejecucion" [label="Default Stop (Fail-Safe de Ejecución)", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-07.html#CONCEPT-default-stop-fail-safe-de-ejecucion", style="filled,bold", penwidth=3, color="#d62728"];
   "CH-00" -> "C-001" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-002" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-003" [label="INTRODUCES", color="#2a5fa5", style="bold"];

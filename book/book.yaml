@@ -28,3 +28,5 @@ chapters:
     file: chapters/05-policy-engine/chapter.md
   - id: CH-06
     file: chapters/06-human-interaction-service/chapter.md
+  - id: CH-07
+    file: chapters/07-execution-controller/chapter.md

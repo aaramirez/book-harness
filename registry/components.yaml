@@ -39,6 +39,11 @@
 # CMP-006 HumanInteractionService, con ficha literal contra Article III (sección
 # "HumanInteractionService") y Article IV. Ver decisión de diseño en
 # planes/2026-09-14-capitulo-06-human-interaction-service.md.
+# CH-07 ("ExecutionController y los Límites Operacionales de una Ejecución") introduce el séptimo,
+# CMP-007 ExecutionController, con ficha literal contra Article III (sección
+# "ExecutionController") y Article IV, y le da, por primera vez, cumplimiento real a
+# ExecutionBudget (C-012, CH-00). Ver decisión de diseño en
+# planes/2026-09-14-capitulo-07-execution-controller.md.
 
 components:
   - id: CMP-001
@@ -193,3 +198,29 @@ components:
     produces: [C-010, C-011, C-015, C-016]
     introduced_in: CH-06
     constitutional_articles: [P-11, INV-14, INV-15, INV-18, INV-19, INV-20]
+
+  - id: CMP-007
+    name: ExecutionController
+    responsibility: >
+      Evaluar si un AgentRun puede continuar operacionalmente contra su ExecutionBudget —
+      turnos, tool calls, tokens, costo, runtime y concurrencia — o si fue cancelado
+      explícitamente, produciendo una ExecutionDecision determinística de tres resultados
+      posibles (continue/stop/cancelled) con el uso actual siempre trazable — sin decidir si
+      otro turno de razonamiento cognitivo debe ocurrir, sin ejecutar tools/side effects, sin
+      evaluar policy/autorización y sin invocar al modelo.
+    owns:
+      - "budgets"
+      - "cancellation"
+      - "deadlines"
+      - "runtime limits"
+      - "operational continuation"
+    does_not_own:
+      - "decidir si otro turno de razonamiento cognitivo debe ocurrir (AgentLoop, CMP-001, ya introducido en CH-01 — Article IV: \"AgentLoop → Should another reasoning turn occur?\"; distinción constitucional literal: ExecutionController decide si la ejecución PUEDE continuar operacionalmente frente a sus límites, AgentLoop decide si DEBE continuar cognitivamente — ninguna de las dos preguntas sustituye a la otra)"
+      - "ejecutar tools/side effects (ToolRuntime, CMP-002, ya introducido en CH-02)"
+      - "evaluar policy/autorización de una acción (PolicyEngine, CMP-005, ya introducido en CH-05)"
+      - "invocar al modelo seleccionado (ModelGateway, CMP-003, ya introducido en CH-03)"
+    dependencies: []
+    consumes: [C-003, C-004, C-012]
+    produces: [C-010, C-011, C-017]
+    introduced_in: CH-07
+    constitutional_articles: [P-10, INV-08, INV-09, INV-10, INV-18, INV-19, INV-20]

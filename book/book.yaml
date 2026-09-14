@@ -42,3 +42,5 @@ chapters:
     file: chapters/12-integracion-camino-feliz/chapter.md
   - id: CH-13
     file: chapters/13-integracion-caminos-de-gobierno/chapter.md
+  - id: CH-14
+    file: chapters/14-admission-controller/chapter.md

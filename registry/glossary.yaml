@@ -648,3 +648,66 @@ terms:
       Activation (CH-11), que parte de un agentId ya conocido y ya configurado.
     introduced_in: CH-11
     kind: concept
+
+  - term: AdmissionController
+    definition: >
+      Componente que aplica identity, authorization, tenant, capacity, rate, budget, deduplication
+      y policy decisions sobre un ActivationRequest ya normalizado, antes de que cualquier ruteo
+      hacia un agente concreto sea posible — produciendo un AdmissionDecision de dos resultados
+      (ADMIT/REJECT, nunca un Boolean) — sin resolver ni rutear hacia un AgentId concreto, sin
+      construir ningún AgentState y sin evaluar policy sobre ninguna acción ya resuelta. Primer
+      componente de este registry que no corresponde a ninguno de los once nombres de Article III
+      — pertenece al "Ingress & Activation Plane" de Amendment v1.1.
+    introduced_in: CH-14
+    kind: component
+    ref: CMP-012
+
+  - term: ActivationRequest
+    definition: >
+      El estímulo externo ya normalizado por un ingress adapter — de dónde vino (una referencia
+      opaca al canal), qué identidad externa lo reclama (todavía sin autorizar), qué se pide y
+      cuándo llegó — sin ningún agentId resuelto todavía. Contrato canónico ActivationRequest,
+      formalizado en CH-14 sobre C-022, el noveno id verdaderamente nuevo del libro. Deliberadamente
+      distinto de AgentActivationRequest (C-021, CH-11), que parte siempre de un agentId ya
+      conocido y ya registrado.
+    introduced_in: CH-14
+    kind: contract
+    ref: C-022
+
+  - term: AdmissionDecision
+    definition: >
+      El resultado normalizado de que AdmissionController evalúe un ActivationRequest — un outcome
+      de dos estados (ADMIT/REJECT, nunca un Boolean), la razón estructurada cuando se rechaza y la
+      correlación de vuelta con el ActivationRequest evaluado (nunca un AgentId resuelto) —
+      contrato canónico AdmissionDecision, formalizado en CH-14 sobre C-023, el décimo id
+      verdaderamente nuevo del libro.
+    introduced_in: CH-14
+    kind: contract
+    ref: C-023
+
+  - term: Admission
+    definition: >
+      La decisión de si un ActivationRequest ya normalizado puede proceder — evaluando identidad,
+      autorización, tenant, capacidad, rate, presupuesto, deduplicación y policy (Amendment v1.1,
+      P-17) — antes de que exista cualquier ruteo hacia un agente concreto o cualquier intento de
+      activación real. Responsabilidad exclusiva de AdmissionController; distinta de Policy
+      Evaluation (CH-05), que decide sobre una acción ya resuelta dentro de un run ya en curso.
+    introduced_in: CH-14
+    kind: concept
+
+  - term: Ingress Adapter
+    definition: >
+      La pieza de infraestructura de borde (un webhook handler, un consumidor de cola, un
+      disparador de cron, un endpoint de API) que normaliza un estímulo externo crudo hacia un
+      ActivationRequest, per Amendment v1.1 P-16 ("ingress mechanisms — not AgentLoop concerns").
+      Nunca un componente propio de este registry — mismo tratamiento que Channel Adapter (CH-06).
+    introduced_in: CH-14
+    kind: concept
+
+  - term: Routing (Amendment v1.1)
+    definition: >
+      La decisión, todavía sin componente propio en este registry, de a qué AgentId/AgentConfig
+      concreto corresponde un ActivationRequest ya admitido. P-17 la coloca explícitamente después
+      de la admisión ("...decisions before routing"); AdmissionController nunca la resuelve.
+    introduced_in: CH-14
+    kind: concept

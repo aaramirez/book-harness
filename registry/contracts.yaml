@@ -196,7 +196,7 @@ contracts:
           retryable: Boolean
           metadata: Map<Text, Value>
       END
-    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005, CMP-006, CMP-007, CMP-008]
+    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005, CMP-006, CMP-007, CMP-008, CMP-012]
     modified_by: []
     constitutional_impact: [INV-20]
 
@@ -431,3 +431,45 @@ contracts:
     used_by: [CMP-011]
     modified_by: []
     constitutional_impact: [P-06, P-10, INV-08, INV-09]
+
+  # C-022/C-023 (ActivationRequest/AdmissionDecision): noveno y décimo id verdaderamente NUEVO del
+  # libro (el correlativo continúa después de C-021, CH-11 — ningún id quedaba reservado desde
+  # CH-01 §7). Ver decisión de diseño en planes/2026-09-14-capitulo-14-admission-controller.md: el
+  # primer par solicitud/decisión de Amendment v1.1 (P-16/P-17) — el estímulo externo YA
+  # normalizado por un ingress adapter (infraestructura de borde, fuera de este registry), sin
+  # ningún agentId resuelto todavía, y el resultado determinístico (ADMIT/REJECT, nunca un
+  # Boolean) de evaluar identity/authorization/tenant/capacity/rate/budget/deduplication/policy
+  # (INV-E01/INV-E02) antes de que cualquier ruteo hacia un agente concreto sea siquiera posible.
+  # Deliberadamente distinto de AgentActivationRequest (C-021, CH-11), que parte SIEMPRE de un
+  # agentId ya conocido y ya registrado — CH-11 §6/§15 ya había anticipado y diferido esta
+  # distinción bajo el término de glosario "Ingress Activation".
+  - id: C-022
+    name: ActivationRequest
+    version: v1
+    introduced_in: CH-14
+    current_definition: |
+      STRUCT ActivationRequest
+          id: ActivationRequestId
+          sourceRef: Text
+          externalIdentityRef: Text
+          payload: Value
+          receivedAt: Timestamp
+      END
+    used_by: [CMP-012]
+    modified_by: []
+    constitutional_impact: [P-16, INV-E01]
+
+  - id: C-023
+    name: AdmissionDecision
+    version: v1
+    introduced_in: CH-14
+    current_definition: |
+      STRUCT AdmissionDecision
+          requestId: ActivationRequestId
+          outcome: AdmissionOutcome
+          reason: Optional<HarnessError>
+          decidedAt: Timestamp
+      END
+    used_by: [CMP-012]
+    modified_by: []
+    constitutional_impact: [P-17, INV-E02, INV-19, INV-20]

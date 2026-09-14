@@ -73,6 +73,17 @@
 # instancia real de un AgentState (C-003, CH-00) de un nuevo run y ejercita, por primera vez con
 # código real, la transición CREATED → INITIALIZING del diagrama de Article V. Ver decisión de
 # diseño en planes/2026-09-14-capitulo-11-agent-core.md.
+# CH-14 ("AdmissionController y la Admisión de una Activación Cruda") introduce el duodécimo
+# componente, CMP-012 AdmissionController — el primero de este registry que NO corresponde a
+# ninguno de los once nombres del árbol de Article III ("Agent Runtime"): pertenece al "Ingress &
+# Activation Plane" de Amendment v1.1, con ficha literal contra ese Amendment (P-17: "AdmissionController
+# MUST apply identity, authorization, tenant, capacity, rate, budget, deduplication and policy
+# decisions before routing"). Evalúa un ActivationRequest (C-022, el estímulo externo ya
+# normalizado, sin ningún agentId resuelto) y produce un AdmissionDecision (C-023, ADMIT/REJECT,
+# nunca un Boolean) — sin resolver ni rutear hacia un AgentId concreto, sin construir el
+# AgentState/AgentActivationRequest real de un agente (AgentCore, CMP-011, CH-11) y sin evaluar
+# policy sobre una ToolCall ya en curso (PolicyEngine, CMP-005, CH-05). Ver decisión de diseño en
+# planes/2026-09-14-capitulo-14-admission-controller.md.
 
 components:
   - id: CMP-001
@@ -354,3 +365,28 @@ components:
     produces: [C-003, C-004, C-010, C-011]
     introduced_in: CH-11
     constitutional_articles: [P-06, P-10, P-12, INV-01, INV-08, INV-09, INV-16, INV-18, INV-19, INV-20]
+
+  - id: CMP-012
+    name: AdmissionController
+    responsibility: >
+      Aplicar identity, authorization, tenant, capacity, rate, budget, deduplication y policy
+      decisions sobre un ActivationRequest ya normalizado, antes de que cualquier ruteo hacia un
+      agente concreto sea siquiera posible — produciendo un AdmissionDecision determinístico de
+      dos resultados posibles (ADMIT/REJECT, nunca un Boolean) — sin decidir a qué agente concreto
+      corresponde la activación, sin construir ningún AgentState y sin evaluar policy sobre
+      ninguna acción ya resuelta.
+    owns:
+      - "apply identity, authorization, tenant, capacity, rate, budget, deduplication and policy decisions before routing (cita literal, Amendment v1.1, P-17)"
+      - "decidir, con un outcome de dos valores (ADMIT/REJECT), si un ActivationRequest ya normalizado puede proceder"
+      - "rechazar por defecto (fail-closed) cuando ninguna regla de admisión concede acceso (Default Reject)"
+      - "correlacionar cada AdmissionDecision de vuelta con el ActivationRequest que la motivó (requestId)"
+    does_not_own:
+      - "normalizar el estímulo externo crudo en un ActivationRequest (Ingress Adapter — infraestructura de borde, Amendment v1.1 P-16, no un componente propio de este registry)"
+      - "resolver o rutear una activación admitida hacia un AgentId/AgentConfig concreto (Routing, Amendment v1.1 — P-17 la coloca explícitamente \"before routing\"; sin componente propio todavía en este registry)"
+      - "construir el AgentState/AgentActivationRequest real de un agente concreto (AgentCore, CMP-011, ya introducido en CH-11 — AdmissionController decide SI se puede proceder, AgentCore decide CÓMO nace el run)"
+      - "evaluar policy sobre una ToolCall ya en curso (PolicyEngine, CMP-005, ya introducido en CH-05 — distinto momento, distinta pregunta: \"¿puede esta activación empezar?\" vs. \"¿puede esta acción ejecutarse?\")"
+    dependencies: []
+    consumes: [C-022]
+    produces: [C-011, C-023]
+    introduced_in: CH-14
+    constitutional_articles: [P-16, P-17, P-25, INV-E01, INV-E02, INV-18, INV-19, INV-20]

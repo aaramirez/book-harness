@@ -26,6 +26,9 @@
 # CH-02 ("ToolRuntime y la Ejecución Controlada de una Tool Call") introduce el segundo, CMP-002
 # ToolRuntime, con ficha literal contra Article III (sección "ToolRuntime") y Article IV. Ver
 # decisión de diseño en planes/2026-09-13-capitulo-02-tool-runtime.md.
+# CH-03 ("ModelGateway y la Invocación Real del Modelo") introduce el tercero, CMP-003
+# ModelGateway, con ficha literal contra Article III (sección "ModelGateway") y Article IV. Ver
+# decisión de diseño en planes/2026-09-13-capitulo-03-model-gateway.md.
 
 components:
   - id: CMP-001
@@ -78,3 +81,28 @@ components:
     produces: [C-009, C-010, C-011]
     introduced_in: CH-02
     constitutional_articles: [P-03, P-04, P-05, P-12, P-13, INV-04, INV-05, INV-06, INV-07, INV-18, INV-19, INV-20]
+
+  - id: CMP-003
+    name: ModelGateway
+    responsibility: >
+      Seleccionar el provider de modelo correspondiente, adaptar los AgentMessage de un turno
+      (más los límites de generación relevantes) hacia el ModelRequest que ese provider espera,
+      invocar al modelo, soportar streaming y normalizar la respuesta cruda del provider hacia un
+      ModelResponse — sin decidir si otro turno de razonamiento debe ocurrir, sin ejecutar ninguna
+      tool call y sin resolver ninguna propuesta de acción hacia un ToolCall validado.
+    owns:
+      - "selección de provider"
+      - "adaptación de mensajes"
+      - "invocación del modelo"
+      - "streaming"
+      - "normalización de respuestas"
+    does_not_own:
+      - "decidir si otro turno de razonamiento debe ocurrir (AgentLoop, CMP-001, ya introducido en CH-01)"
+      - "ejecutar tools/side effects (ToolRuntime, CMP-002, ya introducido en CH-02)"
+      - "seleccionar/rankear/componer contexto (ContextEngine, Article III — no introducido en este capítulo, es un componente distinto)"
+      - "policy/autorización de una acción (PolicyEngine, Article IV — no introducido en este capítulo)"
+    dependencies: []
+    consumes: [C-001, C-004, C-006]
+    produces: [C-007, C-010, C-011]
+    introduced_in: CH-03
+    constitutional_articles: [P-01, P-02, P-10, P-12, P-13, INV-01, INV-02, INV-03, INV-18, INV-19, INV-20]

@@ -31,7 +31,7 @@ contracts:
           content: Value
           timestamp: Timestamp
       END
-    used_by: []
+    used_by: [CMP-003]
     modified_by: []
     constitutional_impact: [P-02, INV-02]
 
@@ -76,15 +76,46 @@ contracts:
           traceId: TraceId
           budget: ExecutionBudget
       END
-    used_by: [CMP-001, CMP-002]
+    used_by: [CMP-001, CMP-002, CMP-003]
     modified_by: []
     constitutional_impact: [P-01, P-14]
 
-  # C-005..C-007 (no C-008/C-009): esos tres ids siguen reservados por convención editorial para
-  # ContextSnapshot/ModelRequest/ModelResponse (ver reference/md/REGLAS_LIBRO_AGENT_HARNESS(1).md
-  # §10, ejemplo de numeración) — llegarán con ModelGateway/ContextEngine en un capítulo posterior.
-  # C-008/C-009 (ToolCall/ToolResult), también reservados desde CH-01, ya se asignaron en CH-02
-  # (ver decisión de diseño en planes/2026-09-13-capitulo-02-tool-runtime.md).
+  # C-005 (ContextSnapshot): el único id que sigue reservado por convención editorial (ver
+  # reference/md/REGLAS_LIBRO_AGENT_HARNESS(1).md §10, ejemplo de numeración) — llega junto con
+  # ContextEngine en un capítulo posterior. C-006/C-007 (ModelRequest/ModelResponse), reservados
+  # desde CH-01, ya se asignaron en CH-03 (ver decisión de diseño en
+  # planes/2026-09-13-capitulo-03-model-gateway.md). C-008/C-009 (ToolCall/ToolResult), también
+  # reservados desde CH-01, ya se asignaron en CH-02 (ver decisión de diseño en
+  # planes/2026-09-13-capitulo-02-tool-runtime.md).
+  - id: C-006
+    name: ModelRequest
+    version: v1
+    introduced_in: CH-03
+    current_definition: |
+      STRUCT ModelRequest
+          messages: List<AgentMessage>
+          budget: ExecutionBudget
+          requestedAt: Timestamp
+      END
+    used_by: [CMP-003]
+    modified_by: []
+    constitutional_impact: [P-01, P-02, INV-02]
+
+  - id: C-007
+    name: ModelResponse
+    version: v1
+    introduced_in: CH-03
+    current_definition: |
+      STRUCT ModelResponse
+          finished: Boolean
+          content: Optional<Value>
+          proposedToolCall: Optional<RawToolCallProposal>
+          producedAt: Timestamp
+      END
+    used_by: [CMP-003]
+    modified_by: []
+    constitutional_impact: [P-10, P-13, INV-03]
+
   - id: C-008
     name: ToolCall
     version: v1
@@ -131,7 +162,7 @@ contracts:
           traceId: TraceId
           payload: Value
       END
-    used_by: [CMP-001, CMP-002]
+    used_by: [CMP-001, CMP-002, CMP-003]
     modified_by: []
     constitutional_impact: [P-04, INV-18, INV-19]
 
@@ -148,7 +179,7 @@ contracts:
           retryable: Boolean
           metadata: Map<Text, Value>
       END
-    used_by: [CMP-001, CMP-002]
+    used_by: [CMP-001, CMP-002, CMP-003]
     modified_by: []
     constitutional_impact: [INV-20]
 
@@ -170,11 +201,12 @@ contracts:
     modified_by: []
     constitutional_impact: [P-10, INV-09]
 
-  # C-013 (no C-005..C-007): esos tres ids siguen reservados (ver comentario junto a C-004 arriba)
-  # para ContextSnapshot/ModelRequest/ModelResponse — llegarán con ModelGateway/ContextEngine en un
-  # capítulo posterior. C-008/C-009 (ToolCall/ToolResult), reservados en CH-01, ya se asignaron en
-  # CH-02. Ver decisión de diseño en planes/2026-09-13-capitulo-01-agent-loop.md y
-  # planes/2026-09-13-capitulo-02-tool-runtime.md.
+  # C-013 (no C-005): ese id sigue reservado (ver comentario junto a C-004 arriba) para
+  # ContextSnapshot — llega con ContextEngine en un capítulo posterior. C-006/C-007
+  # (ModelRequest/ModelResponse), reservados desde CH-01, ya se asignaron en CH-03. C-008/C-009
+  # (ToolCall/ToolResult), reservados en CH-01, ya se asignaron en CH-02. Ver decisión de diseño en
+  # planes/2026-09-13-capitulo-01-agent-loop.md, planes/2026-09-13-capitulo-02-tool-runtime.md y
+  # planes/2026-09-13-capitulo-03-model-gateway.md.
   - id: C-013
     name: AgentRunStatus
     version: v1

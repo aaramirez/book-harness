@@ -3,7 +3,7 @@ digraph BookMindMap {
   size="6.5,9"; ratio=compress;
   node [fontname="Helvetica", fontsize=11, style=filled, target="_top"];
   edge [fontname="Helvetica", fontsize=9];
-  labelloc="t"; fontsize=14; fontname="Helvetica-Bold"; label="Mapa mental completo del libro";
+  labelloc="t"; fontsize=14; fontname="Helvetica-Bold"; label="Mapa mental hasta CH-03";
   "CH-00" [label="La Constitución Arquitectónica de un Arnés", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-00.html", style="filled,bold"];
   "C-001" [label="AgentMessage", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-00.html#C-001", style="filled"];
   "C-002" [label="AgentConfig", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-00.html#C-002", style="filled"];
@@ -29,12 +29,12 @@ digraph BookMindMap {
   "CMP-002" [label="ToolRuntime", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-02.html#CMP-002", style="filled,rounded"];
   "CONCEPT-capability" [label="Capability", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-02.html#CONCEPT-capability", style="filled"];
   "CONCEPT-extension-point" [label="Extension Point", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-02.html#CONCEPT-extension-point", style="filled"];
-  "CH-03" [label="ModelGateway y la Invocación Real del Modelo", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-03.html", style="filled,bold"];
-  "C-006" [label="ModelRequest", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-03.html#C-006", style="filled"];
-  "C-007" [label="ModelResponse", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-03.html#C-007", style="filled"];
-  "CMP-003" [label="ModelGateway", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-03.html#CMP-003", style="filled,rounded"];
-  "CONCEPT-raw-tool-call-proposal" [label="Raw Tool Call Proposal", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-03.html#CONCEPT-raw-tool-call-proposal", style="filled"];
-  "CONCEPT-provider-adapter" [label="Provider Adapter", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-03.html#CONCEPT-provider-adapter", style="filled"];
+  "CH-03" [label="ModelGateway y la Invocación Real del Modelo", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-03.html", style="filled,bold", penwidth=3, color="#d62728"];
+  "C-006" [label="ModelRequest", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-03.html#C-006", style="filled,bold", penwidth=3, color="#d62728"];
+  "C-007" [label="ModelResponse", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-03.html#C-007", style="filled,bold", penwidth=3, color="#d62728"];
+  "CMP-003" [label="ModelGateway", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-03.html#CMP-003", style="filled,rounded,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-raw-tool-call-proposal" [label="Raw Tool Call Proposal", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-03.html#CONCEPT-raw-tool-call-proposal", style="filled,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-provider-adapter" [label="Provider Adapter", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-03.html#CONCEPT-provider-adapter", style="filled,bold", penwidth=3, color="#d62728"];
   "CH-00" -> "C-001" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-002" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-003" [label="INTRODUCES", color="#2a5fa5", style="bold"];

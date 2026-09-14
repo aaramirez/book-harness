@@ -184,3 +184,51 @@ terms:
       propio todavía.
     introduced_in: CH-02
     kind: concept
+
+  - term: ModelGateway
+    definition: >
+      Componente que selecciona el provider de modelo correspondiente, adapta los AgentMessage de
+      un turno hacia el ModelRequest que ese provider espera, invoca al modelo y normaliza su
+      respuesta cruda hacia un ModelResponse — sin decidir si otro turno debe ocurrir, sin
+      ejecutar tool calls y sin resolver ninguna propuesta de acción hacia un ToolCall validado.
+    introduced_in: CH-03
+    kind: component
+    ref: CMP-003
+
+  - term: Model Request
+    definition: >
+      La forma empaquetada e independiente de proveedor que transporta los AgentMessage de un
+      turno más los límites de generación relevantes (ExecutionBudget) — contrato canónico
+      ModelRequest, formalizado como contrato registrado en CH-03, sobre uno de los tres ids que
+      CH-01 dejó reservados.
+    introduced_in: CH-03
+    kind: contract
+    ref: C-006
+
+  - term: Model Response
+    definition: >
+      El resultado normalizado de invocar al modelo — texto final o una propuesta cruda de tool
+      call — contrato canónico ModelResponse, formalizado como contrato registrado en CH-03, sobre
+      uno de los tres ids que CH-01 dejó reservados.
+    introduced_in: CH-03
+    kind: contract
+    ref: C-007
+
+  - term: Raw Tool Call Proposal
+    definition: >
+      La forma en la que ModelResponse representa que el modelo propuso usar una herramienta —
+      nombre de capacidad y argumentos, sin resolver ni validar — para no invadir la
+      responsabilidad de resolución/validación que Article III asigna a ToolRuntime y
+      CapabilityRegistry. Modelada como RawToolCallProposal, un STRUCT embebido dentro de
+      ModelResponse sin contrato C-XXX propio.
+    introduced_in: CH-03
+    kind: concept
+
+  - term: Provider Adapter
+    definition: >
+      La pieza (preview conceptual, no implementada todavía) que traduciría un ModelRequest hacia
+      el payload específico de un proveedor concreto (OpenAI, Anthropic, Gemini, un modelo local) y
+      su respuesta de vuelta hacia un ModelResponse — la materialización concreta de P-02 ("the
+      model is replaceable").
+    introduced_in: CH-03
+    kind: concept

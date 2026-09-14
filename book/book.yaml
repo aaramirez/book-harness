@@ -20,3 +20,5 @@ chapters:
     file: chapters/01-agent-loop/chapter.md
   - id: CH-02
     file: chapters/02-tool-runtime/chapter.md
+  - id: CH-03
+    file: chapters/03-model-gateway/chapter.md

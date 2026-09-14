@@ -36,3 +36,5 @@ chapters:
     file: chapters/09-event-bus/chapter.md
   - id: CH-10
     file: chapters/10-session-manager/chapter.md
+  - id: CH-11
+    file: chapters/11-agent-core/chapter.md

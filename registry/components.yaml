@@ -64,6 +64,15 @@
 # SessionState (C-020) que P-08/INV-12 ya nombraban desde CH-00 sin definición registrada. De los
 # once nombres de Article III, solo AgentCore sigue preview después de este capítulo. Ver decisión
 # de diseño en planes/2026-09-14-capitulo-10-session-manager.md.
+# CH-11 ("AgentCore y el Nacimiento de un AgentState") introduce el undécimo y último componente
+# de Article III, CMP-011 AgentCore, con ficha literal contra Article III (sección "AgentCore") —
+# el segundo componente real del libro sin fila propia en la tabla de Decision Ownership de
+# Article IV (después de EventBus, CH-09), por una razón distinta: su decisión (validar y activar
+# un agente) ocurre antes de que exista ningún AgentRun sobre el cual las preguntas de Article IV
+# puedan aplicarse. Valida un AgentConfig (C-002, CH-00) ya registrado, instancia la primera
+# instancia real de un AgentState (C-003, CH-00) de un nuevo run y ejercita, por primera vez con
+# código real, la transición CREATED → INITIALIZING del diagrama de Article V. Ver decisión de
+# diseño en planes/2026-09-14-capitulo-11-agent-core.md.
 
 components:
   - id: CMP-001
@@ -319,3 +328,29 @@ components:
     produces: [C-010, C-011, C-020]
     introduced_in: CH-10
     constitutional_articles: [P-04, P-08, P-23, INV-12, INV-13, INV-18, INV-19, INV-20]
+
+  - id: CMP-011
+    name: AgentCore
+    responsibility: >
+      Representar la identidad de un agente — independiente de cualquier run o sesión particular
+      —, validar su AgentConfig antes de que arranque cualquier ejecución, e instanciar el
+      AgentState inicial de un nuevo run: asignar su runId, decidir su sessionId y producir la
+      primera transición formal de Article V (CREATED → INITIALIZING) — sin decidir nada de lo que
+      ocurre una vez que ese run ya está RUNNING.
+    owns:
+      - "representar y coordinar las primitives fundamentales del agente"
+      - "representar la identidad/definición del agente, independiente de cualquier run o sesión particular"
+      - "validar un AgentConfig antes de que arranque cualquier ejecución"
+      - "instanciar el AgentState inicial de un nuevo run (asignar runId, decidir sessionId)"
+      - "la transición CREATED → INITIALIZING (Article V)"
+    does_not_own:
+      - "UI (cita literal Article III — INV-16)"
+      - "persistencia específica (cita literal Article III — SessionManager, CMP-010, ya introducido en CH-10, posee la persistencia durable de la historia de una sesión)"
+      - "proveedores (cita literal Article III — ModelGateway, CMP-003, ya introducido en CH-03, posee selección/invocación de provider — INV-01)"
+      - "business integrations (cita literal Article III — sin componente propio todavía en este registry; fuera de alcance genérico de BH-v0.1)"
+      - "decidir si otro turno de razonamiento debe ocurrir una vez que el run ya está RUNNING (AgentLoop, CMP-001, ya introducido en CH-01 — AgentCore entrega el testigo a AgentLoop después de INITIALIZING, nunca compite con él)"
+    dependencies: []
+    consumes: [C-002, C-012, C-021]
+    produces: [C-003, C-004, C-010, C-011]
+    introduced_in: CH-11
+    constitutional_articles: [P-06, P-10, P-12, INV-01, INV-08, INV-09, INV-16, INV-18, INV-19, INV-20]

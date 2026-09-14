@@ -45,7 +45,7 @@ contracts:
           name: Text
           budget: ExecutionBudget
       END
-    used_by: [CMP-001]
+    used_by: [CMP-001, CMP-011]
     modified_by: []
     constitutional_impact: [P-06]
 
@@ -61,7 +61,7 @@ contracts:
           status: AgentRunStatus
           currentTurn: Integer
       END
-    used_by: [CMP-001, CMP-004, CMP-007, CMP-010]
+    used_by: [CMP-001, CMP-004, CMP-007, CMP-010, CMP-011]
     modified_by: []
     constitutional_impact: [P-08, P-10, INV-12]
 
@@ -76,7 +76,7 @@ contracts:
           traceId: TraceId
           budget: ExecutionBudget
       END
-    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005, CMP-006, CMP-007, CMP-008, CMP-010]
+    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005, CMP-006, CMP-007, CMP-008, CMP-010, CMP-011]
     modified_by: []
     constitutional_impact: [P-01, P-14]
 
@@ -214,7 +214,7 @@ contracts:
           maxRuntimeMs: Integer
           maxConcurrentTools: Integer
       END
-    used_by: [CMP-007]
+    used_by: [CMP-007, CMP-011]
     modified_by: []
     constitutional_impact: [P-10, INV-09]
 
@@ -407,3 +407,27 @@ contracts:
     used_by: [CMP-010]
     modified_by: []
     constitutional_impact: [P-08, P-23, INV-12, INV-13]
+
+  # C-021 (AgentActivationRequest): octavo id verdaderamente NUEVO del libro (el correlativo
+  # continúa después de C-020, CH-10 — ningún id quedaba reservado desde CH-01 §7). Ver decisión
+  # de diseño en planes/2026-09-14-capitulo-11-agent-core.md: la solicitud de activar un run de un
+  # agente ya configurado (agentId + AgentConfig ya registrado) — deliberadamente NO el mismo
+  # concepto que ActivationRequest (Amendment v1.1, P-16/P-17), que normaliza un estímulo EXTERNO
+  # crudo antes de que exista siquiera un agentId resuelto, evaluado por un AdmissionController
+  # (Ingress & Activation Plane, Enterprise, fuera de alcance de BH-v0.1). Procesar este contrato
+  # (activateAgent, CMP-011) produce, por primera vez con pseudocódigo real, la primera instancia
+  # de un AgentState (C-003, CH-00) — status = CREATED, luego INITIALIZING.
+  - id: C-021
+    name: AgentActivationRequest
+    version: v1
+    introduced_in: CH-11
+    current_definition: |
+      STRUCT AgentActivationRequest
+          agentId: AgentId
+          sessionId: Optional<SessionId>
+          input: Value
+          requestedAt: Timestamp
+      END
+    used_by: [CMP-011]
+    modified_by: []
+    constitutional_impact: [P-06, P-10, INV-08, INV-09]

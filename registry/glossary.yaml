@@ -582,3 +582,69 @@ terms:
       necesitar ningún proceso en memoria que hubiera sobrevivido desde que ese checkpoint se creó.
     introduced_in: CH-10
     kind: concept
+
+  - term: AgentCore
+    definition: >
+      Componente que representa la identidad de un agente — independiente de cualquier run o
+      sesión particular —, valida su AgentConfig antes de que arranque cualquier ejecución, e
+      instancia el AgentState inicial de un nuevo run: asigna su runId, decide su sessionId y
+      produce la primera transición formal de Article V (CREATED → INITIALIZING) — sin poseer UI,
+      persistencia específica, proveedores, business integrations, ni decidir continuación de
+      turno una vez que el run ya está RUNNING. Undécimo y último componente de Article III; como
+      EventBus (CH-09), sin fila propia en la tabla de Decision Ownership de Article IV, por una
+      razón distinta: su decisión ocurre antes de que exista ningún AgentRun.
+    introduced_in: CH-11
+    kind: component
+    ref: CMP-011
+
+  - term: AgentActivationRequest
+    definition: >
+      La solicitud de activar un run de un agente ya configurado — agentId, un sessionId opcional
+      (NULL si es una sesión nueva), el input/objetivo inicial y cuándo se solicitó — contrato
+      canónico AgentActivationRequest, formalizado en CH-11 sobre C-021, el octavo id
+      verdaderamente nuevo del libro. Deliberadamente distinto de ActivationRequest (Amendment
+      v1.1, P-16), que normaliza un estímulo externo crudo antes de que exista un agentId
+      resuelto — ver Ingress Activation.
+    introduced_in: CH-11
+    kind: contract
+    ref: C-021
+
+  - term: Agent Identity
+    definition: >
+      Lo que un agente es, independientemente de cualquier run o sesión particular — la
+      referencia estable (AgentId) y la configuración declarativa (AgentConfig) que lo describen
+      antes de que exista ninguna ejecución concreta. Una tercera capa, conceptualmente anterior a
+      AgentState (el presente operativo de UNA ejecución) y a SessionState (la historia persistida
+      de UNA sesión), que AgentCore es el primer componente en validar con código real.
+    introduced_in: CH-11
+    kind: concept
+
+  - term: Agent Activation
+    definition: >
+      El acto de admitir que un agente configurado (AgentConfig ya existente y válido) empiece a
+      existir como una ejecución concreta — produciendo el primer AgentState de un nuevo runId,
+      con status = CREATED. Nunca decide si esa ejecución debe continuar después de arrancar; eso
+      pertenece, desde CH-01, a AgentLoop.
+    introduced_in: CH-11
+    kind: concept
+
+  - term: Agent Initialization
+    definition: >
+      La transición formal CREATED → INITIALIZING del diagrama de Article V — el instante en el
+      que un run, ya activado, empieza a prepararse para correr (construyendo su primer
+      ExecutionContext real) sin que todavía se haya invocado ningún turno de razonamiento.
+      Documentada en prosa desde CH-01 §12; ejercitada con pseudocódigo real por primera vez en
+      CH-11.
+    introduced_in: CH-11
+    kind: concept
+
+  - term: Ingress Activation
+    definition: >
+      El concepto de Amendment v1.1 (P-16/P-17): normalizar un estímulo externo (un prompt, un
+      webhook, una cola, un evento de otro sistema) hacia un ActivationRequest, evaluado por un
+      AdmissionController (identidad, autorización, tenant, capacidad, rate, presupuesto,
+      deduplicación, policy) antes de que exista siquiera un agentId resuelto — Ingress &
+      Activation Plane, Enterprise, fuera de alcance de BH-v0.1. Deliberadamente distinto de Agent
+      Activation (CH-11), que parte de un agentId ya conocido y ya configurado.
+    introduced_in: CH-11
+    kind: concept

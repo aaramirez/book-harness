@@ -76,7 +76,7 @@ contracts:
           traceId: TraceId
           budget: ExecutionBudget
       END
-    used_by: [CMP-001, CMP-002, CMP-003, CMP-004]
+    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005]
     modified_by: []
     constitutional_impact: [P-01, P-14]
 
@@ -144,7 +144,7 @@ contracts:
           arguments: Map<Text, Value>
           requestedAt: Timestamp
       END
-    used_by: [CMP-002]
+    used_by: [CMP-002, CMP-005]
     modified_by: []
     constitutional_impact: [P-03, INV-04, INV-05]
 
@@ -179,7 +179,7 @@ contracts:
           traceId: TraceId
           payload: Value
       END
-    used_by: [CMP-001, CMP-002, CMP-003, CMP-004]
+    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005]
     modified_by: []
     constitutional_impact: [P-04, INV-18, INV-19]
 
@@ -196,7 +196,7 @@ contracts:
           retryable: Boolean
           metadata: Map<Text, Value>
       END
-    used_by: [CMP-001, CMP-002, CMP-003, CMP-004]
+    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005]
     modified_by: []
     constitutional_impact: [INV-20]
 
@@ -245,3 +245,25 @@ contracts:
     used_by: [CMP-001]
     modified_by: []
     constitutional_impact: [P-10, INV-08, INV-09]
+
+  # C-014 (PolicyDecision): primer id verdaderamente NUEVO del libro — a diferencia de C-005..C-013,
+  # que ya estaban reservados desde CH-01 §7, ningún capítulo anterior reservó C-014. Ver decisión de
+  # diseño en planes/2026-09-14-capitulo-05-policy-engine.md: el resultado normalizado de que
+  # PolicyEngine evalúe un ToolCall ya resuelto (CH-02), con un resultado de tres estados
+  # (allow/deny/require_approval, nunca un Boolean) y trazabilidad explícita hacia la policy rule
+  # que motivó la decisión (INV-19).
+  - id: C-014
+    name: PolicyDecision
+    version: v1
+    introduced_in: CH-05
+    current_definition: |
+      STRUCT PolicyDecision
+          callId: ToolCallId
+          outcome: PolicyOutcome
+          policyRuleId: Text
+          reason: Optional<HarnessError>
+          decidedAt: Timestamp
+      END
+    used_by: [CMP-005]
+    modified_by: []
+    constitutional_impact: [P-05, P-13, INV-06, INV-15, INV-19]

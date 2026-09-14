@@ -276,3 +276,52 @@ terms:
       selección concreta.
     introduced_in: CH-04
     kind: concept
+
+  - term: PolicyEngine
+    definition: >
+      Componente que evalúa si una acción ya resuelta (ToolCall) puede ocurrir, produciendo una
+      PolicyDecision de tres resultados posibles — allow, deny o require_approval — con la regla
+      aplicable y el ToolCall evaluado siempre trazables, y que deniega por defecto (fail-closed)
+      cuando ninguna policy rule le aplica — sin ejecutar la acción, sin invocar al modelo, sin
+      seleccionar contexto, sin decidir continuación del turno y sin resolver ella misma la
+      aprobación humana que puede exigir.
+    introduced_in: CH-05
+    kind: component
+    ref: CMP-005
+
+  - term: Policy Decision
+    definition: >
+      El resultado normalizado de que PolicyEngine evalúe un ToolCall — un outcome de tres
+      estados (allow/deny/require_approval, nunca un Boolean), la policy rule que lo motivó y,
+      cuando el resultado es deny, un HarnessError (categoría POLICY) explicando por qué —
+      contrato canónico PolicyDecision, formalizado en CH-05 sobre C-014, el primer id
+      verdaderamente nuevo del libro (no reservado desde CH-01).
+    introduced_in: CH-05
+    kind: contract
+    ref: C-014
+
+  - term: Policy Evaluation
+    definition: >
+      El tramo determinístico, exigido por INV-06 y P-05, en el que PolicyEngine decide si una
+      acción ya resuelta puede ocurrir — antes de que ToolRuntime (CH-02) llegue a coordinar su
+      ejecución. Nunca depende del modelo como fuente de autorización (P-13).
+    introduced_in: CH-05
+    kind: concept
+
+  - term: Approval Requirement
+    definition: >
+      El tercer resultado posible de una PolicyDecision (require_approval), distinto de allow y
+      de deny: la acción no está prohibida, pero tampoco puede ejecutarse todavía — necesita que
+      un humano la resuelva primero (INV-15). PolicyEngine solo puede expresar este resultado;
+      resolverlo pertenece a HumanInteractionService (preview, no introducido en este capítulo).
+    introduced_in: CH-05
+    kind: concept
+
+  - term: Default Deny
+    definition: >
+      La regla de diseño (fail-closed) por la cual PolicyEngine responde con outcome = deny
+      cuando ninguna policy rule conocida aplica a un ToolCall, en vez de permitir la acción por
+      defecto o lanzar una excepción sin clasificar — la ausencia de una regla aplicable nunca se
+      interpreta como autorización implícita.
+    introduced_in: CH-05
+    kind: concept

@@ -24,3 +24,5 @@ chapters:
     file: chapters/03-model-gateway/chapter.md
   - id: CH-04
     file: chapters/04-context-engine/chapter.md
+  - id: CH-05
+    file: chapters/05-policy-engine/chapter.md

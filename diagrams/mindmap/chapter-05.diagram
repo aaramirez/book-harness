@@ -3,7 +3,7 @@ digraph BookMindMap {
   size="6.5,9"; ratio=compress;
   node [fontname="Helvetica", fontsize=11, style=filled, target="_top"];
   edge [fontname="Helvetica", fontsize=9];
-  labelloc="t"; fontsize=14; fontname="Helvetica-Bold"; label="Mapa mental completo del libro";
+  labelloc="t"; fontsize=14; fontname="Helvetica-Bold"; label="Mapa mental hasta CH-05";
   "CH-00" [label="La Constitución Arquitectónica de un Arnés", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-00.html", style="filled,bold"];
   "C-001" [label="AgentMessage", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-00.html#C-001", style="filled"];
   "C-002" [label="AgentConfig", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-00.html#C-002", style="filled"];
@@ -41,12 +41,12 @@ digraph BookMindMap {
   "CONCEPT-context-block" [label="Context Block", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-04.html#CONCEPT-context-block", style="filled"];
   "CONCEPT-provenance" [label="Provenance", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-04.html#CONCEPT-provenance", style="filled"];
   "CONCEPT-context-budget" [label="Context Budget", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-04.html#CONCEPT-context-budget", style="filled"];
-  "CH-05" [label="PolicyEngine y la Frontera de Autorización", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-05.html", style="filled,bold"];
-  "C-014" [label="PolicyDecision", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-05.html#C-014", style="filled"];
-  "CMP-005" [label="PolicyEngine", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-05.html#CMP-005", style="filled,rounded"];
-  "CONCEPT-policy-evaluation" [label="Policy Evaluation", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-05.html#CONCEPT-policy-evaluation", style="filled"];
-  "CONCEPT-approval-requirement" [label="Approval Requirement", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-05.html#CONCEPT-approval-requirement", style="filled"];
-  "CONCEPT-default-deny" [label="Default Deny", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-05.html#CONCEPT-default-deny", style="filled"];
+  "CH-05" [label="PolicyEngine y la Frontera de Autorización", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-05.html", style="filled,bold", penwidth=3, color="#d62728"];
+  "C-014" [label="PolicyDecision", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-05.html#C-014", style="filled,bold", penwidth=3, color="#d62728"];
+  "CMP-005" [label="PolicyEngine", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-05.html#CMP-005", style="filled,rounded,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-policy-evaluation" [label="Policy Evaluation", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-05.html#CONCEPT-policy-evaluation", style="filled,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-approval-requirement" [label="Approval Requirement", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-05.html#CONCEPT-approval-requirement", style="filled,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-default-deny" [label="Default Deny", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-05.html#CONCEPT-default-deny", style="filled,bold", penwidth=3, color="#d62728"];
   "CH-00" -> "C-001" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-002" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-003" [label="INTRODUCES", color="#2a5fa5", style="bold"];

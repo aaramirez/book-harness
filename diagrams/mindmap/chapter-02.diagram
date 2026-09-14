@@ -3,7 +3,7 @@ digraph BookMindMap {
   size="6.5,9"; ratio=compress;
   node [fontname="Helvetica", fontsize=11, style=filled, target="_top"];
   edge [fontname="Helvetica", fontsize=9];
-  labelloc="t"; fontsize=14; fontname="Helvetica-Bold"; label="Mapa mental completo del libro";
+  labelloc="t"; fontsize=14; fontname="Helvetica-Bold"; label="Mapa mental hasta CH-02";
   "CH-00" [label="La Constitución Arquitectónica de un Arnés", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-00.html", style="filled,bold"];
   "C-001" [label="AgentMessage", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-00.html#C-001", style="filled"];
   "C-002" [label="AgentConfig", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-00.html#C-002", style="filled"];
@@ -23,12 +23,12 @@ digraph BookMindMap {
   "CONCEPT-turn" [label="Turn", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-01.html#CONCEPT-turn", style="filled"];
   "CONCEPT-agent-run" [label="Agent Run", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-01.html#CONCEPT-agent-run", style="filled"];
   "CONCEPT-decision-ownership" [label="Decision Ownership", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-01.html#CONCEPT-decision-ownership", style="filled"];
-  "CH-02" [label="ToolRuntime y la Ejecución Controlada de una Tool Call", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-02.html", style="filled,bold"];
-  "C-008" [label="ToolCall", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-02.html#C-008", style="filled"];
-  "C-009" [label="ToolResult", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-02.html#C-009", style="filled"];
-  "CMP-002" [label="ToolRuntime", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-02.html#CMP-002", style="filled,rounded"];
-  "CONCEPT-capability" [label="Capability", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-02.html#CONCEPT-capability", style="filled"];
-  "CONCEPT-extension-point" [label="Extension Point", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-02.html#CONCEPT-extension-point", style="filled"];
+  "CH-02" [label="ToolRuntime y la Ejecución Controlada de una Tool Call", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-02.html", style="filled,bold", penwidth=3, color="#d62728"];
+  "C-008" [label="ToolCall", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-02.html#C-008", style="filled,bold", penwidth=3, color="#d62728"];
+  "C-009" [label="ToolResult", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-02.html#C-009", style="filled,bold", penwidth=3, color="#d62728"];
+  "CMP-002" [label="ToolRuntime", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-02.html#CMP-002", style="filled,rounded,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-capability" [label="Capability", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-02.html#CONCEPT-capability", style="filled,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-extension-point" [label="Extension Point", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-02.html#CONCEPT-extension-point", style="filled,bold", penwidth=3, color="#d62728"];
   "CH-00" -> "C-001" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-002" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-003" [label="INTRODUCES", color="#2a5fa5", style="bold"];

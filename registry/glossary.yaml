@@ -139,3 +139,48 @@ terms:
       (PolicyEngine).
     introduced_in: CH-01
     kind: concept
+
+  - term: ToolRuntime
+    definition: >
+      Componente que resuelve la capability solicitada por un ToolCall, valida su input contra el
+      schema declarado, ejecuta los hooks de extensión beforeToolCall/afterToolCall y coordina la
+      ejecución de la acción aprobada, devolviendo un ToolResult normalizado — sin decidir
+      autorización, aprobación humana, enforcement de presupuesto ni qué implementación satisface
+      la capability.
+    introduced_in: CH-02
+    kind: component
+    ref: CMP-002
+
+  - term: Tool Call
+    definition: >
+      La intención, ya resuelta, de invocar una capability con un input concreto — contrato
+      canónico ToolCall, citado por nombre en INV-04/INV-05 desde la primera versión de la
+      Constitution, formalizado como contrato registrado en CH-02.
+    introduced_in: CH-02
+    kind: contract
+    ref: C-008
+
+  - term: Tool Result
+    definition: >
+      El resultado normalizado de ejecutar un ToolCall — éxito u error, nunca una excepción cruda
+      — contrato canónico ToolResult, citado por nombre en INV-07, formalizado como contrato
+      registrado en CH-02.
+    introduced_in: CH-02
+    kind: contract
+    ref: C-009
+
+  - term: Capability
+    definition: >
+      Abstracción (Article III) que desacopla la intención de una acción, nombrada en un ToolCall,
+      de la implementación concreta que la satisface. Su registro y resolución real pertenecen a
+      CapabilityRegistry (preview, no introducido todavía).
+    introduced_in: CH-02
+    kind: concept
+
+  - term: Extension Point
+    definition: >
+      Punto definido del ciclo de ejecución (beforeToolCall/afterToolCall) donde un hook puede
+      intervenir (P-12) — modelado como invocación directa, sin un registro de hooks con contrato
+      propio todavía.
+    introduced_in: CH-02
+    kind: concept

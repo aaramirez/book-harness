@@ -23,6 +23,9 @@
 # del libro, CMP-001 AgentLoop, con ficha literal contra constitution/ARCHITECTURE_CONSTITUTION.md
 # Article III (sección "AgentLoop") y Article IV (Decision Ownership). Ver decisión de diseño en
 # planes/2026-09-13-capitulo-01-agent-loop.md.
+# CH-02 ("ToolRuntime y la Ejecución Controlada de una Tool Call") introduce el segundo, CMP-002
+# ToolRuntime, con ficha literal contra Article III (sección "ToolRuntime") y Article IV. Ver
+# decisión de diseño en planes/2026-09-13-capitulo-02-tool-runtime.md.
 
 components:
   - id: CMP-001
@@ -50,3 +53,28 @@ components:
     produces: [C-003, C-010, C-011, C-013]
     introduced_in: CH-01
     constitutional_articles: [P-10, P-12, P-13, INV-08, INV-09, INV-16, INV-17, INV-18, INV-19]
+
+  - id: CMP-002
+    name: ToolRuntime
+    responsibility: >
+      Resolver la capability solicitada por un ToolCall, validar su input contra el schema
+      declarado, ejecutar los hooks de extensión (beforeToolCall/afterToolCall) y coordinar la
+      ejecución de la acción aprobada, devolviendo un ToolResult normalizado — sin decidir
+      autorización, aprobación humana, enforcement de presupuesto ni qué implementación concreta
+      satisface la capability solicitada.
+    owns:
+      - "resolver tools/capabilities"
+      - "validar llamadas"
+      - "ejecutar hooks"
+      - "coordinar ejecución"
+      - "devolver resultados normalizados"
+    does_not_own:
+      - "policy evaluation y autorización de la acción (PolicyEngine, Article IV — no introducido en este capítulo)"
+      - "aprobación humana (HumanInteractionService — no introducido en este capítulo)"
+      - "enforcement de ExecutionBudget (ExecutionController — no introducido en este capítulo, mismo patrón ya establecido por AgentLoop en CH-01)"
+      - "registro y resolución de qué implementación satisface una capability solicitada (CapabilityRegistry, Article III — no introducido en este capítulo, es un componente distinto)"
+    dependencies: []
+    consumes: [C-004, C-008]
+    produces: [C-009, C-010, C-011]
+    introduced_in: CH-02
+    constitutional_articles: [P-03, P-04, P-05, P-12, P-13, INV-04, INV-05, INV-06, INV-07, INV-18, INV-19, INV-20]

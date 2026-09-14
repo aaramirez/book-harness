@@ -31,7 +31,7 @@ contracts:
           content: Value
           timestamp: Timestamp
       END
-    used_by: [CMP-003]
+    used_by: [CMP-003, CMP-004]
     modified_by: []
     constitutional_impact: [P-02, INV-02]
 
@@ -61,7 +61,7 @@ contracts:
           status: AgentRunStatus
           currentTurn: Integer
       END
-    used_by: [CMP-001]
+    used_by: [CMP-001, CMP-004]
     modified_by: []
     constitutional_impact: [P-08, P-10, INV-12]
 
@@ -76,17 +76,34 @@ contracts:
           traceId: TraceId
           budget: ExecutionBudget
       END
-    used_by: [CMP-001, CMP-002, CMP-003]
+    used_by: [CMP-001, CMP-002, CMP-003, CMP-004]
     modified_by: []
     constitutional_impact: [P-01, P-14]
 
-  # C-005 (ContextSnapshot): el único id que sigue reservado por convención editorial (ver
-  # reference/md/REGLAS_LIBRO_AGENT_HARNESS(1).md §10, ejemplo de numeración) — llega junto con
-  # ContextEngine en un capítulo posterior. C-006/C-007 (ModelRequest/ModelResponse), reservados
-  # desde CH-01, ya se asignaron en CH-03 (ver decisión de diseño en
+  # C-005 (ContextSnapshot): ya asignado en CH-04 (ver decisión de diseño en
+  # planes/2026-09-13-capitulo-04-context-engine.md) — era el único id que seguía reservado por
+  # convención editorial desde CH-01 §7 (ver reference/md/REGLAS_LIBRO_AGENT_HARNESS(1).md §10,
+  # ejemplo de numeración). C-006/C-007 (ModelRequest/ModelResponse), reservados desde CH-01, ya
+  # se asignaron en CH-03 (ver decisión de diseño en
   # planes/2026-09-13-capitulo-03-model-gateway.md). C-008/C-009 (ToolCall/ToolResult), también
   # reservados desde CH-01, ya se asignaron en CH-02 (ver decisión de diseño en
-  # planes/2026-09-13-capitulo-02-tool-runtime.md).
+  # planes/2026-09-13-capitulo-02-tool-runtime.md). Con C-005 asignado, no queda ningún id
+  # reservado del lote original que CH-01 §7 documentó (C-005..C-009).
+  - id: C-005
+    name: ContextSnapshot
+    version: v1
+    introduced_in: CH-04
+    current_definition: |
+      STRUCT ContextSnapshot
+          blocks: List<ContextBlock>
+          budget: ExecutionBudget
+          estimatedTokens: Integer
+          producedAt: Timestamp
+      END
+    used_by: [CMP-004]
+    modified_by: []
+    constitutional_impact: [P-01, P-14, INV-09]
+
   - id: C-006
     name: ModelRequest
     version: v1
@@ -162,7 +179,7 @@ contracts:
           traceId: TraceId
           payload: Value
       END
-    used_by: [CMP-001, CMP-002, CMP-003]
+    used_by: [CMP-001, CMP-002, CMP-003, CMP-004]
     modified_by: []
     constitutional_impact: [P-04, INV-18, INV-19]
 
@@ -179,7 +196,7 @@ contracts:
           retryable: Boolean
           metadata: Map<Text, Value>
       END
-    used_by: [CMP-001, CMP-002, CMP-003]
+    used_by: [CMP-001, CMP-002, CMP-003, CMP-004]
     modified_by: []
     constitutional_impact: [INV-20]
 
@@ -201,12 +218,12 @@ contracts:
     modified_by: []
     constitutional_impact: [P-10, INV-09]
 
-  # C-013 (no C-005): ese id sigue reservado (ver comentario junto a C-004 arriba) para
-  # ContextSnapshot — llega con ContextEngine en un capítulo posterior. C-006/C-007
-  # (ModelRequest/ModelResponse), reservados desde CH-01, ya se asignaron en CH-03. C-008/C-009
-  # (ToolCall/ToolResult), reservados en CH-01, ya se asignaron en CH-02. Ver decisión de diseño en
-  # planes/2026-09-13-capitulo-01-agent-loop.md, planes/2026-09-13-capitulo-02-tool-runtime.md y
-  # planes/2026-09-13-capitulo-03-model-gateway.md.
+  # C-013: de los cinco ids que CH-01 §7 dejó reservados (C-005..C-009), los cinco ya están
+  # asignados — C-005 (ContextSnapshot) en CH-04, C-006/C-007 (ModelRequest/ModelResponse) en
+  # CH-03, C-008/C-009 (ToolCall/ToolResult) en CH-02. No queda ningún id reservado de ese lote
+  # original. Ver decisión de diseño en planes/2026-09-13-capitulo-01-agent-loop.md,
+  # planes/2026-09-13-capitulo-02-tool-runtime.md, planes/2026-09-13-capitulo-03-model-gateway.md
+  # y planes/2026-09-13-capitulo-04-context-engine.md.
   - id: C-013
     name: AgentRunStatus
     version: v1

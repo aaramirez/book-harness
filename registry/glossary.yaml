@@ -232,3 +232,47 @@ terms:
       model is replaceable").
     introduced_in: CH-03
     kind: concept
+
+  - term: ContextEngine
+    definition: >
+      Componente que selecciona, rankea, compone y compacta el material candidato de un turno
+      dentro de un presupuesto de contexto explícito, devolviendo un ContextSnapshot que registra
+      la procedencia de cada bloque incluido — sin invocar al modelo, sin decidir continuación del
+      turno, sin persistir historial de sesión y sin autorizar qué información puede verse.
+    introduced_in: CH-04
+    kind: component
+    ref: CMP-004
+
+  - term: Context Snapshot
+    definition: >
+      El resultado ya seleccionado, priorizado y compactado que ContextEngine produce a partir del
+      material candidato de un turno — contrato canónico ContextSnapshot, formalizado en CH-04,
+      sobre el último id que CH-01 dejó reservado.
+    introduced_in: CH-04
+    kind: contract
+    ref: C-005
+
+  - term: Context Block
+    definition: >
+      El fragmento individual de contexto que ContextEngine decide incluir en un ContextSnapshot,
+      junto con su provenance y si tuvo que compactarse. Modelado como ContextBlock, un STRUCT
+      embebido dentro de ContextSnapshot sin contrato C-XXX propio.
+    introduced_in: CH-04
+    kind: concept
+
+  - term: Provenance
+    definition: >
+      El registro de dónde vino un fragmento de contexto incluido en un ContextSnapshot —
+      responsabilidad que Article III asigna literalmente a ContextEngine, sin la cual ningún
+      componente futuro podría auditar después por qué el modelo supo algo.
+    introduced_in: CH-04
+    kind: concept
+
+  - term: Context Budget
+    definition: >
+      El límite explícito contra el cual ContextEngine valida su selección de contexto —
+      reutiliza ExecutionBudget.maxInputTokens (C-012) en vez de introducir un tipo de presupuesto
+      nuevo; ContextSnapshot.estimatedTokens registra cuánto de ese presupuesto consumió una
+      selección concreta.
+    introduced_in: CH-04
+    kind: concept

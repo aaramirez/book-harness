@@ -22,3 +22,5 @@ chapters:
     file: chapters/02-tool-runtime/chapter.md
   - id: CH-03
     file: chapters/03-model-gateway/chapter.md
+  - id: CH-04
+    file: chapters/04-context-engine/chapter.md

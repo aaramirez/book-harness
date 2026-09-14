@@ -29,6 +29,9 @@
 # CH-03 ("ModelGateway y la Invocación Real del Modelo") introduce el tercero, CMP-003
 # ModelGateway, con ficha literal contra Article III (sección "ModelGateway") y Article IV. Ver
 # decisión de diseño en planes/2026-09-13-capitulo-03-model-gateway.md.
+# CH-04 ("ContextEngine y Qué Ve Realmente el Modelo") introduce el cuarto, CMP-004
+# ContextEngine, con ficha literal contra Article III (sección "ContextEngine") y Article IV. Ver
+# decisión de diseño en planes/2026-09-13-capitulo-04-context-engine.md.
 
 components:
   - id: CMP-001
@@ -106,3 +109,29 @@ components:
     produces: [C-007, C-010, C-011]
     introduced_in: CH-03
     constitutional_articles: [P-01, P-02, P-10, P-12, P-13, INV-01, INV-02, INV-03, INV-18, INV-19, INV-20]
+
+  - id: CMP-004
+    name: ContextEngine
+    responsibility: >
+      Seleccionar, rankear, componer y compactar el material candidato de un turno (AgentMessage,
+      AgentState, ExecutionContext) dentro de un presupuesto de contexto explícito, devolviendo un
+      ContextSnapshot que registra la procedencia (provenance) de cada bloque incluido — sin
+      invocar al modelo, sin decidir si otro turno debe ocurrir, sin persistir historial de sesión
+      y sin autorizar qué información puede verse.
+    owns:
+      - "selección"
+      - "ranking"
+      - "composición"
+      - "compaction"
+      - "context budgets"
+      - "provenance"
+    does_not_own:
+      - "invocar al modelo seleccionado (ModelGateway, CMP-003, ya introducido en CH-03)"
+      - "decidir si otro turno de razonamiento debe ocurrir (AgentLoop, CMP-001, ya introducido en CH-01)"
+      - "persistir/recuperar historial de sesión y checkpoints (SessionManager, Article IV — no introducido en este capítulo, es un componente distinto)"
+      - "policy/autorización sobre qué información puede verse (PolicyEngine, Article IV — no introducido en este capítulo; distinto de seleccionar por relevancia, que sí le pertenece a ContextEngine)"
+    dependencies: []
+    consumes: [C-001, C-003, C-004]
+    produces: [C-005, C-010, C-011]
+    introduced_in: CH-04
+    constitutional_articles: [P-01, P-04, P-12, P-14, INV-02, INV-09, INV-18, INV-19, INV-20]

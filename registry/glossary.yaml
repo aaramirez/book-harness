@@ -429,3 +429,46 @@ terms:
       determinar cuándo debe detenerse una ejecución").
     introduced_in: CH-07
     kind: concept
+
+  - term: CapabilityRegistry
+    definition: >
+      Componente que registra las capabilities disponibles junto con su descriptor (nombre
+      canónico, versión, schema de entrada esperado y una referencia opaca a su implementación
+      concreta), resuelve el capabilityName de una RawToolCallProposal contra ese registro, valida
+      sus rawArguments contra el schema declarado y produce un ToolCall resuelto — sin ejecutar la
+      capability, sin invocar al modelo, sin evaluar policy/autorización y sin decidir continuación
+      de turno. Responde, por primera vez con código real, la pregunta de Article IV: "What
+      implementation satisfies a requested capability?".
+    introduced_in: CH-08
+    kind: component
+    ref: CMP-008
+
+  - term: Capability Descriptor
+    definition: >
+      El descriptor registrado de una capability — su nombre canónico, una versión explícita
+      (P-26), el schema de entrada contra el que se validan sus argumentos y una referencia opaca a
+      su implementación concreta — contrato canónico CapabilityDescriptor, formalizado en CH-08
+      sobre C-018, el quinto id verdaderamente nuevo del libro (no reservado desde CH-01).
+    introduced_in: CH-08
+    kind: contract
+    ref: C-018
+
+  - term: Capability Resolution
+    definition: >
+      El tramo determinístico, exigido por Article VI ("Resolve Capability" → "Validate Schema"),
+      en el que se compara el capabilityName de una RawToolCallProposal contra un registro real de
+      CapabilityDescriptor y se valida rawArguments contra la forma de entrada que esa capacidad
+      declara — nunca una decisión de autorización: una resolución exitosa significa solo que la
+      capacidad existe y sus argumentos son válidos, no que su ejecución esté permitida.
+    introduced_in: CH-08
+    kind: concept
+
+  - term: Capability Versioning
+    definition: >
+      La exigencia (P-26, Amendment v1.1 — "Capabilities have governed lifecycles") de que una
+      capability declare una versión explícita, en vez de depender de que su nombre por sí solo
+      identifique de forma estable qué implementación exacta responde. CapabilityDescriptor.version
+      adopta esta exigencia como base mínima, sin implementar todavía compatibility policy,
+      rollout, deprecation ni retirement.
+    introduced_in: CH-08
+    kind: concept

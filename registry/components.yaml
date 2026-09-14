@@ -44,6 +44,11 @@
 # "ExecutionController") y Article IV, y le da, por primera vez, cumplimiento real a
 # ExecutionBudget (C-012, CH-00). Ver decisión de diseño en
 # planes/2026-09-14-capitulo-07-execution-controller.md.
+# CH-08 ("CapabilityRegistry y la Resolución Real de una Tool Call") introduce el octavo, CMP-008
+# CapabilityRegistry, con ficha literal contra Article III (sección "CapabilityRegistry") y
+# Article IV, y produce, por primera vez con una resolución real (no una señal asumida), un
+# ToolCall (C-008, CH-02) a partir de una RawToolCallProposal (embebida en ModelResponse, C-007,
+# CH-03). Ver decisión de diseño en planes/2026-09-14-capitulo-08-capability-registry.md.
 
 components:
   - id: CMP-001
@@ -224,3 +229,28 @@ components:
     produces: [C-010, C-011, C-017]
     introduced_in: CH-07
     constitutional_articles: [P-10, INV-08, INV-09, INV-10, INV-18, INV-19, INV-20]
+
+  - id: CMP-008
+    name: CapabilityRegistry
+    responsibility: >
+      Registrar las capabilities disponibles junto con su descriptor (nombre canónico, versión,
+      schema de entrada esperado y una referencia opaca a su implementación concreta), resolver el
+      capabilityName de una RawToolCallProposal contra ese registro, validar sus rawArguments
+      contra el schema declarado y producir un ToolCall resuelto — sin ejecutar la capability, sin
+      invocar al modelo ni interpretar su propuesta cruda, sin evaluar policy/autorización y sin
+      decidir continuación de turno.
+    owns:
+      - "registrar el descriptor de una capability disponible (nombre, versión, schema de entrada, referencia de implementación)"
+      - "resolver qué implementación satisface una capability solicitada"
+      - "validar los argumentos crudos de una propuesta contra el schema declarado por la capability resuelta"
+      - "desacoplar la intención de una capacidad de su implementación concreta"
+    does_not_own:
+      - "ejecutar la capability ya resuelta (ToolRuntime, CMP-002, ya introducido en CH-02 — Article IV: \"ToolRuntime → How should an approved action be executed?\")"
+      - "invocar al modelo seleccionado o interpretar su propuesta cruda antes de que llegue como ModelResponse (ModelGateway, CMP-003, ya introducido en CH-03 — Article IV: \"ModelGateway → How should the selected model be invoked?\")"
+      - "evaluar policy/autorización sobre si la acción ya resuelta debe ejecutarse (PolicyEngine, CMP-005, ya introducido en CH-05 — distinción cuidadosa: \"¿existe e implementa correctamente esta capability?\" es de CapabilityRegistry, \"¿está permitido usarla ahora?\" es de PolicyEngine)"
+      - "decidir si otro turno de razonamiento debe ocurrir (AgentLoop, CMP-001, ya introducido en CH-01)"
+    dependencies: []
+    consumes: [C-004, C-007]
+    produces: [C-008, C-010, C-011, C-018]
+    introduced_in: CH-08
+    constitutional_articles: [P-03, P-13, P-26, INV-03, INV-04, INV-05, INV-18, INV-19, INV-20]

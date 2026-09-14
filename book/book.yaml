@@ -30,3 +30,5 @@ chapters:
     file: chapters/06-human-interaction-service/chapter.md
   - id: CH-07
     file: chapters/07-execution-controller/chapter.md
+  - id: CH-08
+    file: chapters/08-capability-registry/chapter.md

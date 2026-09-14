@@ -76,7 +76,7 @@ contracts:
           traceId: TraceId
           budget: ExecutionBudget
       END
-    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005, CMP-006, CMP-007]
+    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005, CMP-006, CMP-007, CMP-008]
     modified_by: []
     constitutional_impact: [P-01, P-14]
 
@@ -129,7 +129,7 @@ contracts:
           proposedToolCall: Optional<RawToolCallProposal>
           producedAt: Timestamp
       END
-    used_by: [CMP-003]
+    used_by: [CMP-003, CMP-008]
     modified_by: []
     constitutional_impact: [P-10, P-13, INV-03]
 
@@ -144,7 +144,7 @@ contracts:
           arguments: Map<Text, Value>
           requestedAt: Timestamp
       END
-    used_by: [CMP-002, CMP-005]
+    used_by: [CMP-002, CMP-005, CMP-008]
     modified_by: []
     constitutional_impact: [P-03, INV-04, INV-05]
 
@@ -179,7 +179,7 @@ contracts:
           traceId: TraceId
           payload: Value
       END
-    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005, CMP-006, CMP-007]
+    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005, CMP-006, CMP-007, CMP-008]
     modified_by: []
     constitutional_impact: [P-04, INV-18, INV-19]
 
@@ -196,7 +196,7 @@ contracts:
           retryable: Boolean
           metadata: Map<Text, Value>
       END
-    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005, CMP-006, CMP-007]
+    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005, CMP-006, CMP-007, CMP-008]
     modified_by: []
     constitutional_impact: [INV-20]
 
@@ -331,3 +331,27 @@ contracts:
     used_by: [CMP-007]
     modified_by: []
     constitutional_impact: [P-10, INV-08, INV-09, INV-10, INV-18, INV-19, INV-20]
+
+  # C-018 (CapabilityDescriptor): quinto id verdaderamente NUEVO del libro (el correlativo continúa
+  # después de C-017, CH-07 — ningún id quedaba reservado desde CH-01 §7). Ver decisión de diseño en
+  # planes/2026-09-14-capitulo-08-capability-registry.md: el descriptor registrado de una
+  # capability — nombre canónico, versión explícita (P-26, Amendment v1.1), el schema de entrada
+  # esperado (contra el que se valida rawArguments) y una referencia opaca a su implementación
+  # concreta — que CapabilityRegistry resuelve contra el capabilityName de una RawToolCallProposal
+  # (embebida en ModelResponse, C-007, CH-03) para producir, por primera vez con una resolución
+  # real, un ToolCall (C-008, CH-02) válido.
+  - id: C-018
+    name: CapabilityDescriptor
+    version: v1
+    introduced_in: CH-08
+    current_definition: |
+      STRUCT CapabilityDescriptor
+          capability: CapabilityId
+          name: Text
+          version: Text
+          inputSchema: Value
+          implementationRef: Text
+      END
+    used_by: [CMP-008]
+    modified_by: []
+    constitutional_impact: [P-03, P-26, INV-04, INV-20]

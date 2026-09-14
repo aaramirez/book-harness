@@ -49,6 +49,13 @@
 # Article IV, y produce, por primera vez con una resolución real (no una señal asumida), un
 # ToolCall (C-008, CH-02) a partir de una RawToolCallProposal (embebida en ModelResponse, C-007,
 # CH-03). Ver decisión de diseño en planes/2026-09-14-capitulo-08-capability-registry.md.
+# CH-09 ("EventBus y la Distribución Desacoplada de un Evento Ya Producido") introduce el noveno,
+# CMP-009 EventBus, con ficha literal contra Article III (sección "EventBus") — el primer
+# componente real del libro sin fila propia en la tabla de Decision Ownership de Article IV, y el
+# primero que no consume ExecutionContext. Distribuye (fan-out) cada AgentEvent (C-010, CH-00) ya
+# producido por cualquier otro componente hacia las EventSubscription (C-019, el contrato nuevo)
+# activas que hagan match por filtro. Ver decisión de diseño en
+# planes/2026-09-14-capitulo-09-event-bus.md.
 
 components:
   - id: CMP-001
@@ -254,3 +261,27 @@ components:
     produces: [C-008, C-010, C-011, C-018]
     introduced_in: CH-08
     constitutional_articles: [P-03, P-13, P-26, INV-03, INV-04, INV-05, INV-18, INV-19, INV-20]
+
+  - id: CMP-009
+    name: EventBus
+    responsibility: >
+      Distribuir cada AgentEvent ya producido por cualquier otro componente del runtime hacia los
+      consumidores desacoplados que se hayan suscrito — registrando cada suscripción activa y
+      entregando (fan-out) el evento a las que hagan match por filtro — sin decidir qué información
+      contiene ese evento, sin interpretar ni actuar sobre él, sin persistir historial de sesión de
+      forma durable y sin decidir continuación de turno ni ninguna otra decisión arquitectónica.
+    owns:
+      - "registrar una suscripción de un consumidor desacoplado (subscriberRef opaco y un filtro opcional)"
+      - "cancelar una suscripción ya registrada"
+      - "distribuir (fan-out) cada AgentEvent ya producido por cualquier componente hacia las suscripciones activas que hagan match por filtro"
+      - "desacoplar al productor de un AgentEvent de sus consumidores (cita literal de Article III)"
+    does_not_own:
+      - "decidir qué información va dentro de un AgentEvent (cada componente productor ya lo decide al construir su propio AgentEvent — CMP-001..CMP-008, ya introducidos)"
+      - "interpretar o actuar sobre un AgentEvent distribuido (Logs/Tracing/Audit/Replay/Analytics/Evals/Cost Analysis/Debugging/UI, Article X — ninguno es un componente propio de este registry todavía)"
+      - "persistir historial de sesión de forma durable para reconstrucción posterior (SessionManager, Article III — no introducido, preview)"
+      - "decidir continuación de turno o cualquier otra decisión arquitectónica (AgentLoop/PolicyEngine/ExecutionController, ya introducidos)"
+    dependencies: []
+    consumes: [C-010]
+    produces: [C-011, C-019]
+    introduced_in: CH-09
+    constitutional_articles: [P-04, P-11, P-12, P-25, INV-18, INV-19, INV-20]

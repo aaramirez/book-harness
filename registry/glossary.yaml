@@ -472,3 +472,53 @@ terms:
       rollout, deprecation ni retirement.
     introduced_in: CH-08
     kind: concept
+
+  - term: EventBus
+    definition: >
+      Componente que registra la suscripción de un consumidor desacoplado (una referencia opaca más
+      un filtro opcional por eventType/runId), permite su cancelación y distribuye (fan-out) cada
+      AgentEvent ya producido por cualquier otro componente hacia las suscripciones activas que
+      hagan match — sin decidir qué información contiene ese evento, sin interpretarlo ni actuar
+      sobre él, sin persistir historial de sesión de forma durable y sin decidir continuación de
+      turno. Es el primer componente real del libro sin fila propia en la tabla de Decision
+      Ownership de Article IV, porque no decide nada, solo distribuye.
+    introduced_in: CH-09
+    kind: component
+    ref: CMP-009
+
+  - term: Event Subscription
+    definition: >
+      El registro de la relación entre un consumidor desacoplado (subscriberRef, opaco por diseño)
+      y los AgentEvent que le interesan (un filtro opcional por eventType/runId), junto con su
+      estado (activa/cancelada) — contrato canónico EventSubscription, formalizado en CH-09 sobre
+      C-019, el sexto id verdaderamente nuevo del libro (no reservado desde CH-01).
+    introduced_in: CH-09
+    kind: contract
+    ref: C-019
+
+  - term: Fan-out
+    definition: >
+      El mecanismo por el cual un único AgentEvent ya producido se entrega, sin modificarse, a cada
+      EventSubscription activa cuyo filtro haga match — responsabilidad exclusiva de EventBus
+      (Article III: "distribuir eventos del runtime a consumidores desacoplados").
+    introduced_in: CH-09
+    kind: concept
+
+  - term: Subscriber / Decoupled Consumer
+    definition: >
+      Quien se suscribe a la distribución de eventos del runtime, representado únicamente por una
+      referencia opaca (EventSubscription.subscriberRef) — nunca modelado en detalle. Logs,
+      Tracing, Audit, Replay, Analytics, Evals, Cost Analysis, Debugging y UI (Article X) son
+      consumidores conceptuales de este tipo, ninguno todavía un componente propio del registry.
+    introduced_in: CH-09
+    kind: concept
+
+  - term: Event Filter
+    definition: >
+      El criterio opcional, embebido dentro de una EventSubscription, que decide si un AgentEvent
+      concreto hace match con esa suscripción — por eventType y/o runId. Su ausencia (filter =
+      NULL) significa "todo tipo de evento, de cualquier ejecución". Modelado como EventFilter, un
+      STRUCT embebido sin contrato C-XXX propio — el mismo patrón que RawToolCallProposal (CH-03) o
+      ExecutionUsage (CH-07).
+    introduced_in: CH-09
+    kind: concept

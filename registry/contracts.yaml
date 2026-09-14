@@ -179,7 +179,7 @@ contracts:
           traceId: TraceId
           payload: Value
       END
-    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005, CMP-006, CMP-007, CMP-008]
+    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005, CMP-006, CMP-007, CMP-008, CMP-009]
     modified_by: []
     constitutional_impact: [P-04, INV-18, INV-19]
 
@@ -355,3 +355,27 @@ contracts:
     used_by: [CMP-008]
     modified_by: []
     constitutional_impact: [P-03, P-26, INV-04, INV-20]
+
+  # C-019 (EventSubscription): sexto id verdaderamente NUEVO del libro (el correlativo continúa
+  # después de C-018, CH-08 — ningún id quedaba reservado desde CH-01 §7). Ver decisión de diseño en
+  # planes/2026-09-14-capitulo-09-event-bus.md: el registro de la relación entre un consumidor
+  # desacoplado (subscriberRef, opaco por diseño — Article III) y los AgentEvent que le interesan
+  # (filter opcional por eventType/runId, embebido como EventFilter, sin contrato C-XXX propio —
+  # mismo patrón que RawToolCallProposal/ContextBlock/ExecutionUsage), junto con su estado
+  # (ACTIVE/CANCELLED). EventBus resuelve, contra este registro, a quién distribuir cada AgentEvent
+  # (C-010, CH-00) ya producido por cualquier otro componente.
+  - id: C-019
+    name: EventSubscription
+    version: v1
+    introduced_in: CH-09
+    current_definition: |
+      STRUCT EventSubscription
+          id: EventSubscriptionId
+          subscriberRef: Text
+          filter: Optional<EventFilter>
+          status: EventSubscriptionStatus
+          subscribedAt: Timestamp
+      END
+    used_by: [CMP-009]
+    modified_by: []
+    constitutional_impact: [P-04, P-12, INV-18, INV-19]

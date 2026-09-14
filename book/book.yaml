@@ -32,3 +32,5 @@ chapters:
     file: chapters/07-execution-controller/chapter.md
   - id: CH-08
     file: chapters/08-capability-registry/chapter.md
+  - id: CH-09
+    file: chapters/09-event-bus/chapter.md

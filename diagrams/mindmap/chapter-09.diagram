@@ -3,7 +3,7 @@ digraph BookMindMap {
   size="6.5,9"; ratio=compress;
   node [fontname="Helvetica", fontsize=11, style=filled, target="_top"];
   edge [fontname="Helvetica", fontsize=9];
-  labelloc="t"; fontsize=14; fontname="Helvetica-Bold"; label="Mapa mental completo del libro";
+  labelloc="t"; fontsize=14; fontname="Helvetica-Bold"; label="Mapa mental hasta CH-09";
   "CH-00" [label="La Constitución Arquitectónica de un Arnés", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-00.html", style="filled,bold"];
   "C-001" [label="AgentMessage", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-00.html#C-001", style="filled"];
   "C-002" [label="AgentConfig", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-00.html#C-002", style="filled"];
@@ -64,12 +64,12 @@ digraph BookMindMap {
   "CMP-008" [label="CapabilityRegistry", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-08.html#CMP-008", style="filled,rounded"];
   "CONCEPT-capability-resolution" [label="Capability Resolution", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-08.html#CONCEPT-capability-resolution", style="filled"];
   "CONCEPT-capability-versioning" [label="Capability Versioning", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-08.html#CONCEPT-capability-versioning", style="filled"];
-  "CH-09" [label="EventBus y la Distribución Desacoplada de un Evento Ya Producido", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-09.html", style="filled,bold"];
-  "C-019" [label="EventSubscription", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-09.html#C-019", style="filled"];
-  "CMP-009" [label="EventBus", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-09.html#CMP-009", style="filled,rounded"];
-  "CONCEPT-fan-out" [label="Fan-out", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-09.html#CONCEPT-fan-out", style="filled"];
-  "CONCEPT-subscriber-decoupled-consumer" [label="Subscriber / Decoupled Consumer", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-09.html#CONCEPT-subscriber-decoupled-consumer", style="filled"];
-  "CONCEPT-event-filter" [label="Event Filter", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-09.html#CONCEPT-event-filter", style="filled"];
+  "CH-09" [label="EventBus y la Distribución Desacoplada de un Evento Ya Producido", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-09.html", style="filled,bold", penwidth=3, color="#d62728"];
+  "C-019" [label="EventSubscription", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-09.html#C-019", style="filled,bold", penwidth=3, color="#d62728"];
+  "CMP-009" [label="EventBus", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-09.html#CMP-009", style="filled,rounded,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-fan-out" [label="Fan-out", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-09.html#CONCEPT-fan-out", style="filled,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-subscriber-decoupled-consumer" [label="Subscriber / Decoupled Consumer", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-09.html#CONCEPT-subscriber-decoupled-consumer", style="filled,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-event-filter" [label="Event Filter", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-09.html#CONCEPT-event-filter", style="filled,bold", penwidth=3, color="#d62728"];
   "CH-00" -> "C-001" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-002" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-003" [label="INTRODUCES", color="#2a5fa5", style="bold"];

@@ -1023,3 +1023,52 @@ terms:
       propio ciclo del run invocara su función en el momento correcto.
     introduced_in: CH-18
     kind: concept
+
+  - term: AuditLedger
+    definition: >
+      Componente (CMP-017) que produce y preserva, de forma estructuralmente inmutable, evidencia
+      de auditoría (AuditRecord, C-029) para una decisión crítica ya tomada por otro componente —
+      cita literal, P-25 ("Logs, traces, execution ledger and immutable audit evidence have
+      different purposes and MUST NOT be conflated"). Nunca toma ni modifica la decisión que
+      audita, y nunca distribuye el flujo general de eventos operacionales del harness (frontera
+      con EventBus, CMP-009, CH-09). Sexto componente de este libro sin fila propia en la tabla de
+      Decision Ownership de Article IV — junto a EventBus, registrar no es decidir.
+    introduced_in: CH-19
+    kind: component
+    ref: CMP-017
+
+  - term: AuditRecord
+    definition: >
+      Contrato (C-029) que representa el registro de evidencia de auditoría estructuralmente
+      inmutable: una referencia opaca a la decisión original ya auditada (subjectRef), el snapshot
+      exacto de versiones que INV-E10 exige (versionSnapshot), el actor y el contexto (INV-19), un
+      timestamp (recordedAt) y una garantía de integridad verificable (contentHash). Primer
+      contrato de este libro sin ningún campo de estado/lifecycle y sin ninguna función de
+      actualización o borrado — inmutabilidad estructural, no una convención documentada.
+    introduced_in: CH-19
+    kind: contract
+    ref: C-029
+
+  - term: Immutable Audit Evidence
+    definition: >
+      Cita literal de P-25: la propiedad que distingue a un AuditRecord (C-029) de un AgentEvent
+      (C-010) distribuido por EventBus (CH-09) — logs, traces y el flujo operacional pueden
+      filtrarse, reinterpretarse o perderse por volumen; la evidencia de auditoría, una vez
+      escrita, nunca se edita ni se borra. Citada sin resolverse desde CH-09 (donde "Audit" ya se
+      nombra como uno de los nueve consumidores de Article X) y repetida, sin resolverse, en
+      CH-14/CH-15/CH-16/CH-17/CH-18 — AuditLedger (CH-19) es el primer componente de este libro que
+      la materializa con código real.
+    introduced_in: CH-19
+    kind: concept
+
+  - term: Version Pinning
+    definition: >
+      Lectura de INV-E10 ("Every production run records exact versions of agent, skill, policy,
+      model configuration and capability contracts"): fijar, en el instante exacto de una decisión
+      crítica, las versiones exactas de los cinco elementos que esa decisión involucró — para que,
+      si cualquiera de ellos cambia después, alguien pueda reconstruir sin ambigüedad contra qué
+      versión exacta se decidió. Modelado como VersionSnapshot, embebido dentro de AuditRecord
+      (C-029, CH-19) sin contrato C-XXX propio — mismo patrón que ExecutionUsage (CH-07) o
+      ControlDirectiveApplication (CH-18).
+    introduced_in: CH-19
+    kind: concept

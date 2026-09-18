@@ -601,3 +601,35 @@ contracts:
     used_by: [CMP-016]
     modified_by: []
     constitutional_impact: [P-30, INV-E14, INV-19]
+
+  # C-029 (AuditRecord): decimosexto id verdaderamente NUEVO del libro (el correlativo continúa
+  # después de C-028, CH-18 — ningún id quedaba reservado desde CH-01 §7). Ver decisión de diseño
+  # en planes/2026-09-17-capitulo-19-audit-ledger.md: el registro de auditoría estructuralmente
+  # inmutable (append-only, nunca editado ni borrado una vez escrito) que P-25 exige distinguir de
+  # la telemetría operacional — cita literal, P-25 ("Logs, traces, execution ledger and immutable
+  # audit evidence have different purposes and MUST NOT be conflated"), citada sin resolverse desde
+  # CH-09 y repetida en CH-14/CH-15/CH-16/CH-17/CH-18 sin que ninguno construyera su mecanismo.
+  # subjectRef es una referencia opaca al contrato de decisión original ya producido por otro
+  # componente (PolicyDecision/ControlDirective/AdmissionDecision/etc. — nunca un campo por tipo
+  # posible, mismo argumento que ControlDirective.targetRef, CH-18); versionSnapshot embebe, sin
+  # contrato C-XXX propio, el snapshot exacto de versiones que INV-E10 exige (agente/skill/policy/
+  # configuración de modelo/capability). Es el primer contrato del libro sin ningún campo de
+  # estado/lifecycle y sin ninguna función de actualización o borrado — inmutabilidad estructural,
+  # no una convención documentada.
+  - id: C-029
+    name: AuditRecord
+    version: v1
+    introduced_in: CH-19
+    current_definition: |
+      STRUCT AuditRecord
+          id: AuditRecordId
+          subjectRef: Text
+          versionSnapshot: VersionSnapshot
+          actor: ActorId
+          context: Optional<TraceId>
+          recordedAt: Timestamp
+          contentHash: Text
+      END
+    used_by: [CMP-017]
+    modified_by: []
+    constitutional_impact: [P-25, INV-19, INV-E10]

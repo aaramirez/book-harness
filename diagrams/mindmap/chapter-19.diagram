@@ -3,7 +3,7 @@ digraph BookMindMap {
   size="6.5,9"; ratio=compress;
   node [fontname="Helvetica", fontsize=11, style=filled, target="_top"];
   edge [fontname="Helvetica", fontsize=9];
-  labelloc="t"; fontsize=14; fontname="Helvetica-Bold"; label="Mapa mental completo del libro";
+  labelloc="t"; fontsize=14; fontname="Helvetica-Bold"; label="Mapa mental hasta CH-19";
   "CH-00" [label="La Constitución Arquitectónica de un Arnés", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-00.html", style="filled,bold"];
   "C-001" [label="AgentMessage", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-00.html#C-001", style="filled"];
   "C-002" [label="AgentConfig", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-00.html#C-002", style="filled"];
@@ -128,11 +128,11 @@ digraph BookMindMap {
   "CONCEPT-tenant-isolation" [label="Tenant Isolation", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-18.html#CONCEPT-tenant-isolation", style="filled"];
   "CONCEPT-rollout-rollback" [label="Rollout Rollback", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-18.html#CONCEPT-rollout-rollback", style="filled"];
   "CONCEPT-operational-override" [label="Operational Override", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-18.html#CONCEPT-operational-override", style="filled"];
-  "CH-19" [label="AuditLedger y la Evidencia de Auditoría Estructuralmente Inmutable", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-19.html", style="filled,bold"];
-  "C-029" [label="AuditRecord", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-19.html#C-029", style="filled"];
-  "CMP-017" [label="AuditLedger", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-19.html#CMP-017", style="filled,rounded"];
-  "CONCEPT-immutable-audit-evidence" [label="Immutable Audit Evidence", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-19.html#CONCEPT-immutable-audit-evidence", style="filled"];
-  "CONCEPT-version-pinning" [label="Version Pinning", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-19.html#CONCEPT-version-pinning", style="filled"];
+  "CH-19" [label="AuditLedger y la Evidencia de Auditoría Estructuralmente Inmutable", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-19.html", style="filled,bold", penwidth=3, color="#d62728"];
+  "C-029" [label="AuditRecord", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-19.html#C-029", style="filled,bold", penwidth=3, color="#d62728"];
+  "CMP-017" [label="AuditLedger", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-19.html#CMP-017", style="filled,rounded,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-immutable-audit-evidence" [label="Immutable Audit Evidence", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-19.html#CONCEPT-immutable-audit-evidence", style="filled,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-version-pinning" [label="Version Pinning", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-19.html#CONCEPT-version-pinning", style="filled,bold", penwidth=3, color="#d62728"];
   "CH-00" -> "C-001" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-002" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-003" [label="INTRODUCES", color="#2a5fa5", style="bold"];

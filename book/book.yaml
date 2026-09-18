@@ -66,3 +66,7 @@ chapters:
     file: chapters/24-skill-library/chapter.md
   - id: CH-25
     file: chapters/25-epilogo-secuenciacion/chapter.md
+  - id: CH-26
+    file: chapters/26-integracion-enterprise-camino-feliz/chapter.md
+  - id: CH-27
+    file: chapters/27-integracion-enterprise-caminos-de-control/chapter.md

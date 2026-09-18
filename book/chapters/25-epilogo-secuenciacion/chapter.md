@@ -8,7 +8,7 @@ introduces_contracts: []
 modifies_contracts: []
 constitutional_articles: [P-09, P-06, P-15]
 previous_chapter: CH-24
-next_chapter: null
+next_chapter: CH-26
 retrieval_set:
   expected_outcome:
     id: EO-CH25

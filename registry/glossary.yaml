@@ -1129,3 +1129,64 @@ terms:
       suspensión — la interacción central que CH-20 documenta con cuidado.
     introduced_in: CH-20
     kind: concept
+
+  - term: ExecutionFabricAdapter
+    definition: >
+      Componente (CMP-019) que abstrae, detrás de una interfaz uniforme, el substrato de cómputo
+      concreto sobre el que se materializa la ejecución de un run ya existente (in-process, worker,
+      Kubernetes, serverless, cloud, edge, on-premise) — cita literal, P-27 ("Agent behavior MUST
+      NOT depend on whether execution occurs in-process, on a worker, Kubernetes, serverless,
+      cloud, edge or on-premise"). Nunca decide límites de recursos/presupuesto de un run (frontera
+      con ExecutionController, CMP-007, CH-07) ni instancia el AgentState inicial de un run
+      (AgentCore, CMP-011, CH-11). Octavo componente de este libro que no corresponde a ninguno de
+      los once nombres de Article III — y el noveno y último plano canónico de Amendment v1.1 que
+      este libro cubre.
+    introduced_in: CH-21
+    kind: component
+    ref: CMP-019
+
+  - term: ExecutionPlacement
+    definition: >
+      Contrato (C-031) que representa la descripción portátil y uniforme de dónde/sobre qué
+      substrato corre un run: el identificador del run (runId: RunId, no una referencia opaca Text
+      — el universo que describe es siempre exactamente un run), un tipo de topología de despliegue
+      (topology: DeploymentTopology, ENUM de siete valores citados literalmente de P-27), una
+      referencia opaca al recurso de cómputo concreto (computeResourceRef), una restricción de
+      residencia geográfica sobre el cómputo cuando aplica (residencyConstraint — distinta de
+      DataGovernanceLabel.residencyRequirement, CH-20, que restringe dónde debe residir el DATO) y
+      un timestamp (resolvedAt).
+    introduced_in: CH-21
+    kind: contract
+    ref: C-031
+
+  - term: Deployment Topology
+    definition: >
+      Cita literal de P-27 ("whether execution occurs in-process, on a worker, Kubernetes,
+      serverless, cloud, edge or on-premise"): el tipo de infraestructura de cómputo sobre la que se
+      materializa la ejecución de un run concreto. Modelado como DeploymentTopology (ENUM de siete
+      valores: IN_PROCESS/WORKER/KUBERNETES/SERVERLESS/CLOUD/EDGE/ON_PREMISE, CH-21) — nunca un
+      Boolean "es distribuido o no".
+    introduced_in: CH-21
+    kind: concept
+
+  - term: Compute Substrate
+    definition: >
+      El recurso de cómputo real y concreto sobre el que corre un run — un pod de Kubernetes, una
+      invocación serverless, un proceso worker. Modelado como
+      ExecutionPlacement.computeResourceRef (Optional<Text>, CH-21), una referencia opaca cuyo
+      detalle real (qué proveedor, qué identificador exacto) es una señal de entrada asumida, no
+      modelada por ese capítulo — mismo tratamiento que residencyRequirement o lineageRef (CH-20)
+      dieron a un detalle real fuera de alcance.
+    introduced_in: CH-21
+    kind: concept
+
+  - term: Execution Fabric
+    definition: >
+      Noveno y último de los "Canonical Enterprise Planes" de Amendment v1.1 (constitution/
+      ARCHITECTURE_CONSTITUTION.md, línea 991+): el plano que protege P-27 ("Deployment topology is
+      independent from agent semantics"). Nombrado en la enumeración de la enmienda desde CH-00,
+      pero sin ningún capítulo que lo materializara con código real hasta CH-21
+      (ExecutionFabricAdapter, CMP-019) — con ese capítulo, los nueve planos canónicos de la
+      enmienda quedan, todos, cubiertos por al menos un capítulo real de este libro.
+    introduced_in: CH-21
+    kind: concept

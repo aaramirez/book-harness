@@ -666,3 +666,36 @@ contracts:
     used_by: [CMP-018]
     modified_by: []
     constitutional_impact: [P-22, INV-E11, INV-19]
+
+  # C-031 (ExecutionPlacement): decimoctavo id verdaderamente NUEVO del libro (el correlativo
+  # continúa después de C-030, CH-20 — ningún id quedaba reservado desde CH-01 §7). Ver decisión
+  # de diseño en planes/2026-09-18-capitulo-21-execution-fabric-adapter.md: la descripción opaca y
+  # uniforme de DÓNDE/SOBRE QUÉ SUSTRATO se materializa la ejecución de un run ya existente — cita
+  # literal, P-27 ("Agent behavior MUST NOT depend on whether execution occurs in-process, on a
+  # worker, Kubernetes, serverless, cloud, edge or on-premise") — de forma que ningún componente
+  # del core necesite ramificar su lógica según la topología de despliegue. `runId` es un
+  # identificador YA EXISTENTE (RunId, CH-00), no una referencia opaca de tipo Text: a diferencia
+  # de AuditRecord.subjectRef (CH-19) o DataGovernanceLabel.subjectRef (CH-20), el universo de lo
+  # que este contrato describe es siempre exactamente un run, nunca un tipo heterogéneo de dato —
+  # decisión evaluada y documentada explícitamente en el propio capítulo (seccion 6).
+  # `computeResourceRef` es una referencia opaca al recurso de cómputo concreto (sin modelar el
+  # detalle real de cada substrato); `residencyConstraint` es, deliberadamente, un concepto
+  # DISTINTO de `DataGovernanceLabel.residencyRequirement` (C-030, CH-20) — este describe dónde
+  # debe residir el CÓMPUTO de un run, aquel describe dónde debe residir el DATO — nunca el mismo
+  # campo reusado (ver seccion 6 del capítulo para el desarrollo completo de esta frontera).
+  - id: C-031
+    name: ExecutionPlacement
+    version: v1
+    introduced_in: CH-21
+    current_definition: |
+      STRUCT ExecutionPlacement
+          id: ExecutionPlacementId
+          runId: RunId
+          topology: DeploymentTopology
+          computeResourceRef: Optional<Text>
+          residencyConstraint: Optional<Text>
+          resolvedAt: Timestamp
+      END
+    used_by: [CMP-019]
+    modified_by: []
+    constitutional_impact: [P-27, INV-19]

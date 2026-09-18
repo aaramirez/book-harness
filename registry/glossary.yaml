@@ -1263,3 +1263,43 @@ terms:
     introduced_in: CH-22
     kind: contract
     ref: C-032
+
+  - term: Human Handoff
+    definition: >
+      Cita literal de INV-E12 ("A human handoff transfers a structured HandoffPackage rather than
+      only prose"): la transferencia del control COMPLETO de un run o de una sesión a un humano —
+      distinta, en tamaño y en objeto, de una decisión puntual dentro de un turno que sigue vivo
+      (HumanInteractionService, CH-06). Modelada como el contrato HandoffPackage (C-034, CH-23).
+    introduced_in: CH-23
+    kind: concept
+
+  - term: Structured Handoff Reason
+    definition: >
+      La razón de un handoff, modelada como HandoffReason (ENUM de cuatro valores:
+      MODEL_STUCK/KILL_SWITCH/BUDGET_EXHAUSTED/EXPLICIT_ESCALATION, CH-23) — nunca un párrafo de
+      texto libre. Materialización literal del "rather than only prose" de INV-E12.
+    introduced_in: CH-23
+    kind: concept
+
+  - term: HandoffPackage
+    definition: >
+      El paquete estructurado que INV-E12 exige para representar la transferencia de control
+      completo de un run/sesión a un humano: referencia al run/sesión (runId/sessionId), una razón
+      estructurada (reason: HandoffReason), una referencia opaca al contexto relevante
+      (contextRef), a quién se transfiere (transferTo: ActorId), una correlación opcional con una
+      HumanInteractionRequest ya existente (humanInteractionRef) y un estado de tres valores
+      (status: HandoffStatus — PENDING/ACCEPTED/COMPLETED, nunca un Boolean).
+    introduced_in: CH-23
+    kind: contract
+    ref: C-034
+
+  - term: HandoffCoordinator
+    definition: >
+      El componente que construye un HandoffPackage estructurado una vez que la decisión de
+      transferir el control completo de un run/sesión a un humano ya se tomó — sin decidir CUÁNDO
+      debe ocurrir esa transferencia (OperationalController/ExecutionController/PolicyEngine, ya
+      resueltos) y sin representar ninguna decisión puntual dentro de un turno en marcha
+      (HumanInteractionService, CH-06 — la frontera más importante de CH-23).
+    introduced_in: CH-23
+    kind: component
+    ref: CMP-021

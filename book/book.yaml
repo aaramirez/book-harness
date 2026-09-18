@@ -60,3 +60,5 @@ chapters:
     file: chapters/21-execution-fabric-adapter/chapter.md
   - id: CH-22
     file: chapters/22-evaluation-harness/chapter.md
+  - id: CH-23
+    file: chapters/23-handoff-coordinator/chapter.md

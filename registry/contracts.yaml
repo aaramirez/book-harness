@@ -761,3 +761,38 @@ contracts:
     used_by: [CMP-020]
     modified_by: []
     constitutional_impact: [P-29, INV-19]
+
+  # C-034 (HandoffPackage): vigesimoprimer id verdaderamente NUEVO del libro (el correlativo
+  # continúa después de C-033, CH-22 — ningún id quedaba reservado desde CH-01 §7). Ver decisión
+  # de diseño en planes/2026-09-18-capitulo-23-handoff-coordinator.md: el paquete ESTRUCTURADO que
+  # INV-E12 exige para transferir el control COMPLETO de un run/sesión a un humano — cita literal,
+  # INV-E12 ("A human handoff transfers a structured HandoffPackage rather than only prose").
+  # `runId`/`sessionId` son identificadores YA EXISTENTES (RunId/SessionId, CH-00) — el universo de
+  # lo que este contrato describe es siempre exactamente un run/sesión, nunca un tipo heterogéneo;
+  # `reason` es un ENUM de cuatro valores (MODEL_STUCK/KILL_SWITCH/BUDGET_EXHAUSTED/
+  # EXPLICIT_ESCALATION), nunca un Text de prosa libre — la materialización literal de "rather than
+  # only prose"; `contextRef` es una referencia opaca Text al AgentState/ContextSnapshot relevante,
+  # sin duplicar su contenido (mismo patrón que subjectRef en AuditRecord/DataGovernanceLabel/
+  # EvaluationReport); `transferTo` reutiliza ActorId (CH-06); `humanInteractionRef` es
+  # Optional<HumanInteractionRequestId> — correlación opcional y reusada, sin modificar
+  # HumanInteractionRequest (CH-06); `status` es un ENUM de tres valores (PENDING/ACCEPTED/
+  # COMPLETED), nunca un Boolean — mismo principio ya establecido repetidamente en este registry.
+  - id: C-034
+    name: HandoffPackage
+    version: v1
+    introduced_in: CH-23
+    current_definition: |
+      STRUCT HandoffPackage
+          id: HandoffPackageId
+          runId: RunId
+          sessionId: SessionId
+          reason: HandoffReason
+          contextRef: Text
+          transferTo: ActorId
+          humanInteractionRef: Optional<HumanInteractionRequestId>
+          status: HandoffStatus
+          createdAt: Timestamp
+      END
+    used_by: [CMP-021]
+    modified_by: []
+    constitutional_impact: [INV-E12, INV-19]

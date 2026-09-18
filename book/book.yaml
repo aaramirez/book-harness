@@ -46,3 +46,5 @@ chapters:
     file: chapters/14-admission-controller/chapter.md
   - id: CH-15
     file: chapters/15-agent-communication-gateway/chapter.md
+  - id: CH-16
+    file: chapters/16-credential-broker/chapter.md

@@ -520,3 +520,28 @@ contracts:
     used_by: [CMP-013]
     modified_by: []
     constitutional_impact: [P-21, INV-E06, INV-19]
+
+  # C-026 (CredentialReference): decimotercer id verdaderamente NUEVO del libro (el correlativo
+  # continúa después de C-025, CH-15 — ningún id quedaba reservado desde CH-01 §7). Ver decisión de
+  # diseño en planes/2026-09-14-capitulo-16-credential-broker.md: la referencia opaca al secreto que
+  # una implementación de capability ya resuelta (CapabilityDescriptor, C-018, CH-08) necesita para
+  # autenticarse — cita literal de INV-E08 ("Credentials are resolved by a CredentialBroker and
+  # SHOULD NOT enter model context"). Ningún campo de este STRUCT transporta jamás el valor real del
+  # secreto — decisión de diseño explícita y deliberada, no una omisión. classification/expiresAt
+  # son la primera materialización con código real de P-22 en todo el libro.
+  - id: C-026
+    name: CredentialReference
+    version: v1
+    introduced_in: CH-16
+    current_definition: |
+      STRUCT CredentialReference
+          id: CredentialReferenceId
+          capability: CapabilityId
+          credentialName: Text
+          classification: CredentialClassification
+          resolvedAt: Timestamp
+          expiresAt: Optional<Timestamp>
+      END
+    used_by: [CMP-014]
+    modified_by: []
+    constitutional_impact: [P-22, INV-E07, INV-E08]

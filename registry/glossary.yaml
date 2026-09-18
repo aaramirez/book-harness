@@ -819,3 +819,71 @@ terms:
       Adapter y Transport Adapter sean reemplazables de forma independiente entre sí.
     introduced_in: CH-15
     kind: concept
+
+  - term: CredentialBroker
+    definition: >
+      Componente (CMP-014) del "Capability & Integration Plane" de Amendment v1.1 que resuelve, para
+      una implementación de capability ya resuelta (CapabilityDescriptor, C-018), la credencial que
+      necesita para autenticarse contra el sistema externo real que envuelve — produciendo
+      exclusivamente una CredentialReference opaca, nunca el valor real del secreto (cita literal,
+      INV-E08), y aplicando sobre ese secreto el gobierno de datos que P-22 exige (clasificación,
+      rotación/expiración).
+    introduced_in: CH-16
+    kind: component
+    ref: CMP-014
+
+  - term: CredentialReference
+    definition: >
+      Contrato (C-026) que representa la referencia opaca al secreto que una implementación de
+      capability ya resuelta necesita — nunca el valor real del secreto en sí. Correlaciona con el
+      CapabilityDescriptor al que pertenece (capability: CapabilityId), declara un nombre lógico
+      (credentialName), una clasificación (CredentialClassification, P-22) y, opcionalmente, un
+      vencimiento (expiresAt).
+    introduced_in: CH-16
+    kind: contract
+    ref: C-026
+
+  - term: Secret
+    definition: >
+      El valor sensible real (una API key, un token, una contraseña) que autentica una
+      implementación de capability contra el sistema externo que envuelve. Este libro nunca modela
+      ese valor como un contrato — no existe, ni existirá, ningún STRUCT cuyo campo lo contenga; se
+      representa exclusivamente mediante una CredentialReference opaca (C-026, CH-16).
+    introduced_in: CH-16
+    kind: concept
+
+  - term: Credential Classification
+    definition: >
+      La materialización literal, con código real, de la exigencia de clasificación de P-22
+      aplicada específicamente a un secreto — modelada como CredentialReference.classification:
+      CredentialClassification (CONFIDENTIAL/RESTRICTED). Un ENUM de dos valores, deliberadamente no
+      un Boolean, porque no todos los secretos cargan el mismo riesgo.
+    introduced_in: CH-16
+    kind: concept
+
+  - term: Credential Rotation
+    definition: >
+      Lectura de P-22 ("retention") aplicada específicamente a un secreto: el vencimiento explícito
+      de una CredentialReference, más allá del cual CredentialBroker rechaza por defecto — modelado
+      de forma mínima como CredentialReference.expiresAt: Optional<Timestamp>. El mecanismo real que
+      rota un secreto detrás de esa fecha no se modela en este libro (Preview).
+    introduced_in: CH-16
+    kind: concept
+
+  - term: Secret Store
+    definition: >
+      La pieza de infraestructura de borde (vault, secret manager, KMS — no modelada, no un
+      componente de este registry) que almacenaría el valor crudo de un secreto detrás de
+      CredentialBroker — mismo tratamiento que Protocol Adapter/Transport Adapter (CH-15) o Ingress
+      Adapter (CH-14): nombrada, nunca modelada en detalle.
+    introduced_in: CH-16
+    kind: concept
+
+  - term: Tenant Isolation of Credentials
+    definition: >
+      Lectura de INV-E07 ("Tenant data, memory, credentials, artifacts and audit records are
+      isolated") aplicada a credenciales: la exigencia de que las credenciales de un tenant nunca
+      sean visibles ni resolubles por otro. Citada literalmente en CH-16 como parte del owns de
+      CredentialBroker, sin que su mecanismo de enforcement se modele todavía.
+    introduced_in: CH-16
+    kind: concept

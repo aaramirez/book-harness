@@ -48,3 +48,5 @@ chapters:
     file: chapters/15-agent-communication-gateway/chapter.md
   - id: CH-16
     file: chapters/16-credential-broker/chapter.md
+  - id: CH-17
+    file: chapters/17-idempotency-guard/chapter.md

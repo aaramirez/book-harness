@@ -545,3 +545,31 @@ contracts:
     used_by: [CMP-014]
     modified_by: []
     constitutional_impact: [P-22, INV-E07, INV-E08]
+
+  # C-027 (IdempotencyRecord): decimocuarto id verdaderamente NUEVO del libro (el correlativo
+  # continúa después de C-026, CH-16 — ningún id quedaba reservado desde CH-01 §7). Ver decisión de
+  # diseño en planes/2026-09-17-capitulo-17-idempotency-guard.md: el registro persistido de una
+  # clave de idempotencia ya vista para un ToolCall con side effects (C-008, CH-02) — cierra INV-11
+  # (Article II, "Execution Invariants", declarado desde CH-00, nunca antes resuelto por ningún
+  # componente) y materializa, con código real, P-24/INV-E09 (Amendment v1.1). status es un ENUM de
+  # dos valores (PENDING/COMPLETED, nunca un Boolean) porque una ejecución en curso y una ya
+  # terminada exigen respuestas opuestas de un llamador (esperar vs. reusar) — la ausencia total de
+  # un registro, no un tercer valor del ENUM, es lo que representa "nunca visto antes".
+  - id: C-027
+    name: IdempotencyRecord
+    version: v1
+    introduced_in: CH-17
+    current_definition: |
+      STRUCT IdempotencyRecord
+          id: IdempotencyRecordId
+          idempotencyKey: Text
+          capability: CapabilityId
+          originalToolCallId: ToolCallId
+          status: IdempotencyRecordStatus
+          result: Optional<ToolResult>
+          createdAt: Timestamp
+          completedAt: Optional<Timestamp>
+      END
+    used_by: [CMP-015]
+    modified_by: []
+    constitutional_impact: [INV-11, P-24, INV-E09]

@@ -108,6 +108,23 @@
 # (PolicyEngine, CMP-005, CH-05), sin resolver qué implementación satisface la capability
 # (CapabilityRegistry, CMP-008, CH-08) y sin ejecutar el side effect en sí (ToolRuntime, CMP-002,
 # CH-02). Ver decisión de diseño en planes/2026-09-14-capitulo-16-credential-broker.md.
+# CH-17 ("IdempotencyGuard y la Deduplicación de un Side Effect Crítico") introduce el
+# decimoquinto componente, CMP-015 IdempotencyGuard — el cuarto de este registry que NO
+# corresponde a ninguno de los once nombres de Article III: pertenece al "Reliability Plane" de
+# Amendment v1.1 (el séptimo plano canónico, cuarto que este libro cubre), con ficha literal
+# contra INV-11 (Article II original — declarado desde CH-00, nunca antes resuelto por ningún
+# componente) y P-24/INV-E09 (Amendment v1.1). A diferencia de CredentialBroker/
+# AdmissionController/AgentCommunicationGateway, ningún texto de la Constitution nombra
+# literalmente este componente — "IdempotencyGuard" es una síntesis de este libro, evaluada y
+# documentada como tal. Rastrea, para un ToolCall (C-008, CH-02) con side effects identificado por
+# una idempotencyKey ya asumida como dada, si esa ejecución ya ocurrió antes, permitiendo reusar el
+# ToolResult (C-009) ya producido en vez de duplicar el side effect real, y registra de forma
+# terminal y write-once una ejecución nueva ya concluida (IdempotencyRecord, C-027) — sin ejecutar
+# el side effect en sí (ToolRuntime, CMP-002, CH-02), sin decidir autorización (PolicyEngine,
+# CMP-005, CH-05), sin resolver qué implementación satisface la capability (CapabilityRegistry,
+# CMP-008, CH-08) y sin decidir si un run puede reintentar contra su presupuesto
+# (ExecutionController, CMP-007, CH-07 — distinción central del capítulo). Ver decisión de diseño
+# en planes/2026-09-17-capitulo-17-idempotency-guard.md.
 
 components:
   - id: CMP-001
@@ -471,3 +488,34 @@ components:
     produces: [C-010, C-011, C-026]
     introduced_in: CH-16
     constitutional_articles: [P-13, P-22, INV-E07, INV-E08, INV-18, INV-19, INV-20]
+
+  - id: CMP-015
+    name: IdempotencyGuard
+    responsibility: >
+      Rastrear, para un ToolCall con side effects (C-008, CH-02) identificado por una clave de
+      idempotencia ya asumida como dada, si esa ejecución ya ocurrió antes bajo esa misma clave —
+      permitiendo, cuando corresponda, reusar el ToolResult (C-009, CH-02) ya producido en vez de
+      duplicar el side effect real — y registrar, una vez que una ejecución nueva concluye, el
+      IdempotencyRecord terminal correspondiente, sin sobrescribir jamás uno ya producido — sin
+      ejecutar el side effect en sí, sin decidir autorización, sin resolver qué implementación
+      satisface la capability y sin decidir si un run puede reintentar contra su presupuesto.
+    owns:
+      - "Side effects críticos deben soportar idempotencia, deduplicación o una protección equivalente (cita literal, INV-11, Article II — Execution Invariants)"
+      - "Capabilities with externally visible side effects MUST declare idempotency, retry and duplicate-delivery behavior (cita literal, P-24)"
+      - "Every side-effecting capability declares idempotency and retry semantics (cita literal, INV-E09 — la mitad de \"idempotency\"; la mitad de \"retry\" pertenece a ExecutionController)"
+      - "detectar cuándo un ToolCall ya se ejecutó antes bajo la misma clave de idempotencia, produciendo el IdempotencyRecord ya asociado a esa clave (PENDING o COMPLETED), cuando existe"
+      - "decidir si una ejecución repetida debe reusar el ToolResult ya conocido, en vez de que el side effect real vuelva a ejecutarse"
+      - "registrar, de forma terminal y write-once, el IdempotencyRecord COMPLETED que resulta de una ejecución nueva ya concluida"
+      - "rechazar por defecto (fail-closed) cuando la clave de idempotencia encontrada corresponde a una capability distinta de la solicitada, o cuando se intenta re-registrar una ejecución ya COMPLETED"
+    does_not_own:
+      - "ejecutar el side effect en sí (ToolRuntime, CMP-002, ya introducido en CH-02 — IdempotencyGuard decide SI debe ejecutarse de nuevo, nunca CÓMO se ejecuta)"
+      - "decidir si la acción/ToolCall ya resuelta está autorizada (PolicyEngine, CMP-005, ya introducido en CH-05 — distinta pregunta, distinto momento: \"¿ya se hizo esto?\" nunca es \"¿está permitido hacerlo?\")"
+      - "resolver qué implementación satisface una capability solicitada (CapabilityRegistry, CMP-008, ya introducido en CH-08)"
+      - "decidir si un AgentRun puede seguir operacionalmente contra su ExecutionBudget, incluyendo si reintentar tras un fallo transitorio (ExecutionController, CMP-007, ya introducido en CH-07 — distinción central de este capítulo: \"puedo seguir intentando\" y \"ya se hizo con éxito\" son preguntas ortogonales sobre materiales distintos)"
+      - "generar la clave de idempotencia misma, ni decidir con qué algoritmo se deriva (asumida como una señal de entrada dada)"
+      - "el mecanismo real de persistencia atómica que evita una condición de carrera entre dos ejecuciones concurrentes que reclaman la misma clave al mismo tiempo (Preview, infraestructura de borde, no un componente propio de este registry)"
+    dependencies: []
+    consumes: [C-004, C-008, C-009]
+    produces: [C-010, C-011, C-027]
+    introduced_in: CH-17
+    constitutional_articles: [P-13, P-24, INV-11, INV-E09, INV-18, INV-19, INV-20]

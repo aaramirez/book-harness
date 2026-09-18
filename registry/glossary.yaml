@@ -887,3 +887,64 @@ terms:
       CredentialBroker, sin que su mecanismo de enforcement se modele todavía.
     introduced_in: CH-16
     kind: concept
+
+  - term: IdempotencyGuard
+    definition: >
+      Componente (CMP-015) del "Reliability Plane" de Amendment v1.1 que rastrea, para un ToolCall
+      con side effects (C-008) identificado por una clave de idempotencia ya asumida como dada, si
+      esa ejecución ya ocurrió antes — permitiendo reusar el ToolResult (C-009) ya producido en vez
+      de duplicar el side effect real, y registrando de forma terminal y write-once una ejecución
+      nueva ya concluida. Cierra INV-11 (Article II, declarado desde CH-00, nunca antes resuelto) y
+      materializa, con código real, P-24/INV-E09 (Amendment v1.1). A diferencia de CredentialBroker/
+      AdmissionController/AgentCommunicationGateway, ningún texto de la Constitution nombra
+      literalmente este componente — es una síntesis de este libro.
+    introduced_in: CH-17
+    kind: component
+    ref: CMP-015
+
+  - term: IdempotencyRecord
+    definition: >
+      Contrato (C-027) que representa el registro persistido de una clave de idempotencia ya
+      vista: la clave misma (idempotencyKey), una referencia opaca a la capability a la que
+      pertenece, una referencia al ToolCall original, un estado (IdempotencyRecordStatus:
+      PENDING/COMPLETED, nunca un Boolean) y, cuando ya terminó, el ToolResult reusable.
+    introduced_in: CH-17
+    kind: contract
+    ref: C-027
+
+  - term: Idempotency Key
+    definition: >
+      El identificador, provisto por quien origina la intención lógica de un ToolCall con side
+      effects, que correlaciona dos o más intentos de esa misma intención entre sí. Quién la
+      genera, y con qué algoritmo, queda fuera de alcance de CH-17 — se asume como dada, igual que
+      otros capítulos asumen señales de entrada.
+    introduced_in: CH-17
+    kind: concept
+
+  - term: Deduplication
+    definition: >
+      Lectura de INV-11 ("deduplicación"): el acto de reconocer que un intento de ejecución
+      corresponde a una intención lógica ya vista, y decidir reusar el resultado ya producido en
+      vez de repetir el side effect real. Modelado por IdempotencyGuard (CMP-015, CH-17) mediante
+      checkIdempotency/recordIdempotentExecution.
+    introduced_in: CH-17
+    kind: concept
+
+  - term: Duplicate Delivery
+    definition: >
+      Cita literal de INV-E09/P-24 ("duplicate-delivery"): el escenario en el que la misma petición
+      lógica se entrega más de una vez por una causa externa al harness (un reintento de red, una
+      cola de mensajes at-least-once, un cliente que reenvía tras no recibir respuesta a tiempo).
+      IdempotencyGuard (CH-17) no elimina la entrega duplicada en sí — hace que esa duplicidad deje
+      de traducirse en un side effect duplicado.
+    introduced_in: CH-17
+    kind: concept
+
+  - term: Concurrent Execution Guard
+    definition: >
+      La exigencia de que una segunda ejecución concurrente bajo la misma idempotencyKey, mientras
+      la primera todavía está en curso, espere en vez de duplicar el side effect — modelada de
+      forma mínima mediante IdempotencyRecordStatus.PENDING (CH-17). El mecanismo real que hace
+      esperar a esa segunda ejecución (colas, locks, polling) es Preview, no modelado por CH-17.
+    introduced_in: CH-17
+    kind: concept

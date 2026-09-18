@@ -1072,3 +1072,60 @@ terms:
       ControlDirectiveApplication (CH-18).
     introduced_in: CH-19
     kind: concept
+
+  - term: DataGovernanceEngine
+    definition: >
+      Componente (CMP-018) que clasifica cualquier dato que fluye por el sistema (un ContextBlock
+      de CH-04, un ToolResult de CH-02) con un nivel de sensibilidad, un requisito de residencia,
+      una fecha límite de retención, una bandera de legal-hold y una referencia de lineage — cita
+      literal, P-22 ("Classification, residency, retention, lineage... and legal-hold requirements
+      MUST be enforceable independently of model reasoning"). Nunca decide qué contexto es
+      relevante (frontera con ContextEngine, CMP-004, CH-04) ni reclasifica un secreto ya
+      clasificado por CredentialBroker (CMP-014, CH-16). Séptimo componente de este libro que no
+      corresponde a ninguno de los once nombres de Article III.
+    introduced_in: CH-20
+    kind: component
+    ref: CMP-018
+
+  - term: DataGovernanceLabel
+    definition: >
+      Contrato (C-030) que representa la etiqueta de gobernanza portátil de un dato: una
+      referencia opaca al dato gobernado (subjectRef), un nivel de clasificación de cuatro valores
+      (classification: DataClassificationLevel), un requisito de residencia opaco
+      (residencyRequirement), una fecha límite de retención (retentionDeadline), una bandera de
+      legal-hold que suspende cualquier borrado programado sin borrar el plazo original
+      (legalHold), una referencia de lineage opaca (lineageRef) y un timestamp (classifiedAt).
+      Diseñada, per INV-E11, para viajar junto con el dato a través de fronteras de componentes.
+    introduced_in: CH-20
+    kind: contract
+    ref: C-030
+
+  - term: Data Classification
+    definition: >
+      Cita literal de P-22 ("Classification... MUST be enforceable independently of model
+      reasoning"): el nivel de sensibilidad asignado a un dato concreto. Modelado como
+      DataClassificationLevel (ENUM de cuatro valores: PUBLIC/INTERNAL/CONFIDENTIAL/RESTRICTED,
+      CH-20) — nunca un Boolean "es sensible o no", y distinto del esquema más estrecho de dos
+      valores (CredentialClassification, C-026, CH-16) exclusivo de secretos.
+    introduced_in: CH-20
+    kind: concept
+
+  - term: Data Residency
+    definition: >
+      Lectura de P-22 ("residency"): el requisito de que un dato deba procesarse o almacenarse
+      dentro de una región o jurisdicción concreta. Modelado como
+      DataGovernanceLabel.residencyRequirement (Optional<Text>, CH-20), una referencia opaca cuyo
+      significado exacto es una señal de entrada asumida, no modelada por ese capítulo.
+    introduced_in: CH-20
+    kind: concept
+
+  - term: Legal Hold
+    definition: >
+      Cita literal de P-22 ("legal-hold requirements MUST be enforceable independently of model
+      reasoning"): la bandera que, cuando está activa, suspende cualquier borrado programado sobre
+      un dato — independientemente de si su retentionDeadline ya se cumplió. Modelada como
+      DataGovernanceLabel.legalHold (Boolean, CH-20); enforceRetention evalúa esta bandera ANTES de
+      comparar retentionDeadline, y nunca borra ni reemplaza ese plazo original al aplicar la
+      suspensión — la interacción central que CH-20 documenta con cuidado.
+    introduced_in: CH-20
+    kind: concept

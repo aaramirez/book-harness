@@ -54,3 +54,5 @@ chapters:
     file: chapters/18-operational-controller/chapter.md
   - id: CH-19
     file: chapters/19-audit-ledger/chapter.md
+  - id: CH-20
+    file: chapters/20-data-governance-engine/chapter.md

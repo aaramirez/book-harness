@@ -633,3 +633,36 @@ contracts:
     used_by: [CMP-017]
     modified_by: []
     constitutional_impact: [P-25, INV-19, INV-E10]
+
+  # C-030 (DataGovernanceLabel): decimoséptimo id verdaderamente NUEVO del libro (el correlativo
+  # continúa después de C-029, CH-19 — ningún id quedaba reservado desde CH-01 §7). Ver decisión de
+  # diseño en planes/2026-09-18-capitulo-20-data-governance-engine.md: la etiqueta de gobernanza
+  # portátil que P-22 exige poder aplicar a CUALQUIER dato del sistema — cita literal, P-22
+  # ("Classification, residency, retention, lineage... and legal-hold requirements MUST be
+  # enforceable independently of model reasoning") — generalizando, sin tocar su contrato, lo que
+  # CredentialClassification (C-026, CH-16) ya resolvió únicamente para un secreto. `subjectRef` es
+  # una referencia opaca al dato gobernado (un ContextBlock de CH-04, un ToolResult de CH-02, etc. —
+  # nunca un campo por tipo posible, mismo argumento que AuditRecord.subjectRef, CH-19);
+  # `classification` es un ENUM de cuatro valores (PUBLIC/INTERNAL/CONFIDENTIAL/RESTRICTED, nunca un
+  # Boolean); `legalHold` suspende cualquier borrado programado sin borrar ni reemplazar
+  # `retentionDeadline` — la interacción documentada con cuidado en el propio capítulo (seccion 11).
+  # A diferencia de AuditRecord (CH-19), no tiene campo `actor`: describe una propiedad del dato,
+  # no evidencia de quién decidió qué.
+  - id: C-030
+    name: DataGovernanceLabel
+    version: v1
+    introduced_in: CH-20
+    current_definition: |
+      STRUCT DataGovernanceLabel
+          id: DataGovernanceLabelId
+          subjectRef: Text
+          classification: DataClassificationLevel
+          residencyRequirement: Optional<Text>
+          retentionDeadline: Optional<Timestamp>
+          legalHold: Boolean
+          lineageRef: Optional<Text>
+          classifiedAt: Timestamp
+      END
+    used_by: [CMP-018]
+    modified_by: []
+    constitutional_impact: [P-22, INV-E11, INV-19]

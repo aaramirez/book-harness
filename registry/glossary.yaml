@@ -1190,3 +1190,76 @@ terms:
       enmienda quedan, todos, cubiertos por al menos un capítulo real de este libro.
     introduced_in: CH-21
     kind: concept
+
+  - term: Evaluation Harness (Component)
+    definition: >
+      Cita casi literal de P-28 ("evaluable in an Evaluation Harness before controlled promotion to
+      production"): el componente que evalúa cualquier candidato (agente, prompt, skill, modelo,
+      policy o capability) antes de su promoción controlada a producción, aplicando la policy de
+      certificación que su clase de riesgo exige (INV-E13) y correlacionando la ejecución de un run
+      con un outcome de negocio medible (P-29). Modelado como EvaluationHarness (CMP-020, CH-22) —
+      a diferencia de los ocho componentes anteriores de Amendment v1.1, no pertenece a ninguno de
+      los nueve "Canonical Enterprise Planes"; P-28/P-29/INV-E13 quedan fuera de esa taxonomía.
+    introduced_in: CH-22
+    kind: component
+    ref: CMP-020
+
+  - term: Certification Policy
+    definition: >
+      Cita literal de INV-E13 ("Production promotion requires certification policy where risk class
+      requires it"): la exigencia, condicionada por la clase de riesgo de un candidato, de que una
+      política de certificación se aplique antes de su promoción a producción. Modelada como
+      EvaluationReport.certificationRequired (Boolean, CH-22) — una propiedad binaria de la policy
+      vigente para esa RiskClass, nunca el resultado de la propia decisión de certificación.
+    introduced_in: CH-22
+    kind: concept
+
+  - term: Risk Class
+    definition: >
+      La clasificación del nivel de riesgo de un candidato que determina si una Certification
+      Policy aplica o no. Modelada como RiskClass (ENUM de cuatro valores:
+      LOW/MEDIUM/HIGH/CRITICAL, CH-22) — mismo tamaño de escala que DataClassificationLevel (CH-20)
+      para un problema de forma análoga.
+    introduced_in: CH-22
+    kind: concept
+
+  - term: Three-State Certification Outcome
+    definition: >
+      El resultado de evaluar un candidato antes de producción nunca se reduce a
+      aprobado/rechazado. Modelado como EvaluationOutcome (ENUM de tres valores:
+      CERTIFIED/REJECTED/NEEDS_REVIEW, CH-22), donde NEEDS_REVIEW es el estado que exige
+      intervención humana antes de decidir — mismo principio que ya protegió REQUIRE_APPROVAL
+      (PolicyOutcome, CH-05).
+    introduced_in: CH-22
+    kind: concept
+
+  - term: Business Outcome Correlation
+    definition: >
+      Cita literal de P-29 ("Enterprise runs SHOULD correlate execution with measurable outcomes,
+      value, SLA/SLO and human escalation"): la asociación entre un run ya existente y un resultado
+      de negocio medible, una referencia a un SLA/SLO aplicable, y una posible escalación humana.
+      Modelada como el contrato BusinessOutcomeCorrelation (C-033, CH-22) — la materialización
+      directa de que el éxito técnico de un run nunca implica, por sí solo, éxito de negocio.
+    introduced_in: CH-22
+    kind: contract
+    ref: C-033
+
+  - term: SLA/SLO Reference
+    definition: >
+      Una referencia opaca a un acuerdo o un objetivo de nivel de servicio aplicable a un run
+      concreto. Modelada como BusinessOutcomeCorrelation.slaRef (Optional<Text>, CH-22) — cuyo
+      detalle real (qué SLA, qué umbral concreto) es una señal de entrada asumida, no modelada por
+      ese capítulo.
+    introduced_in: CH-22
+    kind: concept
+
+  - term: EvaluationReport
+    definition: >
+      El resultado de evaluar un candidato (agente, prompt, skill, modelo, policy o capability)
+      antes de su promoción controlada a producción: una referencia opaca al candidato
+      (subjectRef), su clase de riesgo (riskClass: RiskClass), si la certificación es requerida
+      para esa clase (certificationRequired: Boolean) y el resultado de la certificación
+      (outcome: EvaluationOutcome, nunca reducido a dos estados) y un timestamp (evaluatedAt).
+    introduced_in: CH-22
+    kind: contract
+    ref: C-032

@@ -699,3 +699,65 @@ contracts:
     used_by: [CMP-019]
     modified_by: []
     constitutional_impact: [P-27, INV-19]
+
+  # C-032 (EvaluationReport): decimonoveno id verdaderamente NUEVO del libro (el correlativo
+  # continúa después de C-031, CH-21 — ningún id quedaba reservado desde CH-01 §7). Ver decisión
+  # de diseño en planes/2026-09-18-capitulo-22-evaluation-harness.md: el resultado de evaluar un
+  # candidato (agente/prompt/skill/modelo/policy/capability) ANTES de su promoción controlada a
+  # producción — cita literal, P-28 ("Candidate agents, prompts, skills, models, policies and
+  # capabilities MUST be evaluable in an Evaluation Harness before controlled promotion to
+  # production") — aplicando la certificación que INV-E13 exige según la clase de riesgo. `subjectRef`
+  # es una referencia opaca al candidato (mismo patrón que subjectRef en AuditRecord/
+  # DataGovernanceLabel, porque el universo referenciado es heterogéneo, nunca un tipo homogéneo
+  # como runId); `riskClass` es un ENUM de cuatro valores (LOW/MEDIUM/HIGH/CRITICAL, nunca un
+  # Boolean); `certificationRequired` es un Boolean legítimo — una propiedad binaria de la policy de
+  # certificación vigente, no el resultado de una decisión —; `outcome` es un ENUM de tres valores
+  # (CERTIFIED/REJECTED/NEEDS_REVIEW, nunca reducido a dos) — la interacción entre los cuatro campos
+  # documentada con cuidado en el propio capítulo (seccion 6/11).
+  - id: C-032
+    name: EvaluationReport
+    version: v1
+    introduced_in: CH-22
+    current_definition: |
+      STRUCT EvaluationReport
+          id: EvaluationReportId
+          subjectRef: Text
+          riskClass: RiskClass
+          certificationRequired: Boolean
+          outcome: EvaluationOutcome
+          evaluatedAt: Timestamp
+      END
+    used_by: [CMP-020]
+    modified_by: []
+    constitutional_impact: [P-28, INV-E13, INV-19]
+
+  # C-033 (BusinessOutcomeCorrelation): vigésimo id verdaderamente NUEVO del libro (el correlativo
+  # continúa después de C-032, CH-22 — ningún id quedaba reservado desde CH-01 §7). Ver decisión de
+  # diseño en planes/2026-09-18-capitulo-22-evaluation-harness.md: la correlación entre un run ya
+  # existente y un resultado de negocio medible — cita literal, P-29 ("Technical success does not
+  # imply business success. Enterprise runs SHOULD correlate execution with measurable outcomes,
+  # value, SLA/SLO and human escalation"). `runId` es un identificador YA EXISTENTE (RunId, CH-00),
+  # no una referencia opaca de tipo Text — mismo argumento que runId en ExecutionPlacement (C-031,
+  # CH-21): el universo de lo que este contrato describe es siempre exactamente un run.
+  # `measuredOutcome` es deliberadamente Text opaco, no un Number ni una STRUCT Metric estructurada
+  # (fuera de alcance); `slaRef` es una referencia opaca Optional<Text>; `humanEscalationRef` es
+  # Optional<HumanInteractionRequestId> — reutiliza el identificador fuerte que
+  # HumanInteractionService (CH-06) ya produce, en vez de agregar un campo nuevo a
+  # HumanInteractionRequest — decisión evaluada y documentada explícitamente en el propio capítulo
+  # (seccion 6).
+  - id: C-033
+    name: BusinessOutcomeCorrelation
+    version: v1
+    introduced_in: CH-22
+    current_definition: |
+      STRUCT BusinessOutcomeCorrelation
+          id: BusinessOutcomeCorrelationId
+          runId: RunId
+          measuredOutcome: Text
+          slaRef: Optional<Text>
+          humanEscalationRef: Optional<HumanInteractionRequestId>
+          correlatedAt: Timestamp
+      END
+    used_by: [CMP-020]
+    modified_by: []
+    constitutional_impact: [P-29, INV-19]

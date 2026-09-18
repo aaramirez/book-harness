@@ -64,3 +64,5 @@ chapters:
     file: chapters/23-handoff-coordinator/chapter.md
   - id: CH-24
     file: chapters/24-skill-library/chapter.md
+  - id: CH-25
+    file: chapters/25-epilogo-secuenciacion/chapter.md

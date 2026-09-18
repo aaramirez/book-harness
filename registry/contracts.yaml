@@ -61,7 +61,7 @@ contracts:
           status: AgentRunStatus
           currentTurn: Integer
       END
-    used_by: [CMP-001, CMP-004, CMP-007, CMP-010, CMP-011]
+    used_by: [CMP-001, CMP-004, CMP-007, CMP-010, CMP-011, CMP-016]
     modified_by: []
     constitutional_impact: [P-08, P-10, INV-12]
 
@@ -76,7 +76,7 @@ contracts:
           traceId: TraceId
           budget: ExecutionBudget
       END
-    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005, CMP-006, CMP-007, CMP-008, CMP-010, CMP-011]
+    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005, CMP-006, CMP-007, CMP-008, CMP-010, CMP-011, CMP-016]
     modified_by: []
     constitutional_impact: [P-01, P-14]
 
@@ -242,7 +242,7 @@ contracts:
           CANCELLED
           EXPIRED
       END
-    used_by: [CMP-001]
+    used_by: [CMP-001, CMP-016]
     modified_by: []
     constitutional_impact: [P-10, INV-08, INV-09]
 
@@ -573,3 +573,31 @@ contracts:
     used_by: [CMP-015]
     modified_by: []
     constitutional_impact: [INV-11, P-24, INV-E09]
+
+  # C-028 (ControlDirective): decimoquinto id verdaderamente NUEVO del libro (el correlativo
+  # continúa después de C-027, CH-17 — ningún id quedaba reservado desde CH-01 §7). Ver decisión de
+  # diseño en planes/2026-09-17-capitulo-18-operational-controller.md: el comando operacional
+  # emitido desde AFUERA de cualquier AgentRun particular — cita literal de P-30 ("cancellation,
+  # capability disablement, tenant isolation, rollout rollback and kill switches without relying on
+  # model cooperation") e INV-E14 ("Kill switches operate independently of AgentLoop"). type es un
+  # ENUM de cuatro valores (DISABLE_CAPABILITY/ISOLATE_TENANT/ROLLBACK/KILL_SWITCH); targetRef es
+  # una referencia opaca cuyo significado depende de type; status es un ENUM de dos valores
+  # (ISSUED/APPLIED, nunca un Boolean) porque un comando ya emitido y uno ya con efecto real exigen
+  # respuestas opuestas de un llamador.
+  - id: C-028
+    name: ControlDirective
+    version: v1
+    introduced_in: CH-18
+    current_definition: |
+      STRUCT ControlDirective
+          id: ControlDirectiveId
+          type: ControlDirectiveType
+          targetRef: Text
+          issuedBy: ActorId
+          status: ControlDirectiveStatus
+          issuedAt: Timestamp
+          appliedAt: Optional<Timestamp>
+      END
+    used_by: [CMP-016]
+    modified_by: []
+    constitutional_impact: [P-30, INV-E14, INV-19]

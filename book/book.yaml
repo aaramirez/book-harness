@@ -50,3 +50,5 @@ chapters:
     file: chapters/16-credential-broker/chapter.md
   - id: CH-17
     file: chapters/17-idempotency-guard/chapter.md
+  - id: CH-18
+    file: chapters/18-operational-controller/chapter.md

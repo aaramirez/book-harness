@@ -948,3 +948,78 @@ terms:
       esperar a esa segunda ejecución (colas, locks, polling) es Preview, no modelado por CH-17.
     introduced_in: CH-17
     kind: concept
+
+  - term: OperationalController
+    definition: >
+      Componente (CMP-016) del "Control Plane" de Amendment v1.1 que emite y aplica un
+      ControlDirective — deshabilitar una capability, aislar los runs de un tenant, revertir un
+      rollout o forzar, mediante un kill switch, la terminación inmediata de un AgentRun — actuando
+      siempre desde AFUERA del ciclo de cualquier run particular, sin depender de la cooperación
+      del modelo ni de AgentLoop (cita literal, P-30/INV-E14). A diferencia de CredentialBroker/
+      AdmissionController/AgentCommunicationGateway, y de la misma forma que IdempotencyGuard,
+      ningún texto de la Constitution nombra literalmente este componente — es una síntesis de
+      este libro. Es el primer componente distinto de AgentLoop cuyo pseudocódigo produce, de
+      verdad, una transición de AgentRunStatus.
+    introduced_in: CH-18
+    kind: component
+    ref: CMP-016
+
+  - term: ControlDirective
+    definition: >
+      Contrato (C-028) que representa el comando operacional emitido desde afuera de cualquier
+      AgentRun particular: qué tipo de acción (ControlDirectiveType: DISABLE_CAPABILITY/
+      ISOLATE_TENANT/ROLLBACK/KILL_SWITCH, cita literal de P-30), a qué alcance opaco aplica
+      (targetRef), quién lo emitió (issuedBy: ActorId, reusado de CH-06) y si ya se propagó con
+      efecto real (status: ControlDirectiveStatus, ISSUED/APPLIED, nunca un Boolean).
+    introduced_in: CH-18
+    kind: contract
+    ref: C-028
+
+  - term: Kill Switch
+    definition: >
+      Cita literal de P-30/INV-E14: el mecanismo más inmediato de control operacional — forzar la
+      terminación de un AgentRun específico, de inmediato, sin pasar por su ciclo cooperativo.
+      Modelado como ControlDirective.type = KILL_SWITCH; applyControlDirective (CH-18) lo aplica
+      forzando AgentState.status = CANCELLED directamente, sin invocar
+      ExecutionController.evaluateExecutionContinuation (CH-07) ni ningún turno de AgentLoop
+      (CH-01) — la primera vía no cooperativa hacia AgentRunStatus.CANCELLED que este libro cablea
+      con código real.
+    introduced_in: CH-18
+    kind: concept
+
+  - term: Capability Disablement
+    definition: >
+      Lectura de P-30: deshabilitar una capability ya registrada (CapabilityDescriptor, C-018,
+      CH-08) de modo que ningún ToolCall pueda resolverse contra ella mientras esté deshabilitada.
+      Modelado como ControlDirective.type = DISABLE_CAPABILITY; el mecanismo real de enforcement
+      dentro de CapabilityRegistry.resolveToolCall es Preview, no modelado por CH-18.
+    introduced_in: CH-18
+    kind: concept
+
+  - term: Tenant Isolation
+    definition: >
+      Lectura de P-30, distinta de INV-E07 ("Tenant data, memory, credentials, artifacts and audit
+      records are isolated", ya citada por CredentialBroker, CH-16): detener o bloquear TODOS los
+      runs de un tenant de una sola vez, en vez de aislar sus datos entre tenants. Modelado como
+      ControlDirective.type = ISOLATE_TENANT; el mecanismo real y distribuido que efectivamente
+      bloquea esos runs es Preview, no modelado por CH-18.
+    introduced_in: CH-18
+    kind: concept
+
+  - term: Rollout Rollback
+    definition: >
+      Lectura de P-30, reusa el versionado de P-26/CapabilityDescriptor.version (C-018, CH-08) ya
+      existente en vez de introducir un sistema de versiones nuevo: revertir una capability
+      desplegada hacia una versión anterior ya conocida. Modelado como ControlDirective.type =
+      ROLLBACK, con targetRef refiriendo la versión objetivo.
+    introduced_in: CH-18
+    kind: concept
+
+  - term: Operational Override
+    definition: >
+      La propiedad, exigida por P-30, de que un ControlDirective tenga efecto incluso cuando el
+      proceso o ciclo objetivo no coopera. El eje que distingue a OperationalController (CH-18) de
+      cualquier componente anterior a CH-18, cuya eficacia dependía siempre de que algo dentro del
+      propio ciclo del run invocara su función en el momento correcto.
+    introduced_in: CH-18
+    kind: concept

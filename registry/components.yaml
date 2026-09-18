@@ -125,6 +125,27 @@
 # CMP-008, CH-08) y sin decidir si un run puede reintentar contra su presupuesto
 # (ExecutionController, CMP-007, CH-07 — distinción central del capítulo). Ver decisión de diseño
 # en planes/2026-09-17-capitulo-17-idempotency-guard.md.
+# CH-18 ("OperationalController y los Kill Switches Independientes de AgentLoop") introduce el
+# decimosexto componente, CMP-016 OperationalController — el quinto de este registry que NO
+# corresponde a ninguno de los once nombres de Article III: pertenece al "Control Plane" de
+# Amendment v1.1 (el sexto plano canónico, quinto que este libro cubre), con ficha literal contra
+# P-30 ("Operational control can override autonomy") e INV-E14 ("Kill switches operate
+# independently of AgentLoop"). A diferencia de CredentialBroker/AdmissionController/
+# AgentCommunicationGateway, y de la misma forma que IdempotencyGuard, ningún texto de la
+# Constitution nombra literalmente este componente — "OperationalController" es una síntesis de
+# este libro, evaluada y documentada como tal. Emite y aplica un ControlDirective (C-028) que
+# deshabilita una capability, aísla los runs de un tenant, revierte un rollout o fuerza, mediante
+# un kill switch, la terminación inmediata de un AgentRun — actuando siempre desde AFUERA del ciclo
+# de cualquier run particular, sin depender de la cooperación del modelo ni de AgentLoop — sin
+# decidir si UN run específico puede seguir operacionalmente contra su propio ExecutionBudget,
+# evaluado desde DENTRO de su propio ciclo (ExecutionController, CMP-007, CH-07 — distinción
+# central del capítulo), sin autorizar ninguna acción ya resuelta (PolicyEngine, CMP-005, CH-05),
+# sin resolver qué implementación satisface una capability (CapabilityRegistry, CMP-008, CH-08) y
+# sin ejecutar el side effect en sí (ToolRuntime, CMP-002, CH-02). Es, además, el primer componente
+# de este libro cuyo pseudocódigo escribe, de verdad, una transición de AgentRunStatus (C-013)
+# hacia CANCELLED sin invocar AgentLoop.runTurn (CH-01) ni ExecutionController.
+# evaluateExecutionContinuation (CH-07) — la materialización literal de INV-E14. Ver decisión de
+# diseño en planes/2026-09-17-capitulo-18-operational-controller.md.
 
 components:
   - id: CMP-001
@@ -519,3 +540,33 @@ components:
     produces: [C-010, C-011, C-027]
     introduced_in: CH-17
     constitutional_articles: [P-13, P-24, INV-11, INV-E09, INV-18, INV-19, INV-20]
+
+  - id: CMP-016
+    name: OperationalController
+    responsibility: >
+      Emitir y aplicar un comando operacional (ControlDirective) que deshabilita una capability,
+      aísla los runs de un tenant, revierte un rollout o fuerza, mediante un kill switch, la
+      terminación inmediata de un AgentRun — actuando siempre desde AFUERA del ciclo de cualquier
+      run particular y sin depender de la cooperación del modelo ni de AgentLoop — sin decidir si
+      UN run específico puede seguir contra su propio presupuesto operacional, sin autorizar
+      ninguna acción ya resuelta, sin resolver qué implementación satisface una capability y sin
+      ejecutar el side effect en sí.
+    owns:
+      - "The platform MUST support cancellation, capability disablement, tenant isolation, rollout rollback and kill switches without relying on model cooperation (cita literal, P-30 — \"cancellation\" se provee aquí exclusivamente como KILL_SWITCH, la mitad externa; la mitad interna, evaluada desde dentro del ciclo de un run, sigue siendo de ExecutionController)"
+      - "Kill switches operate independently of AgentLoop (cita literal, INV-E14)"
+      - "emitir un ControlDirective (ISSUED) para cualquiera de los cuatro tipos, rechazando por defecto (fail-closed) uno sin referencia de alcance (targetRef)"
+      - "forzar, para un ControlDirective de tipo KILL_SWITCH, la transición inmediata de un AgentState en un AgentRunStatus no terminal hacia CANCELLED, sin invocar evaluateExecutionContinuation (ExecutionController, CH-07) ni ningún turno de AgentLoop (CH-01)"
+      - "registrar, de forma terminal y write-once, cuándo un ControlDirective ya se aplicó (APPLIED), rechazando reaplicar uno ya APPLIED"
+      - "rechazar por defecto (fail-closed) un kill switch cuyo AgentRun objetivo ya alcanzó un AgentRunStatus terminal por cualquier otra vía — la regla explícita que resuelve el \"empate\" con ExecutionController"
+    does_not_own:
+      - "decidir si UN AgentRun específico puede seguir operacionalmente contra su ExecutionBudget, evaluado desde DENTRO del propio ciclo de esa ejecución (ExecutionController, CMP-007, ya introducido en CH-07 — distinción central de este capítulo: \"¿puedo seguir intentando, evaluado desde dentro de mi propio ciclo?\" nunca es \"¿debe el control externo forzar mi fin, desde afuera, sin pedir cooperación?\"; la mitad de \"cancellation\" evaluada por presupuesto sigue siendo, sin excepción, de ExecutionController)"
+      - "decidir si una acción/ToolCall ya resuelta está autorizada (PolicyEngine, CMP-005, ya introducido en CH-05 — distinta pregunta, distinto momento: \"¿debe detenerse/deshabilitarse esto por control operacional?\" nunca es \"¿está permitido hacerlo?\")"
+      - "resolver qué implementación satisface una capability solicitada (CapabilityRegistry, CMP-008, ya introducido en CH-08 — este componente decide SI una capability está deshabilitada, nunca CUÁL implementación la satisface)"
+      - "ejecutar el side effect en sí (ToolRuntime, CMP-002, ya introducido en CH-02)"
+      - "generar el targetRef mismo, ni decidir a qué capability/tenant/rollout/run corresponde en el mundo real más allá de la referencia opaca ya provista (asumida como una señal de entrada dada)"
+      - "el mecanismo real y distribuido que efectivamente impide invocar una capability deshabilitada, bloquea físicamente los runs de un tenant aislado, o redespliega una versión anterior de un rollout (Preview, infraestructura de borde, no un componente propio de este registry)"
+    dependencies: []
+    consumes: [C-003, C-004]
+    produces: [C-010, C-011, C-028]
+    introduced_in: CH-18
+    constitutional_articles: [P-13, P-30, INV-08, INV-18, INV-19, INV-20, INV-E14]

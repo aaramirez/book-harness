@@ -62,3 +62,5 @@ chapters:
     file: chapters/22-evaluation-harness/chapter.md
   - id: CH-23
     file: chapters/23-handoff-coordinator/chapter.md
+  - id: CH-24
+    file: chapters/24-skill-library/chapter.md

@@ -8,7 +8,7 @@ introduces_contracts: [C-034]
 modifies_contracts: []
 constitutional_articles: [P-13, INV-E12, INV-18, INV-19, INV-20]
 previous_chapter: CH-22
-next_chapter: null
+next_chapter: CH-24
 retrieval_set:
   expected_outcome:
     id: EO-CH23

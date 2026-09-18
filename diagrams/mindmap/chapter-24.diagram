@@ -3,7 +3,7 @@ digraph BookMindMap {
   size="6.5,9"; ratio=compress;
   node [fontname="Helvetica", fontsize=11, style=filled, target="_top"];
   edge [fontname="Helvetica", fontsize=9];
-  labelloc="t"; fontsize=14; fontname="Helvetica-Bold"; label="Mapa mental completo del libro";
+  labelloc="t"; fontsize=14; fontname="Helvetica-Bold"; label="Mapa mental hasta CH-24";
   "CH-00" [label="La Constitución Arquitectónica de un Arnés", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-00.html", style="filled,bold"];
   "C-001" [label="AgentMessage", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-00.html#C-001", style="filled"];
   "C-002" [label="AgentConfig", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-00.html#C-002", style="filled"];
@@ -158,11 +158,11 @@ digraph BookMindMap {
   "CMP-021" [label="HandoffCoordinator", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-23.html#CMP-021", style="filled,rounded"];
   "CONCEPT-human-handoff" [label="Human Handoff", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-23.html#CONCEPT-human-handoff", style="filled"];
   "CONCEPT-structured-handoff-reason" [label="Structured Handoff Reason", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-23.html#CONCEPT-structured-handoff-reason", style="filled"];
-  "CH-24" [label="SkillLibrary y el Conocimiento Procedural que Nunca Fue una Capability", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-24.html", style="filled,bold"];
-  "C-035" [label="SkillDescriptor", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-24.html#C-035", style="filled"];
-  "CMP-022" [label="SkillLibrary", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-24.html#CMP-022", style="filled,rounded"];
-  "CONCEPT-reusable-procedural-knowledge" [label="Reusable Procedural Knowledge", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-24.html#CONCEPT-reusable-procedural-knowledge", style="filled"];
-  "CONCEPT-skill-resolution" [label="Skill Resolution", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-24.html#CONCEPT-skill-resolution", style="filled"];
+  "CH-24" [label="SkillLibrary y el Conocimiento Procedural que Nunca Fue una Capability", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-24.html", style="filled,bold", penwidth=3, color="#d62728"];
+  "C-035" [label="SkillDescriptor", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-24.html#C-035", style="filled,bold", penwidth=3, color="#d62728"];
+  "CMP-022" [label="SkillLibrary", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-24.html#CMP-022", style="filled,rounded,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-reusable-procedural-knowledge" [label="Reusable Procedural Knowledge", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-24.html#CONCEPT-reusable-procedural-knowledge", style="filled,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-skill-resolution" [label="Skill Resolution", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-24.html#CONCEPT-skill-resolution", style="filled,bold", penwidth=3, color="#d62728"];
   "CH-00" -> "C-001" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-002" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-003" [label="INTRODUCES", color="#2a5fa5", style="bold"];

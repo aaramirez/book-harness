@@ -1303,3 +1303,50 @@ terms:
     introduced_in: CH-23
     kind: component
     ref: CMP-021
+
+  - term: Reusable Procedural Knowledge
+    definition: >
+      Cita literal de P-07 ("Skills encode reusable procedural knowledge" / "El conocimiento
+      procedural reusable debe estar separado del core, las tools y la identidad del agente"): el
+      CÓMO hacer algo paso a paso — una guía o procedimiento reusable — como una capa separada del
+      core del agente (AgentCore, CH-11), de las tools/capabilities (CapabilityRegistry/
+      ToolRuntime, CH-08/CH-02) y de la identidad/configuración del agente (AgentConfig, CH-00).
+      Distinto, por objeto, de una Capability Resolution (CH-08): esa resuelve QUÉ IMPLEMENTACIÓN
+      CONCRETA satisface una capacidad; esto resuelve QUÉ PROCEDIMIENTO aplica a una situación.
+    introduced_in: CH-24
+    kind: concept
+
+  - term: Skill Resolution
+    definition: >
+      El tramo determinístico en el que se compara el nombre de una situación contra un registro
+      real de skills conocidas (SkillDescriptor) y se produce una referencia consultable al
+      procedimiento que aplica — nunca una acción ejecutable. Contraste explícito y deliberado con
+      Capability Resolution (CH-08): resolveSkillForSituation nunca produce un ToolCall, y su
+      resultado nunca pasa por ToolRuntime ni por PolicyEngine como si fuera una acción.
+    introduced_in: CH-24
+    kind: concept
+
+  - term: SkillDescriptor
+    definition: >
+      El registro nombrado de una skill — su identificador (skill: SkillId), su nombre canónico,
+      su versión explícita (mismo criterio de versionado que CapabilityDescriptor, C-018, y P-26,
+      sin que P-26 en sí se extienda a skills), una referencia opaca al procedimiento/guía real
+      (procedureRef, nunca su contenido en prosa completo) y, opcionalmente, una referencia opaca a
+      qué capabilities/situaciones aplica (appliesTo). Deliberadamente con la misma forma de cinco
+      campos que CapabilityDescriptor, para hacer el contraste legible sin sugerir que son el mismo
+      concepto.
+    introduced_in: CH-24
+    kind: contract
+    ref: C-035
+
+  - term: SkillLibrary
+    definition: >
+      El componente que registra el descriptor de una skill como conocimiento procedural reusable
+      — separado de AgentCore (identidad, CH-11), de CapabilityRegistry/ToolRuntime (tools/
+      capabilities, CH-08/CH-02) y de PolicyEngine (autorización, CH-05) — y resuelve qué
+      SkillDescriptor aplica a una situación nombrada, sin resolver jamás qué implementación
+      concreta satisface una capability solicitada (CapabilityRegistry, CH-08 — la frontera más
+      importante de CH-24).
+    introduced_in: CH-24
+    kind: component
+    ref: CMP-022

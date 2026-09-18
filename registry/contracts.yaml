@@ -796,3 +796,37 @@ contracts:
     used_by: [CMP-021]
     modified_by: []
     constitutional_impact: [INV-E12, INV-19]
+
+  # C-035 (SkillDescriptor): vigesimosegundo id verdaderamente NUEVO del libro (el correlativo
+  # continúa después de C-034, CH-23 — ningún id quedaba reservado desde CH-01 §7). Ver decisión de
+  # diseño en planes/2026-09-18-capitulo-24-skill-library.md: el registro de una skill que P-07
+  # exige como conocimiento procedural reusable, SEPARADO de CapabilityDescriptor (C-018, CH-08) —
+  # CapabilityDescriptor resuelve QUÉ IMPLEMENTACIÓN CONCRETA satisface una capability solicitada;
+  # SkillDescriptor resuelve QUÉ PROCEDIMIENTO/GUÍA reusable aplica a una situación — dos capas
+  # ortogonales, deliberadamente con la misma forma de cinco campos que CapabilityDescriptor para
+  # hacer el contraste legible, nunca para sugerir que son el mismo concepto. `skill` reutiliza el
+  # mismo patrón que `capability: CapabilityId` en CapabilityDescriptor (C-018) — el identificador
+  # ya resuelto que este descriptor produce, no un id de fila separado; `version` reusa el mismo
+  # criterio de versionado (Text explícito) que P-26/CapabilityDescriptor.version ya establecieron,
+  # sin que P-26 en sí (literalmente sobre "Tools/capabilities") se extienda a skills — decisión de
+  # consistencia de diseño, no una cita constitucional nueva; `procedureRef` es una referencia opaca
+  # Text al procedimiento/guía real, nunca su contenido en prosa completo (mismo patrón que
+  # `implementationRef` en CapabilityDescriptor); `appliesTo` es Optional<Text>, una referencia
+  # opaca y opcional a qué capabilities/situaciones aplica esta skill — se evaluó explícitamente
+  # List<CapabilityId> y se descartó por modelar una relación estructurada que este capítulo no
+  # necesita resolver todavía (ver decisión completa en el propio capítulo, seccion 6).
+  - id: C-035
+    name: SkillDescriptor
+    version: v1
+    introduced_in: CH-24
+    current_definition: |
+      STRUCT SkillDescriptor
+          skill: SkillId
+          name: Text
+          version: Text
+          procedureRef: Text
+          appliesTo: Optional<Text>
+      END
+    used_by: [CMP-022]
+    modified_by: []
+    constitutional_impact: [P-07, INV-19]

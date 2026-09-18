@@ -711,3 +711,111 @@ terms:
       de la admisión ("...decisions before routing"); AdmissionController nunca la resuelve.
     introduced_in: CH-14
     kind: concept
+
+  - term: AgentCommunicationGateway
+    definition: >
+      Componente que adapta mensajes semánticos hacia/desde protocolos de interoperabilidad
+      externos (A2A u otros) exclusivamente a través de adapters, desacoplando el core de cualquier
+      SDK, protocolo o transporte concreto, y verifica — sin redefinirlo — que una comunicación
+      respaldada por un DelegationGrant respete su scope, su vencimiento y el ExecutionBudget
+      acotado que ese grant declara — sin decidir si el estímulo que originó cualquiera de los dos
+      runs comunicándose tenía derecho a arrancar, sin autorizar ninguna acción ya resuelta y sin
+      decidir continuación de turno. Segundo componente de este registry que no corresponde a
+      ninguno de los once nombres de Article III — pertenece al "Agent Interoperability Plane" de
+      Amendment v1.1.
+    introduced_in: CH-15
+    kind: component
+    ref: CMP-013
+
+  - term: AgentCommunicationMessage
+    definition: >
+      El contrato semántico explícito que cruza una frontera de comunicación entre agentes —
+      de qué agente viene, hacia qué agente va, si esa frontera es interna (delegación) o externa
+      (federación), su contenido semántico, la referencia opcional al DelegationGrant que lo
+      respalda, y su traceId — deliberadamente sin ningún campo de protocolo o transporte (P-18,
+      INV-E04). Contrato canónico AgentCommunicationMessage, formalizado en CH-15 sobre C-024, el
+      undécimo id verdaderamente nuevo del libro.
+    introduced_in: CH-15
+    kind: contract
+    ref: C-024
+
+  - term: DelegationGrant
+    definition: >
+      El token de autoridad delegada, explícito y acotado, que un run transfiere hacia un agente
+      hijo o remoto — quién delega, a quién, con qué scope explícito (nunca "todo"), con qué
+      ExecutionBudget acotado (reutilizado, sin modificar, INV-E06) y hasta cuándo — satisfaciendo,
+      literalmente, las tres propiedades que P-21 exige: scoped, time-bounded y auditable. Contrato
+      canónico DelegationGrant, formalizado en CH-15 sobre C-025, el duodécimo id verdaderamente
+      nuevo del libro.
+    introduced_in: CH-15
+    kind: contract
+    ref: C-025
+
+  - term: AgentCommunication Boundary
+    definition: >
+      La frontera explícita que todo mensaje agente-a-agente debe cruzar (INV-E03, cita literal
+      "AgentCommunication boundary") — nunca una invocación directa de un agente hacia la
+      implementación de otro. Modelada como AgentCommunicationMessage.boundary
+      (AgentCommunicationBoundary: INTERNAL/EXTERNAL).
+    introduced_in: CH-15
+    kind: concept
+
+  - term: Internal Delegation
+    definition: >
+      Comunicación hacia un sub-agente gestionado por el mismo runtime — P-20 permite que use un
+      protocolo interno. Modelada como AgentCommunicationMessage.boundary = INTERNAL; puede o no
+      llevar un DelegationGrant, según si representa una transferencia real de autoridad.
+    introduced_in: CH-15
+    kind: concept
+
+  - term: External Federation
+    definition: >
+      Comunicación con un agente operado independientemente, fuera de este sistema — P-20
+      recomienda un boundary basado en estándares (A2A u otros) para este caso. Modelada como
+      AgentCommunicationMessage.boundary = EXTERNAL.
+    introduced_in: CH-15
+    kind: concept
+
+  - term: A2A (Agent-to-Agent)
+    definition: >
+      El estándar de interoperabilidad que P-19/INV-E05 citan por nombre como una opción externa
+      de federación — nunca una dependencia del core. Se enseña exclusivamente como el protocolo
+      que un Protocol Adapter futuro (Preview, no introducido) implementaría detrás de
+      AgentCommunicationGateway; ningún STRUCT/ENUM/FUNCTION de este libro lo modela como tipo o
+      dependencia real.
+    introduced_in: CH-15
+    kind: concept
+
+  - term: Federation Boundary
+    definition: >
+      El límite de confianza que separa a este sistema de un agente operado por un tercero
+      independiente — la razón por la cual External Federation debería apoyarse en un estándar
+      público como A2A en vez de un protocolo interno propietario (P-20).
+    introduced_in: CH-15
+    kind: concept
+
+  - term: Delegated Authority
+    definition: >
+      La autoridad, siempre acotada, que un DelegationGrant transfiere de un run hacia un agente
+      hijo o remoto — nunca la autoridad completa de quien delega (P-21: "MUST NOT automatically
+      inherit the caller's authority").
+    introduced_in: CH-15
+    kind: concept
+
+  - term: Protocol Adapter
+    definition: >
+      La pieza de infraestructura de borde (no modelada en detalle, no un componente de este
+      registry) que traduciría un AgentCommunicationMessage semántico hacia el formato concreto de
+      un estándar de interoperabilidad (A2A u otro) y de vuelta — mismo tratamiento que Provider
+      Adapter (CH-03) para el lado del modelo.
+    introduced_in: CH-15
+    kind: concept
+
+  - term: Transport Adapter
+    definition: >
+      La pieza de infraestructura de borde (distinta de Protocol Adapter, no modelada, no un
+      componente de este registry) que entregaría físicamente un mensaje ya adaptado a un
+      protocolo — HTTP, gRPC, WebSocket, SSE, una cola, un Service Bus. INV-E04 exige que Protocol
+      Adapter y Transport Adapter sean reemplazables de forma independiente entre sí.
+    introduced_in: CH-15
+    kind: concept

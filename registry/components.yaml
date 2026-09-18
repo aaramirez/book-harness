@@ -84,6 +84,18 @@
 # AgentState/AgentActivationRequest real de un agente (AgentCore, CMP-011, CH-11) y sin evaluar
 # policy sobre una ToolCall ya en curso (PolicyEngine, CMP-005, CH-05). Ver decisión de diseño en
 # planes/2026-09-14-capitulo-14-admission-controller.md.
+# CH-15 ("AgentCommunicationGateway y la Frontera Explícita entre Agentes") introduce el
+# decimotercer componente, CMP-013 AgentCommunicationGateway — el segundo de este registry que NO
+# corresponde a ninguno de los once nombres de Article III: pertenece al "Agent Interoperability
+# Plane" de Amendment v1.1 (el tercer plano canónico, segundo que este libro cubre), con ficha
+# literal contra P-18/P-19/P-21. Adapta mensajes semánticos (AgentCommunicationMessage, C-024,
+# boundary INTERNAL/EXTERNAL) hacia/desde protocolos de interoperabilidad externos exclusivamente
+# vía adapters, desacopla el core de cualquier SDK/protocolo/transporte concreto, y verifica — sin
+# redefinirlo — el límite de ExecutionBudget que un DelegationGrant (C-025) ya declara para una
+# comunicación delegada (INV-E06) — sin decidir si un estímulo crudo tiene derecho a arrancar un run
+# (AdmissionController, CMP-012, CH-14), sin autorizar una acción ya resuelta (PolicyEngine,
+# CMP-005, CH-05) y sin decidir continuación de turno (AgentLoop, CMP-001, CH-01). Ver decisión de
+# diseño en planes/2026-09-14-capitulo-15-agent-communication-gateway.md.
 
 components:
   - id: CMP-001
@@ -390,3 +402,31 @@ components:
     produces: [C-011, C-023]
     introduced_in: CH-14
     constitutional_articles: [P-16, P-17, P-25, INV-E01, INV-E02, INV-18, INV-19, INV-20]
+
+  - id: CMP-013
+    name: AgentCommunicationGateway
+    responsibility: >
+      Adaptar mensajes semánticos hacia/desde protocolos de interoperabilidad externos (A2A u
+      otros) exclusivamente a través de adapters, desacoplando el core de cualquier SDK, protocolo
+      o transporte concreto — y verificar, sin redefinirlo, que una comunicación respaldada por un
+      DelegationGrant respete el scope, el vencimiento y el ExecutionBudget acotado que ese grant ya
+      declara — sin decidir si el estímulo que originó cualquiera de los dos runs comunicándose
+      tenía derecho a arrancar, sin autorizar ninguna acción ya resuelta y sin decidir continuación
+      de turno.
+    owns:
+      - "Agent communication MUST use explicit semantic contracts. Protocols define interoperability; transports define delivery. Neither belongs inside Agent Core (cita literal, P-18)"
+      - "A2A or future interoperability standards MUST be integrated through AgentCommunicationGateway adapters. The core MUST NOT depend directly on an A2A SDK or a particular wire protocol (cita literal, P-19)"
+      - "distinguir siempre delegación interna de federación externa (boundary, P-20)"
+      - "verificar — nunca redefinir — que un DelegationGrant que respalda un mensaje siga vigente, cubra lo que el mensaje pide (scope) y respete el ExecutionBudget acotado que declara (INV-E06)"
+      - "rechazar por defecto (fail-closed) cuando un DelegationGrant declarado no se encuentra, no corresponde, expiró o no cubre el mensaje"
+    does_not_own:
+      - "decidir si el estímulo externo crudo que originó cualquiera de los dos runs comunicándose tenía siquiera derecho a arrancar (AdmissionController, CMP-012, ya introducido en CH-14 — pregunta anterior, sobre un ActivationRequest todavía sin agentId resuelto)"
+      - "autorizar una acción/tool call ya resuelta dentro de un run (PolicyEngine, CMP-005, ya introducido en CH-05 — distinto momento, distinta pregunta: \"¿puede este mensaje cruzar hacia otro agente?\" vs. \"¿puede esta acción ejecutarse dentro de este run?\")"
+      - "decidir si otro turno de razonamiento debe ocurrir (AgentLoop, CMP-001, ya introducido en CH-01)"
+      - "el protocolo de wire o el transporte concreto en sí — HTTP, gRPC, WebSocket, un SDK de A2A (Protocol Adapter / Transport Adapter, INV-E04, no un componente propio de este registry)"
+      - "revalidar la coherencia interna del ExecutionBudget embebido en un DelegationGrant (AgentCore, CMP-011, ya introducido en CH-11 — isExecutionBudgetCoherent ya existe ahí)"
+    dependencies: []
+    consumes: [C-024, C-025]
+    produces: [C-011, C-024]
+    introduced_in: CH-15
+    constitutional_articles: [P-18, P-19, P-20, P-21, P-25, INV-E03, INV-E04, INV-E05, INV-E06, INV-18, INV-19, INV-20]

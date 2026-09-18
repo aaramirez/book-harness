@@ -44,3 +44,5 @@ chapters:
     file: chapters/13-integracion-caminos-de-gobierno/chapter.md
   - id: CH-14
     file: chapters/14-admission-controller/chapter.md
+  - id: CH-15
+    file: chapters/15-agent-communication-gateway/chapter.md

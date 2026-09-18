@@ -473,3 +473,50 @@ contracts:
     used_by: [CMP-012]
     modified_by: []
     constitutional_impact: [P-17, INV-E02, INV-19, INV-20]
+
+  # C-024/C-025 (AgentCommunicationMessage/DelegationGrant): undécimo y duodécimo id
+  # verdaderamente NUEVO del libro (el correlativo continúa después de C-023, CH-14 — ningún id
+  # quedaba reservado desde CH-01 §7). Ver decisión de diseño en
+  # planes/2026-09-14-capitulo-15-agent-communication-gateway.md: el primer par contrato semántico/
+  # token de delegación del Agent Interoperability Plane (Amendment v1.1, P-18/P-19/P-20/P-21) —
+  # un mensaje entre dos agentes que cruza siempre una frontera explícita (boundary: INTERNAL/
+  # EXTERNAL, cita literal de INV-E03), deliberadamente sin ningún campo de protocolo o transporte
+  # (INV-E04), y un token de autoridad delegada scoped/time-bounded/auditable (P-21) cuyo budget
+  # reutiliza ExecutionBudget (C-012, CH-00) sin modificarlo (INV-E06).
+  - id: C-024
+    name: AgentCommunicationMessage
+    version: v1
+    introduced_in: CH-15
+    current_definition: |
+      STRUCT AgentCommunicationMessage
+          id: AgentCommunicationMessageId
+          boundary: AgentCommunicationBoundary
+          sourceAgentRef: Text
+          targetAgentRef: Text
+          content: Value
+          delegationGrantId: Optional<DelegationGrantId>
+          traceId: TraceId
+          sentAt: Timestamp
+      END
+    used_by: [CMP-013]
+    modified_by: []
+    constitutional_impact: [P-18, P-20, INV-E03, INV-E04]
+
+  - id: C-025
+    name: DelegationGrant
+    version: v1
+    introduced_in: CH-15
+    current_definition: |
+      STRUCT DelegationGrant
+          id: DelegationGrantId
+          delegatingRunId: Optional<RunId>
+          delegatorRef: Text
+          delegateRef: Text
+          delegatedScope: List<Text>
+          budget: ExecutionBudget
+          expiresAt: Timestamp
+          grantedAt: Timestamp
+      END
+    used_by: [CMP-013]
+    modified_by: []
+    constitutional_impact: [P-21, INV-E06, INV-19]

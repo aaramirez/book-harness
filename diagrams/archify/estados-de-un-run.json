@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Los 11 Estados de un AgentRun",
+    "output": "estados-de-un-run.html",
+    "viewBox": [1080, 650],
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "ciclo-principal", "label": "Ciclo principal", "focus": ["created", "initializing", "running", "completed"], "note": "El camino feliz: de una activación cruda a un AgentRun terminado con éxito." },
+      { "id": "esperas", "label": "Esperas del turno", "focus": ["running", "waiting_tool", "waiting_model", "waiting_human"], "note": "RUNNING se detiene en una espera y siempre puede retomar — nunca es terminal." },
+      { "id": "control-y-terminacion", "label": "Control externo y terminación", "focus": ["running", "cancelled", "failed", "expired"], "note": "CANCELLED llega por un kill switch que no coopera con AgentLoop (INV-E14); FAILED/EXPIRED llegan por presupuesto agotado." }
+    ]
+  },
+  "lanes": [
+    { "id": "main", "label": "Ciclo principal" },
+    { "id": "esperas", "label": "Esperas y control externo" },
+    { "id": "terminal", "label": "Terminación" }
+  ],
+  "states": [
+    { "id": "created", "type": "start", "label": "CREATED", "sublabel": "activateAgent", "lane": "main", "col": 0, "step": "01", "tag": "AgentCore" },
+    { "id": "initializing", "type": "active", "label": "INITIALIZING", "sublabel": "beginAgentInitialization", "lane": "main", "col": 1, "step": "02", "tag": "AgentCore" },
+    { "id": "running", "type": "active", "label": "RUNNING", "sublabel": "ciclo cognitivo", "lane": "main", "col": 2, "step": "03", "tag": "AgentLoop.runTurn" },
+    { "id": "completed", "type": "success", "label": "COMPLETED", "sublabel": "modelFinished = TRUE", "lane": "main", "col": 4, "step": "04", "tag": "AgentLoop" },
+    { "id": "waiting_tool", "type": "waiting", "label": "WAITING_FOR_TOOL", "sublabel": "handoff sin resolver", "lane": "esperas", "col": 0, "tag": "AgentLoop.runTurn" },
+    { "id": "waiting_model", "type": "waiting", "label": "WAITING_FOR_MODEL", "sublabel": "otro turno de razonamiento", "lane": "esperas", "col": 1, "tag": "AgentLoop.runTurn" },
+    { "id": "waiting_human", "type": "waiting", "label": "WAITING_FOR_HUMAN", "sublabel": "aprobación pendiente", "lane": "esperas", "col": 2, "tag": "HumanInteractionService" },
+    { "id": "paused", "type": "neutral", "label": "PAUSED", "sublabel": "declarado, nunca producido", "lane": "esperas", "col": 1, "yOffset": 78, "tag": "sin pseudocódigo real" },
+    { "id": "failed", "type": "failure", "label": "FAILED", "sublabel": "MAX_TOOL_CALLS_EXCEEDED", "lane": "terminal", "col": 1, "tag": "ExecutionController" },
+    { "id": "expired", "type": "failure", "label": "EXPIRED", "sublabel": "MAX_RUNTIME_EXCEEDED", "lane": "terminal", "col": 2, "tag": "ExecutionController" },
+    { "id": "cancelled", "type": "failure", "label": "CANCELLED", "sublabel": "kill switch (no coopera)", "lane": "terminal", "col": 0, "tag": "OperationalController" }
+  ],
+  "transitions": [
+    { "id": "created-initializing", "from": "created", "to": "initializing", "label": "beginAgentInitialization", "variant": "default", "labelAt": [171, 108] },
+    { "id": "initializing-running", "from": "initializing", "to": "running", "label": "primer runTurn", "variant": "default", "labelAt": [325, 108] },
+    { "id": "running-waiting-tool", "from": "running", "to": "waiting_tool", "label": "modelProposesToolCall", "variant": "emphasis", "labelAt": [300, 235] },
+    { "id": "waiting-tool-running", "from": "waiting_tool", "to": "running", "label": "executeToolCall + observación", "variant": "default", "labelAt": [300, 262] },
+    { "id": "running-waiting-model", "from": "running", "to": "waiting_model", "label": "runTurn (default)", "variant": "default", "labelAt": [600, 235] },
+    { "id": "waiting-model-running", "from": "waiting_model", "to": "running", "label": "retoma", "variant": "default", "labelAt": [610, 262] },
+    { "id": "running-waiting-human", "from": "running", "to": "waiting_human", "label": "REQUIRE_APPROVAL", "variant": "security", "fromSide": "bottom", "toSide": "top", "via": [[402, 198], [760, 198], [760, 260], [710, 260]], "labelAt": [760, 235] },
+    { "id": "waiting-human-running", "from": "waiting_human", "to": "running", "label": "resolveHumanInteractionRequest", "variant": "default", "fromSide": "bottom", "toSide": "bottom", "via": [[710, 360], [860, 360], [860, 198], [402, 198]], "labelAt": [860, 300] },
+    { "id": "running-completed", "from": "running", "to": "completed", "label": "modelFinished = TRUE", "variant": "emphasis", "route": "straight", "labelAt": [556, 108] },
+    { "id": "running-failed", "from": "running", "to": "failed", "label": "terminateAgentRunOperationally", "variant": "security", "fromSide": "bottom", "toSide": "top", "via": [[402, 198], [90, 198], [90, 430], [556, 430]], "labelAt": [75, 350] },
+    { "id": "running-expired", "from": "running", "to": "expired", "label": "terminateAgentRunOperationally", "variant": "security", "fromSide": "bottom", "toSide": "top", "via": [[402, 198], [990, 198], [990, 430], [710, 430]], "labelAt": [990, 350] },
+    { "id": "running-cancelled", "from": "running", "to": "cancelled", "label": "applyControlDirective (KILL_SWITCH)", "variant": "security", "fromSide": "bottom", "toSide": "top", "via": [[402, 198], [170, 198], [170, 430], [402, 430]], "labelAt": [210, 400] }
+  ],
+  "cards": [
+    { "dot": "emerald", "title": "Article V", "items": ["Once valores de AgentRunStatus, ninguno inventado (C-013)"] },
+    { "dot": "rose", "title": "INV-E14", "items": ["CANCELLED por kill switch nunca invoca AgentLoop.runTurn"] },
+    { "dot": "cyan", "title": "Hallazgo honesto", "items": ["PAUSED es el único estado que ningún pseudocódigo del libro llega a producir"] }
+  ]
+}

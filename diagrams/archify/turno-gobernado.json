@@ -1,0 +1,63 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "El Turno Gobernado de Punta a Punta",
+    "output": "turno-gobernado.html",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "camino-feliz", "label": "Camino feliz", "focus": ["admission", "agentcore", "contextengine", "modelgateway", "capabilityregistry", "policyengine", "guardas", "toolruntime"], "note": "runGovernedEnterpriseTurn (CH-26): admisión, razonamiento gobernado y ejecución con evidencia." },
+      { "id": "kill-switch", "label": "Interrupción por kill switch", "focus": ["operationalcontroller", "handoffcoordinator"], "note": "interruptGovernedEnterpriseRunWithKillSwitch (CH-27): fuerza CANCELLED sin cooperación de AgentLoop." },
+      { "id": "escalacion", "label": "Escalación por denegación severa", "focus": ["policyengine", "handoffcoordinator"], "note": "escalateGovernedEnterpriseRunAfterSevereDenial (CH-27): empaqueta el traspaso cuando la denegación amerita un humano." }
+    ]
+  },
+  "lanes": [
+    { "id": "ingreso", "label": "Ingreso" },
+    { "id": "nucleo", "label": "Núcleo Cognitivo" },
+    { "id": "gobierno", "label": "Gobierno Enterprise" },
+    { "id": "control", "label": "Control y Traspaso", "variant": "exception" }
+  ],
+  "phases": [
+    { "id": "admision", "label": "Admisión", "fromCol": 0, "toCol": 0 },
+    { "id": "razonamiento", "label": "Razonamiento + Gobierno", "fromCol": 1, "toCol": 3, "variant": "emphasis" },
+    { "id": "ejecucion-evidencia", "label": "Ejecución + Evidencia", "fromCol": 4, "toCol": 5, "variant": "dashed" }
+  ],
+  "groups": [
+    { "id": "context-gov", "label": "Contexto + gobierno de datos", "lane": "gobierno", "fromCol": 2, "toCol": 2, "variant": "dashed" },
+    { "id": "policy-guards", "label": "Guardas pre-ejecución", "lane": "gobierno", "fromCol": 4, "toCol": 5, "variant": "dashed" },
+    { "id": "kill-escalation", "label": "Caminos de control (CH-27)", "lane": "control", "fromCol": 2, "toCol": 5, "variant": "security" }
+  ],
+  "mainPath": ["admission", "agentcore", "contextengine", "modelgateway", "capabilityregistry", "policyengine", "guardas", "toolruntime"],
+  "nodes": [
+    { "id": "admission", "lane": "ingreso", "col": 0, "type": "security", "label": "AdmissionController", "sublabel": "admite la activación cruda", "tag": "AuditLedger preserva ADMIT/REJECT", "width": 150 },
+    { "id": "agentcore", "lane": "nucleo", "col": 1, "type": "backend", "label": "AgentCore + AgentLoop", "sublabel": "activateAgent · runTurn", "width": 150 },
+    { "id": "contextengine", "lane": "nucleo", "col": 2, "type": "backend", "label": "ContextEngine", "sublabel": "assembleContextSnapshot", "width": 150 },
+    { "id": "datagovernance", "lane": "gobierno", "col": 2, "type": "security", "label": "DataGovernanceEngine", "sublabel": "classifyData por ContextBlock", "width": 150 },
+    { "id": "modelgateway", "lane": "nucleo", "col": 3, "type": "cloud", "label": "ModelGateway", "sublabel": "invokeModelForTurn", "width": 150 },
+    { "id": "skilllibrary", "lane": "gobierno", "col": 3, "type": "backend", "label": "SkillLibrary", "sublabel": "resolveSkillForSituation", "width": 150 },
+    { "id": "capabilityregistry", "lane": "nucleo", "col": 4, "type": "backend", "label": "CapabilityRegistry", "sublabel": "resolveModelProposedToolCall", "width": 150 },
+    { "id": "policyengine", "lane": "gobierno", "col": 4, "type": "security", "label": "PolicyEngine", "sublabel": "evaluatePolicyForToolCall", "width": 150 },
+    { "id": "guardas", "lane": "gobierno", "col": 5, "type": "security", "label": "Credential + Idempotency", "sublabel": "resolveCredentialReference", "tag": "+ checkIdempotency (CH-16/17)", "width": 185 },
+    { "id": "toolruntime", "lane": "nucleo", "col": 5, "type": "backend", "label": "ToolRuntime", "sublabel": "executeToolCall", "tag": "+ AuditLedger/EventBus", "width": 150 },
+    { "id": "operationalcontroller", "lane": "control", "col": 2, "type": "security", "label": "OperationalController", "sublabel": "applyControlDirective (KILL_SWITCH)", "width": 195 },
+    { "id": "handoffcoordinator", "lane": "control", "col": 5, "type": "external", "label": "HandoffCoordinator", "sublabel": "createHandoffPackage", "width": 150 }
+  ],
+  "edges": [
+    { "id": "admission-agentcore", "from": "admission", "to": "agentcore", "label": "ADMIT", "variant": "emphasis" },
+    { "id": "agentcore-contextengine", "from": "agentcore", "to": "contextengine", "variant": "default" },
+    { "id": "contextengine-datagovernance", "from": "contextengine", "to": "datagovernance", "label": "clasifica cada bloque", "variant": "dashed", "role": "branch" },
+    { "id": "agentcore-skilllibrary", "from": "agentcore", "to": "skilllibrary", "label": "qué procedimiento aplica", "variant": "dashed", "role": "branch" },
+    { "id": "skilllibrary-modelgateway", "from": "skilllibrary", "to": "modelgateway", "variant": "dashed", "role": "branch" },
+    { "id": "contextengine-modelgateway", "from": "contextengine", "to": "modelgateway", "variant": "default" },
+    { "id": "modelgateway-capabilityregistry", "from": "modelgateway", "to": "capabilityregistry", "label": "runTurn → WAITING_FOR_TOOL", "variant": "default" },
+    { "id": "capabilityregistry-policyengine", "from": "capabilityregistry", "to": "policyengine", "variant": "default" },
+    { "id": "policyengine-guardas", "from": "policyengine", "to": "guardas", "label": "ALLOW", "variant": "emphasis" },
+    { "id": "guardas-toolruntime", "from": "guardas", "to": "toolruntime", "variant": "emphasis" },
+    { "id": "policyengine-handoff", "from": "policyengine", "to": "handoffcoordinator", "label": "DENY severa → escalación", "variant": "security", "role": "error" },
+    { "id": "operationalcontroller-handoff", "from": "operationalcontroller", "to": "handoffcoordinator", "label": "KILL_SWITCH → interrupción", "variant": "security", "role": "error" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "runGovernedEnterpriseTurn (CH-26)", "items": ["Seis componentes de Amendment v1.1 se cablean sin cambiar de dueño"] },
+    { "dot": "rose", "title": "Caminos de control (CH-27)", "items": ["Kill switch y escalación convergen en HandoffCoordinator sin decidir por sí mismos si transferir"] }
+  ]
+}

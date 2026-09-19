@@ -406,6 +406,118 @@ Los nodos son clicables y llevan a la sección del capítulo que introdujo cada 
 `;
 }
 
+/**
+ * Sección "Diagramas Interactivos" (Archify) — paso NUEVO, independiente del pipeline
+ * zero-dependencias de capítulos/mapa mental de arriba. Archify (https://github.com/tt-a1i/archify)
+ * no es una dependencia de este proyecto: los HTML ya vienen entregados (delivered) en
+ * diagrams/archify/rendered/*.html por un paso de autoría manual/agente, y este paso SOLO copia
+ * esos artefactos íntegros a dist/web/diagramas/ — nunca los regenera ni los modifica. Si el
+ * directorio no existe (p.ej. alguien clona el repo sin haber corrido ese paso de autoría), este
+ * paso se salta limpiamente sin fallar el build, preservando el pipeline zero-dependencias para
+ * cualquiera que solo quiera los 28 capítulos + mapa mental + PDF.
+ */
+const ARCHIFY_RENDERED_DIR = path.join(ROOT, 'diagrams', 'archify', 'rendered');
+const ARCHIFY_OUT_DIR = path.join(OUT_DIR, 'diagramas');
+
+const ARCHIFY_DIAGRAMS = [
+  {
+    file: 'nucleo-del-arnes.html',
+    title: 'El Núcleo del Arnés',
+    description: 'Los once componentes de Article III y cómo se invocan entre sí dentro de un turno real (CH-12).'
+  },
+  {
+    file: 'capa-enterprise.html',
+    title: 'La Capa de Gobierno Enterprise',
+    description: 'Los once componentes de Amendment v1.1, qué gobiernan y la única arista real que el libro cablea entre ellos.'
+  },
+  {
+    file: 'turno-gobernado.html',
+    title: 'El Turno Gobernado de Punta a Punta',
+    description: 'runGovernedEnterpriseTurn (CH-26) más los caminos de kill switch y escalación por denegación severa (CH-27).'
+  },
+  {
+    file: 'un-agentrun-real.html',
+    title: 'Un AgentRun de Punta a Punta',
+    description: 'La secuencia real de funciones — activación, razonamiento, gobierno y ejecución — de runAgentTurnEndToEnd (CH-12).'
+  },
+  {
+    file: 'estados-de-un-run.html',
+    title: 'Los 11 Estados de un AgentRun',
+    description: 'Los once valores de AgentRunStatus (C-013), quién produce cada transición y el hallazgo de PAUSED, nunca ejercitado.'
+  }
+];
+
+function renderDiagramasIndexPage(available) {
+  const cards = available
+    .map(
+      (d) => `<a class="diagram-card" href="diagramas/${escapeHtml(d.file)}">
+  <h2>${escapeHtml(d.title)}</h2>
+  <p>${escapeHtml(d.description)}</p>
+</a>`
+    )
+    .join('\n');
+  return `<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Diagramas Interactivos — book-harness</title>
+<style>${BASE_CSS}
+.diagram-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+                gap: 1rem; margin: 1.5rem 0; }
+.diagram-card { display: block; border: 1px solid #ccc; border-radius: 6px; padding: 1rem 1.15rem;
+                text-decoration: none; color: inherit; background: #f4f1ea; }
+.diagram-card:hover { border-color: #558; background: #eef0fb; }
+.diagram-card h2 { margin: 0 0 .4rem; font-size: 1.05rem; }
+.diagram-card p { margin: 0; font-size: .92rem; color: #444; }
+</style>
+</head>
+<body>
+<p><a href="index.html">&larr; book-harness</a></p>
+<h1>Diagramas Interactivos</h1>
+<p>Estos diagramas son distintos de los mapas mentales por capítulo (<a href="mapa.html">mapa.html</a>):
+son diagramas curados a mano, navegables — con búsqueda, trazado de rutas, vistas guiadas y tema
+claro/oscuro — generados con <a href="https://github.com/tt-a1i/archify">Archify</a> a partir del
+contenido real del libro (nombres de función, componentes y estados citados contra los capítulos
+que los publican).</p>
+<div class="diagram-grid">
+${cards}
+</div>
+</body>
+</html>
+`;
+}
+
+function buildArchifyDiagramsSection() {
+  if (!fs.existsSync(ARCHIFY_RENDERED_DIR)) {
+    console.log('build-web: diagrams/archify/rendered/ no existe — se omite la sección de Diagramas Interactivos.');
+    return { built: false, available: [] };
+  }
+  // Excluye los sidecars de evidencia que `archify visual-check` deja junto al HTML entregado
+  // (p.ej. "<nombre>.visual-check.html", además de sus .png/.json) — solo se copian los
+  // artefactos realmente entregados por `archify deliver`.
+  const entries = fs
+    .readdirSync(ARCHIFY_RENDERED_DIR)
+    .filter((f) => f.endsWith('.html') && !f.includes('.visual-check.'));
+  if (entries.length === 0) {
+    console.log('build-web: diagrams/archify/rendered/ existe pero está vacío — se omite la sección de Diagramas Interactivos.');
+    return { built: false, available: [] };
+  }
+  fs.mkdirSync(ARCHIFY_OUT_DIR, { recursive: true });
+  const available = [];
+  for (const entry of entries) {
+    const srcPath = path.join(ARCHIFY_RENDERED_DIR, entry);
+    const destPath = path.join(ARCHIFY_OUT_DIR, entry);
+    // Copia íntegra, byte a byte — nunca se re-renderiza ni se modifica el HTML ya entregado por
+    // Archify (son artefactos firmados/validados por su propio pipeline de deliver+visual-check).
+    fs.copyFileSync(srcPath, destPath);
+    const known = ARCHIFY_DIAGRAMS.find((d) => d.file === entry);
+    available.push(known || { file: entry, title: entry.replace(/\.html$/, ''), description: '' });
+  }
+  fs.writeFileSync(path.join(OUT_DIR, 'diagramas.html'), renderDiagramasIndexPage(available), 'utf8');
+  console.log(`build-web: diagramas.html + ${available.length} diagrama(s) interactivo(s) copiado(s) → dist/web/diagramas/`);
+  return { built: true, available };
+}
+
 function main() {
   if (!fs.existsSync(IR_PATH)) {
     console.error(`build-web: no existe ${path.relative(ROOT, IR_PATH)}. Correr build-book-ir primero.`);
@@ -448,6 +560,16 @@ function main() {
   if (ir.mindMapFullBookDiagramPath) {
     const fullSvg = renderMindMapSvg(ir.mindMapFullBookDiagramPath);
     fs.writeFileSync(path.join(OUT_DIR, 'mapa.html'), renderMapaPage(ir, fullSvg), 'utf8');
+  }
+
+  const archifySection = buildArchifyDiagramsSection();
+  if (archifySection.built) {
+    const indexPath = path.join(OUT_DIR, 'index.html');
+    const indexHtml = fs.readFileSync(indexPath, 'utf8').replace(
+      '<p><a href="mapa.html">Mapa mental completo del libro</a></p>',
+      '<p><a href="mapa.html">Mapa mental completo del libro</a></p>\n<p><a href="diagramas.html">Diagramas Interactivos (Archify)</a></p>'
+    );
+    fs.writeFileSync(indexPath, indexHtml, 'utf8');
   }
 
   console.log(`build-web: OK → ${path.relative(ROOT, OUT_DIR)}/`);

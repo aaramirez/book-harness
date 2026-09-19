@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Un AgentRun de Punta a Punta",
+    "output": "un-agentrun-real.html",
+    "viewBox": [1080, 560],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "activacion", "label": "Activación", "focus": ["core", "loop", "context", "model"], "note": "Un AgentActivationRequest se convierte en un AgentState CREATED y luego RUNNING." },
+      { "id": "razonamiento", "label": "Razonamiento y gobierno", "focus": ["loop", "capreg", "policy"], "note": "El modelo propone una tool call; se resuelve y se autoriza antes de ejecutarla." },
+      { "id": "ejecucion", "label": "Ejecución y cierre", "focus": ["policy", "tools", "loop", "events"], "note": "ToolRuntime ejecuta, AgentLoop retoma con la observación y el turno se completa." }
+    ]
+  },
+  "participants": [
+    { "id": "core", "type": "backend", "label": "AgentCore", "sublabel": "CH-11" },
+    { "id": "loop", "type": "backend", "label": "AgentLoop", "sublabel": "CH-01" },
+    { "id": "context", "type": "backend", "label": "ContextEngine", "sublabel": "CH-04" },
+    { "id": "model", "type": "cloud", "label": "ModelGateway", "sublabel": "CH-03" },
+    { "id": "capreg", "type": "backend", "label": "CapabilityReg.", "sublabel": "CH-08" },
+    { "id": "policy", "type": "security", "label": "PolicyEngine", "sublabel": "CH-05" },
+    { "id": "tools", "type": "backend", "label": "ToolRuntime", "sublabel": "CH-02" },
+    { "id": "events", "type": "messagebus", "label": "EventBus", "sublabel": "CH-09" }
+  ],
+  "segments": [
+    { "from": 150, "to": 288, "label": "Activación" },
+    { "from": 296, "to": 397, "label": "Razonamiento" },
+    { "from": 405, "to": 476, "label": "Ejecución" }
+  ],
+  "messages": [
+    { "id": "begin-init", "from": "core", "to": "loop", "y": 165, "label": "activateAgent + beginAgentInitialization", "variant": "emphasis", "note": "CREATED → INITIALIZING → RUNNING; EMIT RUN_STARTED" },
+    { "id": "assemble-context", "from": "loop", "to": "context", "y": 193, "label": "assembleContextSnapshot", "variant": "default" },
+    { "id": "context-snapshot", "from": "context", "to": "loop", "y": 221, "label": "ContextSnapshot", "variant": "return" },
+    { "id": "invoke-model-1", "from": "loop", "to": "model", "y": 249, "label": "invokeModelForTurn", "variant": "emphasis" },
+    { "id": "model-response-1", "from": "model", "to": "loop", "y": 277, "label": "ModelResponse: proposedToolCall", "variant": "return" },
+    { "id": "resolve-toolcall", "from": "loop", "to": "capreg", "y": 305, "label": "resolveModelProposedToolCall", "variant": "default", "note": "runTurn ya transicionó a WAITING_FOR_TOOL" },
+    { "id": "toolcall-resolved", "from": "capreg", "to": "loop", "y": 333, "label": "ToolCall", "variant": "return" },
+    { "id": "evaluate-policy", "from": "loop", "to": "policy", "y": 361, "label": "evaluatePolicyForToolCall", "variant": "security" },
+    { "id": "policy-allow", "from": "policy", "to": "loop", "y": 389, "label": "PolicyDecision: ALLOW", "variant": "return" },
+    { "id": "execute-tool", "from": "loop", "to": "tools", "y": 417, "label": "executeToolCall", "variant": "emphasis" },
+    { "id": "tool-result", "from": "tools", "to": "loop", "y": 445, "label": "ToolResult (observación)", "variant": "return", "note": "EMIT TOOL_CALL_COMPLETED" },
+    { "id": "emit-run-completed", "from": "loop", "to": "events", "y": 473, "label": "RUN_COMPLETED", "variant": "dashed", "note": "segundo turno completo: assembleContextSnapshot, invokeModelForTurn, ModelResponse(finished=TRUE), runTurn → COMPLETED" }
+  ],
+  "activations": [
+    { "participant": "core", "from": 160, "to": 178, "type": "backend" },
+    { "participant": "loop", "from": 160, "to": 479, "type": "backend" },
+    { "participant": "context", "from": 188, "to": 226, "type": "backend" },
+    { "participant": "model", "from": 244, "to": 282, "type": "cloud" },
+    { "participant": "capreg", "from": 300, "to": 338, "type": "backend" },
+    { "participant": "policy", "from": 356, "to": 394, "type": "security" },
+    { "participant": "tools", "from": 412, "to": 450, "type": "backend" }
+  ],
+  "cards": [
+    { "dot": "emerald", "title": "El camino feliz (CH-12)", "items": ["runAgentTurnEndToEnd invoca estas funciones ya publicadas, sin modificar ninguna", "AgentLoop nunca decide autorización ni ejecuta la tool call — solo orquesta la transición"] },
+    { "dot": "rose", "title": "Lo que este diagrama no dibuja", "items": ["El camino DENY de PolicyEngine y la pausa WAITING_FOR_HUMAN — CH-13", "El kill switch de OperationalController y la escalación por denegación severa — CH-27"] },
+    { "dot": "cyan", "title": "EventBus en cada paso", "items": ["emitAndDistribute entrega un AgentEvent en cada uno de los quince pasos reales de CH-12", "Aquí solo se dibuja la emisión de cierre para no saturar el diagrama"] }
+  ]
+}

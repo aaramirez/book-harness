@@ -1,3 +1,7 @@
 reference/
 dist/
 
+
+# Evidencia de archify visual-check (sidecars .png/.json/.html) — no son artefactos entregados,
+# solo evidencia de verificación local; los .html reales viven en diagrams/archify/rendered/*.html
+diagrams/archify/rendered/*.visual-check.*

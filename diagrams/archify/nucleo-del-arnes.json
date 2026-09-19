@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "El Núcleo del Arnés",
+    "output": "nucleo-del-arnes.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/aaramirez/book-harness",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "44a70a2f8c42910934bb812f1d0d869eba386e5d"
+    },
+    "views": [
+      { "id": "ciclo-cognitivo", "label": "El ciclo cognitivo", "focus": ["agentcore", "agentloop", "contextengine", "modelgateway"], "note": "AgentLoop pide contexto, invoca al modelo y decide la transición del turno." },
+      { "id": "gobierno-tool-call", "label": "Gobierno de una tool call", "focus": ["agentloop", "capabilityregistry", "policyengine", "toolruntime", "humaninteraction"], "note": "Una propuesta cruda del modelo se resuelve, se autoriza y solo entonces se ejecuta." },
+      { "id": "persistencia-eventos", "label": "Persistencia y eventos", "focus": ["agentloop", "executioncontroller", "eventbus", "sessionmanager"], "note": "Cada paso del turno se distribuye como evento y se hace checkpoint de la sesión." }
+    ]
+  },
+  "components": [
+    { "id": "agentcore", "type": "backend", "label": "AgentCore", "sublabel": "nace un AgentState", "pos": [40, 340], "size": [150, 64], "sources": [{ "path": "book/chapters/11-agent-core/chapter.md", "label": "CH-11" }] },
+    { "id": "agentloop", "type": "backend", "label": "AgentLoop", "sublabel": "ciclo cognitivo", "tag": "el corazón del turno", "pos": [310, 330], "size": [160, 84], "sources": [{ "path": "book/chapters/01-agent-loop/chapter.md", "label": "CH-01" }] },
+    { "id": "contextengine", "type": "backend", "label": "ContextEngine", "sublabel": "snapshot de contexto", "pos": [310, 90], "size": [160, 64], "sources": [{ "path": "book/chapters/04-context-engine/chapter.md", "label": "CH-04" }] },
+    { "id": "modelgateway", "type": "cloud", "label": "ModelGateway", "sublabel": "invoca al modelo", "pos": [590, 90], "size": [160, 64], "sources": [{ "path": "book/chapters/03-model-gateway/chapter.md", "label": "CH-03" }] },
+    { "id": "capabilityregistry", "type": "backend", "label": "CapabilityRegistry", "sublabel": "resuelve el ToolCall", "pos": [590, 330], "size": [160, 64], "sources": [{ "path": "book/chapters/08-capability-registry/chapter.md", "label": "CH-08" }] },
+    { "id": "policyengine", "type": "security", "label": "PolicyEngine", "sublabel": "ALLOW / DENY", "pos": [870, 330], "size": [160, 64], "sources": [{ "path": "book/chapters/05-policy-engine/chapter.md", "label": "CH-05" }] },
+    { "id": "toolruntime", "type": "backend", "label": "ToolRuntime", "sublabel": "ejecuta la tool call", "pos": [1150, 330], "size": [160, 64], "sources": [{ "path": "book/chapters/02-tool-runtime/chapter.md", "label": "CH-02" }] },
+    { "id": "humaninteraction", "type": "external", "label": "HumanInteractionService", "sublabel": "aprobación humana", "pos": [870, 540], "size": [160, 64], "sources": [{ "path": "book/chapters/06-human-interaction-service/chapter.md", "label": "CH-06" }] },
+    { "id": "executioncontroller", "type": "backend", "label": "ExecutionController", "sublabel": "budgets + cancelación", "pos": [40, 540], "size": [160, 64], "sources": [{ "path": "book/chapters/07-execution-controller/chapter.md", "label": "CH-07" }] },
+    { "id": "eventbus", "type": "messagebus", "label": "EventBus", "sublabel": "fan-out de eventos", "pos": [310, 540], "size": [160, 64], "sources": [{ "path": "book/chapters/09-event-bus/chapter.md", "label": "CH-09" }] },
+    { "id": "sessionmanager", "type": "database", "label": "SessionManager", "sublabel": "checkpoints durables", "pos": [590, 540], "size": [160, 64], "sources": [{ "path": "book/chapters/10-session-manager/chapter.md", "label": "CH-10" }] }
+  ],
+  "connections": [
+    { "id": "core-to-loop", "from": "agentcore", "to": "agentloop", "label": "activateAgent", "variant": "default", "labelAt": [250, 260] },
+    { "id": "loop-to-context", "from": "agentloop", "to": "contextengine", "label": "assembleContextSnapshot", "variant": "default", "fromSide": "top", "toSide": "bottom" },
+    { "id": "context-to-model", "from": "contextengine", "to": "modelgateway", "label": "ContextSnapshot", "variant": "default" },
+    { "id": "model-to-loop", "from": "modelgateway", "to": "agentloop", "label": "propone tool call", "variant": "emphasis", "fromSide": "bottom", "toSide": "right" },
+    { "id": "loop-to-capreg", "from": "agentloop", "to": "capabilityregistry", "label": "resolveModelProposedToolCall", "variant": "default", "labelAt": [545, 428] },
+    { "id": "capreg-to-policy", "from": "capabilityregistry", "to": "policyengine", "label": "evaluatePolicyForToolCall", "variant": "default", "labelAt": [810, 408] },
+    { "id": "policy-to-tools", "from": "policyengine", "to": "toolruntime", "label": "ALLOW", "variant": "emphasis" },
+    { "id": "policy-to-human", "from": "policyengine", "to": "humaninteraction", "label": "REQUIRE_APPROVAL", "variant": "dashed", "fromSide": "bottom", "toSide": "top", "labelDy": 24 },
+    { "id": "tools-to-loop", "from": "toolruntime", "to": "agentloop", "label": "ToolResult (observación)", "variant": "default", "fromSide": "top", "toSide": "left" },
+    { "id": "loop-to-exec", "from": "agentloop", "to": "executioncontroller", "label": "evaluateExecutionContinuation", "variant": "default", "fromSide": "bottom", "toSide": "top" },
+    { "id": "loop-to-eventbus", "from": "agentloop", "to": "eventbus", "label": "distributeEvent", "variant": "dashed", "fromSide": "bottom", "toSide": "top", "labelAt": [395, 505] },
+    { "id": "loop-to-session", "from": "agentloop", "to": "sessionmanager", "label": "createOrUpdateSessionCheckpoint", "variant": "default", "fromSide": "bottom", "toSide": "top" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Article III — Component Sovereignty", "items": ["Los once componentes de Article III, sin excepción", "Ningún componente absorbe una decisión de otro dominio (Article IV)"] },
+    { "dot": "rose", "title": "INV-06 / INV-11", "items": ["Una acción con side effects nunca se ejecuta sin una PolicyDecision ALLOW previa", "AgentLoop nunca ejecuta tools directamente — ToolRuntime coordina la ejecución real"] },
+    { "dot": "emerald", "title": "La traza real (CH-12)", "items": ["runAgentTurnEndToEnd invoca estas once fichas en el orden exacto de este diagrama", "Ningún componente cambió de dueño para que la integración funcionara"] }
+  ]
+}

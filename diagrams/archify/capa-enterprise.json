@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "La Capa de Gobierno Enterprise",
+    "output": "capa-enterprise.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/aaramirez/book-harness",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "44a70a2f8c42910934bb812f1d0d869eba386e5d"
+    },
+    "views": [
+      { "id": "cableados", "label": "Cableados en un turno", "focus": ["admission", "credential", "idempotency", "operational", "audit", "datagovernance", "handoff", "skilllibrary"], "note": "Ocho de los once componentes de Amendment v1.1 ya tienen integración real dentro de un turno (CH-26/27)." },
+      { "id": "escala-distinta", "label": "Otra escala", "focus": ["comgateway", "evalharness", "fabric"], "note": "Estos tres operan entre agentes, antes de producción o sobre la topología de despliegue — nunca dentro de un turno individual." },
+      { "id": "unica-arista", "label": "La única arista real", "focus": ["operational", "handoff"], "note": "OperationalController → HandoffCoordinator (CH-27) es la única conexión real entre estos once componentes." }
+    ]
+  },
+  "components": [
+    { "id": "admission", "type": "security", "label": "AdmissionController", "sublabel": "CH-14", "tag": "antecede a AgentCore", "pos": [40, 90], "size": [190, 64], "sources": [{ "path": "book/chapters/14-admission-controller/chapter.md", "label": "CH-14" }] },
+    { "id": "datagovernance", "type": "security", "label": "DataGovernanceEngine", "sublabel": "CH-20", "tag": "clasifica lo que ve ContextEngine", "pos": [270, 90], "size": [190, 64], "sources": [{ "path": "book/chapters/20-data-governance-engine/chapter.md", "label": "CH-20" }] },
+    { "id": "skilllibrary", "type": "backend", "label": "SkillLibrary", "sublabel": "CH-24", "tag": "procedimiento, no capability", "pos": [500, 90], "size": [190, 64], "sources": [{ "path": "book/chapters/24-skill-library/chapter.md", "label": "CH-24" }] },
+    { "id": "credential", "type": "security", "label": "CredentialBroker", "sublabel": "CH-16", "tag": "antecede a ToolRuntime", "pos": [730, 90], "size": [190, 64], "sources": [{ "path": "book/chapters/16-credential-broker/chapter.md", "label": "CH-16" }] },
+    { "id": "idempotency", "type": "security", "label": "IdempotencyGuard", "sublabel": "CH-17", "tag": "antecede a ToolRuntime", "pos": [960, 90], "size": [190, 64], "sources": [{ "path": "book/chapters/17-idempotency-guard/chapter.md", "label": "CH-17" }] },
+    { "id": "audit", "type": "database", "label": "AuditLedger", "sublabel": "CH-19", "tag": "preserva sin depender de EventBus", "pos": [40, 300], "size": [190, 64], "sources": [{ "path": "book/chapters/19-audit-ledger/chapter.md", "label": "CH-19" }] },
+    { "id": "operational", "type": "security", "label": "OperationalController", "sublabel": "CH-18", "tag": "kill switch, independiente de AgentLoop", "pos": [270, 300], "size": [190, 64], "sources": [{ "path": "book/chapters/18-operational-controller/chapter.md", "label": "CH-18" }] },
+    { "id": "handoff", "type": "external", "label": "HandoffCoordinator", "sublabel": "CH-23", "tag": "empaqueta, nunca decide transferir", "pos": [500, 300], "size": [190, 64], "sources": [{ "path": "book/chapters/23-handoff-coordinator/chapter.md", "label": "CH-23" }] },
+    { "id": "comgateway", "type": "cloud", "label": "AgentCommunicationGateway", "sublabel": "CH-15", "tag": "frontera entre agentes, no dentro de uno", "pos": [730, 300], "size": [190, 64], "sources": [{ "path": "book/chapters/15-agent-communication-gateway/chapter.md", "label": "CH-15" }] },
+    { "id": "evalharness", "type": "backend", "label": "EvaluationHarness", "sublabel": "CH-22", "tag": "certifica antes de producción", "pos": [960, 300], "size": [190, 64], "sources": [{ "path": "book/chapters/22-evaluation-harness/chapter.md", "label": "CH-22" }] },
+    { "id": "fabric", "type": "cloud", "label": "ExecutionFabricAdapter", "sublabel": "CH-21", "tag": "topología de despliegue, no de turno", "pos": [500, 460], "size": [190, 64], "sources": [{ "path": "book/chapters/21-execution-fabric-adapter/chapter.md", "label": "CH-21" }] }
+  ],
+  "connections": [
+    { "id": "operational-handoff", "from": "operational", "to": "handoff", "label": "applyControlDirective → createHandoffPackage", "variant": "emphasis", "labelAt": [480, 378] }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Once componentes, una sola arista real", "items": ["OperationalController → HandoffCoordinator (CH-27, kill switch) es la única conexión componente-a-componente que el libro cablea entre estos once", "PolicyEngine → HandoffCoordinator (denegación severa) también existe, pero PolicyEngine pertenece al núcleo — ver 'nucleo-del-arnes'"] },
+    { "dot": "rose", "title": "Ocho cableados dentro de un turno (CH-26/27)", "items": ["AdmissionController, DataGovernanceEngine, SkillLibrary, CredentialBroker, IdempotencyGuard, AuditLedger, OperationalController y HandoffCoordinator", "Cada uno gobierna a un componente del núcleo — ver el campo tag de cada nodo — sin que el libro dibuje esa relación como una arista"] },
+    { "dot": "amber", "title": "Tres a otra escala (por diseño, no por omisión)", "items": ["AgentCommunicationGateway opera entre agentes/runs distintos, nunca dentro de uno", "EvaluationHarness certifica un candidato antes de que exista ningún run", "ExecutionFabricAdapter abstrae la topología de despliegue, no la traza de un turno"] }
+  ]
+}

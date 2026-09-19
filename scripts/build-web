@@ -416,39 +416,12 @@ Los nodos son clicables y llevan a la sección del capítulo que introdujo cada 
  * paso se salta limpiamente sin fallar el build, preservando el pipeline zero-dependencias para
  * cualquiera que solo quiera los 28 capítulos + mapa mental + PDF.
  */
-const ARCHIFY_RENDERED_DIR = path.join(ROOT, 'diagrams', 'archify', 'rendered');
+const ARCHIFY_DIR = path.join(ROOT, 'diagrams', 'archify');
+const ARCHIFY_RENDERED_DIR = path.join(ARCHIFY_DIR, 'rendered');
 const ARCHIFY_OUT_DIR = path.join(OUT_DIR, 'diagramas');
 
-const ARCHIFY_DIAGRAMS = [
-  {
-    file: 'nucleo-del-arnes.html',
-    title: 'El Núcleo del Arnés',
-    description: 'Los once componentes de Article III y cómo se invocan entre sí dentro de un turno real (CH-12).'
-  },
-  {
-    file: 'capa-enterprise.html',
-    title: 'La Capa de Gobierno Enterprise',
-    description: 'Los once componentes de Amendment v1.1, qué gobiernan y la única arista real que el libro cablea entre ellos.'
-  },
-  {
-    file: 'turno-gobernado.html',
-    title: 'El Turno Gobernado de Punta a Punta',
-    description: 'runGovernedEnterpriseTurn (CH-26) más los caminos de kill switch y escalación por denegación severa (CH-27).'
-  },
-  {
-    file: 'un-agentrun-real.html',
-    title: 'Un AgentRun de Punta a Punta',
-    description: 'La secuencia real de funciones — activación, razonamiento, gobierno y ejecución — de runAgentTurnEndToEnd (CH-12).'
-  },
-  {
-    file: 'estados-de-un-run.html',
-    title: 'Los 11 Estados de un AgentRun',
-    description: 'Los once valores de AgentRunStatus (C-013), quién produce cada transición y el hallazgo de PAUSED, nunca ejercitado.'
-  }
-];
-
-function renderDiagramasIndexPage(available) {
-  const cards = available
+function renderDiagramCards(items) {
+  return items
     .map(
       (d) => `<a class="diagram-card" href="diagramas/${escapeHtml(d.file)}">
   <h2>${escapeHtml(d.title)}</h2>
@@ -456,6 +429,11 @@ function renderDiagramasIndexPage(available) {
 </a>`
     )
     .join('\n');
+}
+
+function renderDiagramasIndexPage(general, porCapitulo) {
+  const generalCards = renderDiagramCards(general);
+  const porCapituloCards = renderDiagramCards(porCapitulo);
   return `<!doctype html>
 <html lang="es">
 <head>
@@ -475,16 +453,44 @@ function renderDiagramasIndexPage(available) {
 <p><a href="index.html">&larr; book-harness</a></p>
 <h1>Diagramas Interactivos</h1>
 <p>Estos diagramas son distintos de los mapas mentales por capítulo (<a href="mapa.html">mapa.html</a>):
-son diagramas curados a mano, navegables — con búsqueda, trazado de rutas, vistas guiadas y tema
+son diagramas curados, navegables — con búsqueda, trazado de rutas, vistas guiadas y tema
 claro/oscuro — generados con <a href="https://github.com/tt-a1i/archify">Archify</a> a partir del
 contenido real del libro (nombres de función, componentes y estados citados contra los capítulos
-que los publican).</p>
+que los publican, sin inventar topología).</p>
+<h2>Vistas Generales</h2>
 <div class="diagram-grid">
-${cards}
+${generalCards}
+</div>
+<h2>Por Capítulo</h2>
+<p>La sección "10. Diagrama de Secuencia" real de cada capítulo, convertida a Archify —
+mismo contenido, ahora navegable.</p>
+<div class="diagram-grid">
+${porCapituloCards}
 </div>
 </body>
 </html>
 `;
+}
+
+/**
+ * Cada `diagrams/archify/<slug>.json` es la fuente que produjo el `.html` entregado del mismo
+ * nombre en `rendered/` — leerlo aquí (solo `meta.title`/`meta.subtitle`, JSON.parse plano, sin
+ * dependencia nueva) evita mantener una lista de títulos hardcodeada y desincronizable del
+ * contenido real. Un `.html` sin `.json` fuente (no debería ocurrir en este flujo) cae de vuelta
+ * al nombre de archivo.
+ */
+function loadArchifyMeta(slug) {
+  const jsonPath = path.join(ARCHIFY_DIR, `${slug}.json`);
+  if (!fs.existsSync(jsonPath)) return { title: slug, description: '' };
+  try {
+    const spec = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+    return {
+      title: (spec.meta && spec.meta.title) || slug,
+      description: (spec.meta && spec.meta.subtitle) || '',
+    };
+  } catch (e) {
+    return { title: slug, description: '' };
+  }
 }
 
 function buildArchifyDiagramsSection() {
@@ -497,25 +503,46 @@ function buildArchifyDiagramsSection() {
   // artefactos realmente entregados por `archify deliver`.
   const entries = fs
     .readdirSync(ARCHIFY_RENDERED_DIR)
-    .filter((f) => f.endsWith('.html') && !f.includes('.visual-check.'));
+    .filter((f) => f.endsWith('.html') && !f.includes('.visual-check.'))
+    .sort();
   if (entries.length === 0) {
     console.log('build-web: diagrams/archify/rendered/ existe pero está vacío — se omite la sección de Diagramas Interactivos.');
     return { built: false, available: [] };
   }
   fs.mkdirSync(ARCHIFY_OUT_DIR, { recursive: true });
-  const available = [];
+  const general = [];
+  const porCapitulo = [];
   for (const entry of entries) {
     const srcPath = path.join(ARCHIFY_RENDERED_DIR, entry);
     const destPath = path.join(ARCHIFY_OUT_DIR, entry);
     // Copia íntegra, byte a byte — nunca se re-renderiza ni se modifica el HTML ya entregado por
     // Archify (son artefactos firmados/validados por su propio pipeline de deliver+visual-check).
     fs.copyFileSync(srcPath, destPath);
-    const known = ARCHIFY_DIAGRAMS.find((d) => d.file === entry);
-    available.push(known || { file: entry, title: entry.replace(/\.html$/, ''), description: '' });
+    const slug = entry.replace(/\.html$/, '');
+    const meta = loadArchifyMeta(slug);
+    // "capitulo-NN-..." (dos dígitos, prefijo fijo) agrupa las conversiones 1:1 de la sección
+    // "10. Diagrama de Secuencia" de cada capítulo; todo lo demás son vistas generales curadas.
+    const isPerChapter = /^capitulo-\d{2}-/.test(slug);
+    const description = meta.description || (isPerChapter ? 'Diagrama de Secuencia real de este capítulo (sección 10), convertido a Archify.' : '');
+    const item = { file: entry, title: meta.title, description };
+    if (isPerChapter) porCapitulo.push(item);
+    else general.push(item);
   }
-  fs.writeFileSync(path.join(OUT_DIR, 'diagramas.html'), renderDiagramasIndexPage(available), 'utf8');
-  console.log(`build-web: diagramas.html + ${available.length} diagrama(s) interactivo(s) copiado(s) → dist/web/diagramas/`);
-  return { built: true, available };
+  // "Por Capítulo" ordenado numéricamente por el NN del prefijo (el sort() de arriba ya es
+  // lexicográfico, pero lo hacemos explícito para no depender de que todos los NN tengan
+  // exactamente 2 dígitos).
+  porCapitulo.sort((a, b) => {
+    const na = parseInt(a.file.match(/^capitulo-(\d+)-/)[1], 10);
+    const nb = parseInt(b.file.match(/^capitulo-(\d+)-/)[1], 10);
+    return na - nb;
+  });
+  fs.writeFileSync(path.join(OUT_DIR, 'diagramas.html'), renderDiagramasIndexPage(general, porCapitulo), 'utf8');
+  const total = general.length + porCapitulo.length;
+  console.log(
+    `build-web: diagramas.html + ${total} diagrama(s) interactivo(s) copiado(s) → dist/web/diagramas/ ` +
+      `(${general.length} vista(s) general(es), ${porCapitulo.length} por capítulo)`
+  );
+  return { built: true, available: [...general, ...porCapitulo] };
 }
 
 function main() {

@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 14 — AdmissionController y la Admisión de una Activación Cruda",
+    "output": "capitulo-14-admission-controller.html",
+    "viewBox": [
+      1080,
+      480
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "ingreso",
+        "label": "Ingreso crudo",
+        "focus": [
+          "trigger",
+          "ingress",
+          "admission"
+        ],
+        "note": "La forma canónica: Trigger -> Adapter -> ActivationRequest, nunca Trigger -> AgentLoop directo."
+      },
+      {
+        "id": "fail-closed",
+        "label": "Rechazo fail-closed",
+        "focus": [
+          "admission",
+          "ingress"
+        ],
+        "note": "Sin ninguna regla que conceda acceso, AdmissionController rechaza por defecto."
+      },
+      {
+        "id": "admit-preview",
+        "label": "Admisión y routing (Preview)",
+        "focus": [
+          "admission",
+          "routing",
+          "agentcore"
+        ],
+        "note": "Routing y AgentCore.activateAgent son Preview de esta interacción, no código que este capítulo cablea."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "trigger",
+      "type": "external",
+      "label": "Trigger",
+      "sublabel": "estímulo externo crudo"
+    },
+    {
+      "id": "ingress",
+      "type": "external",
+      "label": "Ingress Adapter",
+      "sublabel": "borde, fuera de registry"
+    },
+    {
+      "id": "admission",
+      "type": "security",
+      "label": "AdmissionController",
+      "sublabel": "CH-14"
+    },
+    {
+      "id": "routing",
+      "type": "external",
+      "label": "Routing",
+      "sublabel": "Preview, sin componente propio"
+    },
+    {
+      "id": "agentcore",
+      "type": "backend",
+      "label": "AgentCore",
+      "sublabel": "CH-11, Preview"
+    }
+  ],
+  "segments": [
+    {
+      "from": 160,
+      "to": 220,
+      "label": "Ingreso"
+    },
+    {
+      "from": 220,
+      "to": 285,
+      "label": "Admisión"
+    },
+    {
+      "from": 285,
+      "to": 320,
+      "label": "Routing (Preview)"
+    }
+  ],
+  "messages": [
+    {
+      "id": "raw-stimulus",
+      "from": "trigger",
+      "to": "ingress",
+      "y": 170,
+      "label": "estímulo externo crudo",
+      "variant": "default"
+    },
+    {
+      "id": "activation-request",
+      "from": "ingress",
+      "to": "admission",
+      "y": 200,
+      "label": "ActivationRequest(id, sourceRef, externalIdentityRef, payload, receivedAt)",
+      "variant": "emphasis",
+      "note": "evaluateAdmissionForActivationRequest(request) evalúa identity/authorization/tenant/capacity/rate/budget/deduplication/policy en conjunto"
+    },
+    {
+      "id": "decision-reject",
+      "from": "admission",
+      "to": "ingress",
+      "y": 240,
+      "label": "AdmissionDecision(REJECT)",
+      "variant": "security",
+      "note": "fail-closed: HarnessError categoría ADMISSION (NO_ADMISSION_RULE_GRANTS_ACCESS); ningún AgentRun llega a existir"
+    },
+    {
+      "id": "decision-admit",
+      "from": "admission",
+      "to": "routing",
+      "y": 270,
+      "label": "AdmissionDecision(ADMIT, reason = NULL)",
+      "variant": "return"
+    },
+    {
+      "id": "activate-preview",
+      "from": "routing",
+      "to": "agentcore",
+      "y": 300,
+      "label": "activateAgent(agentId ya resuelto) — Preview",
+      "variant": "dashed",
+      "note": "integración futura: AgentCore.activateAgent (CH-11) no cambia una sola línea de su código ya publicado"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "ingress",
+      "from": 165,
+      "to": 245,
+      "type": "external"
+    },
+    {
+      "participant": "admission",
+      "from": 195,
+      "to": 275,
+      "type": "security"
+    },
+    {
+      "participant": "routing",
+      "from": 265,
+      "to": 305,
+      "type": "external"
+    },
+    {
+      "participant": "agentcore",
+      "from": 295,
+      "to": 305,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Forma canónica de activación",
+      "items": [
+        "Trigger -> Ingress Adapter -> ActivationRequest -> AdmissionController -> Route -> ExecutionTarget",
+        "Nunca Trigger -> AgentLoop directamente (regla de activación, §31)"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Rechazo por defecto",
+      "items": [
+        "Sin ninguna de las ocho reglas de admisión (identity/authorization/tenant/capacity/rate/budget/deduplication/policy) concediendo acceso, el outcome es REJECT",
+        "REJECT se asume primero; solo admissionRulesGrantAccess lo sobrescribe a ADMIT"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Routing y AgentCore son Preview",
+      "items": [
+        "AdmissionController decide SI se puede proceder, nunca A QUÉ AgentId corresponde",
+        "Routing (sin componente propio todavía) y AgentCore.activateAgent son integración de un capítulo futuro"
+      ]
+    }
+  ]
+}

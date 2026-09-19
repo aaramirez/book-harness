@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "CH-04 — ContextEngine y Qué Ve Realmente el Modelo",
+    "output": "capitulo-04-context-engine.html",
+    "viewBox": [
+      1080,
+      480
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "candidatos",
+        "label": "Candidatos del turno",
+        "focus": [
+          "loop",
+          "context"
+        ],
+        "note": "AgentLoop recopila candidates ya existentes; su orden dado ES el ranking."
+      },
+      {
+        "id": "seleccion",
+        "label": "Selección por budget",
+        "focus": [
+          "context"
+        ],
+        "note": "Cada candidato cabe completo, cabe compactado, o queda fuera — nunca descarte silencioso."
+      },
+      {
+        "id": "snapshot",
+        "label": "Snapshot o error",
+        "focus": [
+          "context",
+          "loop"
+        ],
+        "note": "ContextSnapshot vuelve a AgentLoop, o HarnessError si ningún candidato cupo."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "loop",
+      "type": "backend",
+      "label": "AgentLoop",
+      "sublabel": "conceptual"
+    },
+    {
+      "id": "context",
+      "type": "backend",
+      "label": "ContextEngine",
+      "sublabel": "CH-04"
+    }
+  ],
+  "segments": [
+    {
+      "from": 170,
+      "to": 210,
+      "label": "Recolección de candidatos"
+    },
+    {
+      "from": 220,
+      "to": 300,
+      "label": "Selección con budget"
+    },
+    {
+      "from": 310,
+      "to": 380,
+      "label": "Snapshot o error (alternativos)"
+    }
+  ],
+  "messages": [
+    {
+      "id": "assemble-context-snapshot",
+      "from": "loop",
+      "to": "context",
+      "y": 190,
+      "label": "assembleContextSnapshot(candidates, execution, agentId)",
+      "variant": "emphasis",
+      "note": "candidates: List<AgentMessage> ya existentes para este turno (AgentState, historial); su orden ya dado ES el ranking"
+    },
+    {
+      "id": "context-snapshot",
+      "from": "context",
+      "to": "loop",
+      "y": 290,
+      "label": "ContextSnapshot (blocks, budget, estimatedTokens)",
+      "variant": "return",
+      "note": "por candidato: cabe completo (compacted=FALSE) | cabe compactado (compacted=TRUE) | queda fuera — selección explícita; emite AgentEvent CONTEXT_SNAPSHOT_ASSEMBLED"
+    },
+    {
+      "id": "context-error",
+      "from": "context",
+      "to": "loop",
+      "y": 350,
+      "label": "HarnessError (ningún candidato cupo)",
+      "variant": "dashed",
+      "note": "solo si había candidates y ninguno cupo, ni siquiera compactado; emite AgentEvent CONTEXT_SNAPSHOT_FAILED"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "context",
+      "from": 180,
+      "to": 360,
+      "type": "backend"
+    },
+    {
+      "participant": "loop",
+      "from": 175,
+      "to": 365,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Lo que ContextEngine owns (Article III)",
+      "items": [
+        "selección, ranking, composición, compaction",
+        "context budgets y provenance de cada bloque incluido"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Cuatro exclusiones (Article IV)",
+      "items": [
+        "invocar al modelo seleccionado — ModelGateway, ya introducido en CH-03",
+        "decidir si otro turno debe ocurrir — AgentLoop, ya introducido en CH-01",
+        "persistir/recuperar historial y checkpoints — SessionManager, Preview",
+        "policy/autorización sobre qué información puede verse — PolicyEngine, Preview"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Dos desenlaces, ningún componente cambia",
+      "items": [
+        "assembleContextSnapshot (§11) construye ambos desenlaces solo con material que ya existe",
+        "ModelGateway (CH-03) consumiría este ContextSnapshot en el futuro — ese cableado formal no existe todavía"
+      ]
+    }
+  ]
+}

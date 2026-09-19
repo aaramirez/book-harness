@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 22 — EvaluationHarness y la Certificación de un Candidato Antes de que Exista Ningún Run",
+    "output": "capitulo-22-evaluation-harness.html",
+    "viewBox": [1080, 560],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "certificacion", "label": "Certificación de candidato", "focus": ["candidato", "harness"], "note": "evaluateCandidateForPromotion certifica agente, prompt, skill, modelo, policy o capability — antes de que exista ningún run." },
+      { "id": "reglas-outcome", "label": "Reglas de outcome", "focus": ["harness"], "note": "Sin certificación requerida → CERTIFIED; certificationSatisfied ausente → NEEDS_REVIEW; TRUE → CERTIFIED; FALSE → REJECTED." },
+      { "id": "correlacion", "label": "Correlación con negocio", "focus": ["agentrun", "harness"], "note": "correlateRunWithBusinessOutcome separa el éxito técnico del éxito de negocio (P-29)." }
+    ]
+  },
+  "participants": [
+    { "id": "candidato", "type": "external", "label": "Candidato", "sublabel": "agente/skill/policy — conceptual" },
+    { "id": "harness", "type": "backend", "label": "EvaluationHarness", "sublabel": "CH-22" },
+    { "id": "agentrun", "type": "external", "label": "AgentRun", "sublabel": "runId, CH-00/CH-11" }
+  ],
+  "segments": [
+    { "from": 160, "to": 245, "label": "Certificación de candidato" },
+    { "from": 255, "to": 340, "label": "Correlación de negocio" }
+  ],
+  "messages": [
+    { "id": "evaluate-candidate", "from": "candidato", "to": "harness", "y": 175, "label": "evaluateCandidateForPromotion(subjectRef, riskClass, certificationRequired, certificationSatisfied, execution, agentId)", "variant": "emphasis", "note": "¿subjectRef ausente? → HarnessError EVALUATION_REPORT_MISSING_SUBJECT_REF" },
+    { "id": "report-built", "from": "harness", "to": "candidato", "y": 218, "label": "EvaluationReport(id, subjectRef, riskClass, certificationRequired, outcome, evaluatedAt)", "variant": "return", "note": "sin certificación→CERTIFIED · certificationSatisfied ausente→NEEDS_REVIEW · =TRUE→CERTIFIED · =FALSE→REJECTED; EMIT AgentEvent(EVALUATION_REPORT_PRODUCED) → EventBus, CH-09, Preview" },
+    { "id": "correlate-run", "from": "agentrun", "to": "harness", "y": 270, "label": "correlateRunWithBusinessOutcome(runId, measuredOutcome, slaRef, humanEscalationRef, execution, agentId)", "variant": "emphasis", "note": "¿runId ausente? → HarnessError BUSINESS_OUTCOME_CORRELATION_MISSING_RUN_ID" },
+    { "id": "correlation-built", "from": "harness", "to": "agentrun", "y": 313, "label": "BusinessOutcomeCorrelation(id, runId, measuredOutcome, slaRef, humanEscalationRef, correlatedAt)", "variant": "return", "note": "EMIT AgentEvent(BUSINESS_OUTCOME_CORRELATED) → EventBus, CH-09, Preview" }
+  ],
+  "activations": [
+    { "participant": "candidato", "from": 170, "to": 223, "type": "external" },
+    { "participant": "harness", "from": 170, "to": 318, "type": "backend" },
+    { "participant": "agentrun", "from": 265, "to": 318, "type": "external" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Dos preocupaciones separadas (P-28/P-29)", "items": ["production and evaluation are separate execution concerns (P-28): EvaluationHarness certifica candidatos, nunca ejecuta un run", "technical success does not imply business success (P-29): BusinessOutcomeCorrelation es una capa aparte del AgentRunStatus técnico"] },
+    { "dot": "rose", "title": "Fail-closed en ambas funciones", "items": ["subjectRef ausente → HarnessError EVALUATION_REPORT_MISSING_SUBJECT_REF", "runId ausente → HarnessError BUSINESS_OUTCOME_CORRELATION_MISSING_RUN_ID"] },
+    { "dot": "amber", "title": "Integración futura (Preview, no cableada)", "items": ["CapabilityRegistry (CH-08) podría invocar evaluateCandidateForPromotion tras registrar una nueva versión", "HumanInteractionService (CH-06) podría reaccionar a un outcome NEEDS_REVIEW", "AuditLedger (CH-19) podría auditar que una certificación ocurrió; PolicyEngine (CH-05) seguiría evaluando solo ToolCall"] }
+  ]
+}

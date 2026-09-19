@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 11 — AgentCore y el Nacimiento de un AgentState",
+    "output": "capitulo-11-agent-core.html",
+    "viewBox": [1080, 500],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "activacion", "label": "Activación", "focus": ["caller", "agentcore"], "note": "activateAgent valida AgentConfig y ExecutionBudget antes de crear el primer AgentState." },
+      { "id": "inicializacion", "label": "Inicialización", "focus": ["agentcore", "events", "agentloop"], "note": "beginAgentInitialization transiciona CREATED → INITIALIZING y emite RUN_STARTED." }
+    ]
+  },
+  "participants": [
+    { "id": "caller", "type": "external", "label": "Llamador", "sublabel": "todavía sin componente propio · Preview" },
+    { "id": "agentcore", "type": "backend", "label": "AgentCore", "sublabel": "CH-11" },
+    { "id": "events", "type": "messagebus", "label": "EventBus", "sublabel": "CH-09" },
+    { "id": "agentloop", "type": "backend", "label": "AgentLoop", "sublabel": "CH-01 · Preview de esta interacción" }
+  ],
+  "segments": [
+    { "from": 170, "to": 260, "label": "activateAgent" },
+    { "from": 270, "to": 400, "label": "beginAgentInitialization" }
+  ],
+  "messages": [
+    {
+      "id": "activation-request",
+      "from": "caller",
+      "to": "agentcore",
+      "y": 190,
+      "label": "AgentActivationRequest(agentId, sessionId?, input, requestedAt)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "created-return",
+      "from": "agentcore",
+      "to": "caller",
+      "y": 230,
+      "label": "AgentState (CREATED, currentTurn = 0)",
+      "variant": "return",
+      "note": "activateAgent: ¿existe un AgentConfig para agentId? no → HarnessError AGENT_CONFIG_NOT_FOUND (VALIDATION); ¿su ExecutionBudget es coherente? no → HarnessError INCOHERENT_EXECUTION_BUDGET (VALIDATION); decide sessionId (el provisto, o uno nuevo) y genera un runId nuevo"
+    },
+    {
+      "id": "begin-init",
+      "from": "caller",
+      "to": "agentcore",
+      "y": 300,
+      "label": "beginAgentInitialization(state, config)",
+      "variant": "emphasis",
+      "note": "el mismo AgentCore, o un llamador con la misma referencia, decide iniciar; ¿state.status != CREATED? sí → HarnessError INITIALIZATION_REQUIRES_CREATED_STATE (VALIDATION); construye el primer ExecutionContext real de este run (traceId nuevo)"
+    },
+    {
+      "id": "emit-run-started",
+      "from": "agentcore",
+      "to": "events",
+      "y": 340,
+      "label": "EMIT AgentEvent (RUN_STARTED)",
+      "variant": "dashed",
+      "note": "primera vez que este libro lo emite"
+    },
+    {
+      "id": "initializing-handoff",
+      "from": "agentcore",
+      "to": "agentloop",
+      "y": 380,
+      "label": "AgentState (INITIALIZING)",
+      "variant": "return",
+      "note": "transiciona CREATED → INITIALIZING; el testigo pasa a AgentLoop — CH-01, Preview de esta interacción; su código no cambia"
+    }
+  ],
+  "activations": [
+    { "participant": "caller", "from": 180, "to": 310, "type": "external" },
+    { "participant": "agentcore", "from": 185, "to": 386, "type": "backend" },
+    { "participant": "events", "from": 335, "to": 350, "type": "messagebus" },
+    { "participant": "agentloop", "from": 375, "to": 390, "type": "backend" }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Qué formaliza este capítulo",
+      "items": [
+        "activateAgent + beginAgentInitialization: primer AgentState de un nuevo run",
+        "Construidas sobre AgentConfig, ExecutionBudget, AgentState y ExecutionContext (CH-00)"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Validación (todas VALIDATION)",
+      "items": [
+        "AGENT_CONFIG_NOT_FOUND — no existe un AgentConfig para agentId",
+        "INCOHERENT_EXECUTION_BUDGET — ExecutionBudget no coherente",
+        "INITIALIZATION_REQUIRES_CREATED_STATE — state.status != CREATED"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "RUN_STARTED y lo que sigue Preview",
+      "items": [
+        "RUN_STARTED es el primer AgentEvent que este libro emite",
+        "AgentLoop (CH-01) recibe el testigo en INITIALIZING — su código no cambia aquí"
+      ]
+    }
+  ]
+}

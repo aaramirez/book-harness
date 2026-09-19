@@ -1,0 +1,49 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Capítulo 25 — Epílogo: El Orden que Nunca se Declaró en Prosa",
+    "output": "capitulo-25-epilogo.html",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "orden-real", "label": "Orden real de book.yaml", "focus": ["ch00-11", "ch12-13", "ch14", "ch15", "ch16-24", "ch25"], "note": "27 capítulos, un solo orden canónico — el que scripts/validate-chapter ya recorrió en verde." },
+      { "id": "riesgo-p09", "label": "El único punto de riesgo", "focus": ["ch15", "riesgo-p09"], "note": "Solo en CH-15 P-09 podría haberse violado, si los 14 capítulos anteriores no hubieran estado ya completos y validados." },
+      { "id": "verificacion", "label": "Verificación con código, no prosa", "focus": ["ch25"], "note": "chapterIds.indexOf('CH-15') = 14 de 26 — un comando real, no una afirmación." }
+    ]
+  },
+  "lanes": [
+    { "id": "construccion", "label": "Construcción del arnés (orden real de book/book.yaml)" },
+    { "id": "riesgo", "label": "Punto de riesgo P-09", "variant": "exception" }
+  ],
+  "phases": [
+    { "id": "article-iii", "label": "Article III — single-agent", "fromCol": 0, "toCol": 0 },
+    { "id": "integracion", "label": "Integración single-agent", "fromCol": 1, "toCol": 1 },
+    { "id": "amendment-pre", "label": "Amendment v1.1 pre-multiagente", "fromCol": 2, "toCol": 2 },
+    { "id": "multiagente", "label": "Primera pieza multi-agente", "fromCol": 3, "toCol": 3, "variant": "emphasis" },
+    { "id": "amendment-post", "label": "Amendment v1.1 post-multiagente", "fromCol": 4, "toCol": 4 },
+    { "id": "epilogo", "label": "Verificación", "fromCol": 5, "toCol": 5, "variant": "dashed" }
+  ],
+  "mainPath": ["ch00-11", "ch12-13", "ch14", "ch15", "ch16-24", "ch25"],
+  "nodes": [
+    { "id": "ch00-11", "lane": "construccion", "col": 0, "type": "backend", "label": "CH-00 → CH-11", "sublabel": "11 componentes Article III", "tag": "todos validados", "width": 170 },
+    { "id": "ch12-13", "lane": "construccion", "col": 1, "type": "backend", "label": "CH-12 → CH-13", "sublabel": "Integración single-agent", "tag": "sin CMP propio", "width": 170 },
+    { "id": "ch14", "lane": "construccion", "col": 2, "type": "security", "label": "CH-14", "sublabel": "AdmissionController", "tag": "single-agent", "width": 160 },
+    { "id": "ch15", "lane": "construccion", "col": 3, "type": "security", "label": "CH-15", "sublabel": "AgentCommunicationGateway", "tag": "primera pieza multi-agente", "width": 190 },
+    { "id": "ch16-24", "lane": "construccion", "col": 4, "type": "backend", "label": "CH-16 → CH-24", "sublabel": "9 componentes más", "tag": "single-agent", "width": 160 },
+    { "id": "ch25", "lane": "construccion", "col": 5, "type": "external", "label": "CH-25", "sublabel": "este capítulo", "tag": "verificación", "width": 150 },
+    { "id": "riesgo-p09", "lane": "riesgo", "col": 3, "type": "security", "label": "Riesgo P-09", "sublabel": "único punto de violación posible", "width": 190 }
+  ],
+  "edges": [
+    { "id": "e-00-12", "from": "ch00-11", "to": "ch12-13", "label": "book/book.yaml, orden canónico", "variant": "default" },
+    { "id": "e-12-14", "from": "ch12-13", "to": "ch14", "variant": "default" },
+    { "id": "e-14-15", "from": "ch14", "to": "ch15", "label": "CMP-013 introducido en CH-15", "variant": "emphasis" },
+    { "id": "e-15-16", "from": "ch15", "to": "ch16-24", "variant": "default" },
+    { "id": "e-16-25", "from": "ch16-24", "to": "ch25", "variant": "default" },
+    { "id": "e-15-riesgo", "from": "ch15", "to": "riesgo-p09", "label": "único momento posible", "variant": "security", "role": "branch" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "P-09 verificado, no afirmado", "items": ["CH-00..CH-11: 11 componentes de Article III — AgentLoop, ToolRuntime, ModelGateway, ContextEngine, PolicyEngine, HumanInteractionService, ExecutionController, CapabilityRegistry, EventBus, SessionManager, AgentCore — cada uno single-agent y validado", "CH-12/CH-13: integración single-agent, sin componente propio (runAgentTurnEndToEnd + 5 funciones de gobierno, ambos en verde)", "CH-14: AdmissionController (CMP-012), primer componente de Amendment v1.1, todavía single-agent"] },
+    { "dot": "rose", "title": "El único punto de riesgo", "items": ["Solo en CH-15 (AgentCommunicationGateway, CMP-013) P-09 podría haberse violado, si los 14 capítulos anteriores no hubieran estado ya completos y validados", "CH-16..CH-24: 9 componentes más, todos single-agent, sobre el mismo runtime ya validado"] },
+    { "dot": "slate", "title": "Un epílogo sin componente propio, verificado con código", "items": ["introduces_components: [] — CH-25 no añade ningún CMP nuevo", "El script real: chapterIds.indexOf('CH-15') = 14 de 26; catorce capítulos (CH-00..CH-14) estrictamente anteriores", "Verifica sobre book/book.yaml y registry/components.yaml, no con pseudocódigo de dominio del arnés"] }
+  ]
+}

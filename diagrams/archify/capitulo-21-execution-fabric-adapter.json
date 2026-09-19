@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 21 — ExecutionFabricAdapter y la Topología de Despliegue que el Comportamiento del Agente Nunca Debe Conocer",
+    "output": "capitulo-21-execution-fabric-adapter.html",
+    "viewBox": [1080, 480],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "resolucion", "label": "Resolución de topología", "focus": ["executioncontext", "adapter"], "note": "resolveExecutionPlacement construye ExecutionPlacement a partir de runId, topology, computeResourceRef y residencyConstraint." },
+      { "id": "estructura", "label": "ExecutionPlacement resultante", "focus": ["adapter", "placement"], "note": "El resultado es una descripción opaca de topología, consultable vía runId — nunca algo que ExecutionController evalúe." },
+      { "id": "notificacion", "label": "Notificación (Preview)", "focus": ["adapter", "eventbus"], "note": "AgentEvent EXECUTION_PLACEMENT_RESOLVED es Preview: ningún componente lo consume todavía." }
+    ]
+  },
+  "participants": [
+    { "id": "executioncontext", "type": "external", "label": "ExecutionContext", "sublabel": "runId ya asignado — AgentCore, CH-11" },
+    { "id": "adapter", "type": "backend", "label": "ExecutionFabricAdapter", "sublabel": "CH-21" },
+    { "id": "placement", "type": "database", "label": "ExecutionPlacement", "sublabel": "topología vigente por runId" },
+    { "id": "eventbus", "type": "messagebus", "label": "EventBus", "sublabel": "CH-09, Preview" }
+  ],
+  "segments": [
+    { "from": 160, "to": 195, "label": "Solicitud" },
+    { "from": 205, "to": 225, "label": "Construcción" },
+    { "from": 235, "to": 255, "label": "Notificación (Preview)" }
+  ],
+  "messages": [
+    { "id": "request-placement", "from": "executioncontext", "to": "adapter", "y": 170, "label": "resolveExecutionPlacement(runId, topology, computeResourceRef, residencyConstraint, execution, agentId)", "variant": "emphasis", "note": "¿runId ausente? → HarnessError EXECUTION_FABRIC_PLACEMENT_MISSING_RUN_ID" },
+    { "id": "placement-built", "from": "adapter", "to": "placement", "y": 215, "label": "ExecutionPlacement(id, runId, topology, computeResourceRef, residencyConstraint, resolvedAt)", "variant": "return", "note": "topología vigente para este runId, consultable por cualquier componente futuro" },
+    { "id": "placement-event", "from": "adapter", "to": "eventbus", "y": 245, "label": "AgentEvent(EXECUTION_PLACEMENT_RESOLVED) — Preview", "variant": "dashed", "note": "solo si execution y agentId ambos resueltos" }
+  ],
+  "activations": [
+    { "participant": "executioncontext", "from": 165, "to": 220, "type": "external" },
+    { "participant": "adapter", "from": 165, "to": 250, "type": "backend" },
+    { "participant": "placement", "from": 210, "to": 220, "type": "database" },
+    { "participant": "eventbus", "from": 240, "to": 250, "type": "messagebus" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "El comportamiento del agente no depende de dónde corre (P-27)", "items": ["ExecutionPlacement es una descripción opaca y portátil de topología, recurso de cómputo y residencia — nunca una rama de lógica cognitiva", "P-13/INV-18/INV-19/INV-20: C-031 se construye exclusivamente sobre material ya existente desde CH-00/CH-11"] },
+    { "dot": "rose", "title": "Único fallo posible, fail-closed", "items": ["runId ausente → HarnessError EXECUTION_FABRIC_PLACEMENT_MISSING_RUN_ID"] },
+    { "dot": "amber", "title": "Integración futura (Preview, no cableada)", "items": ["AgentCore (CH-11) invocaría resolveExecutionPlacement de verdad tras crear cada run nuevo", "ExecutionController (CH-07) seguiría, sin cambios, evaluando solo ExecutionBudget/ExecutionUsage — nunca ExecutionPlacement", "AuditLedger (CH-19) podría auditar que una resolución de topología concreta ocurrió"] }
+  ]
+}

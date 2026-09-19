@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 20 — DataGovernanceEngine y la Etiqueta de Gobernanza que Viaja con el Dato",
+    "output": "capitulo-20-data-governance-engine.html",
+    "viewBox": [
+      1080,
+      480
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "clasificacion",
+        "label": "Clasificación",
+        "focus": [
+          "contextengine",
+          "engine",
+          "label"
+        ],
+        "note": "classifyData construye la etiqueta vigente para un subjectRef, fail-closed si no hay regla."
+      },
+      {
+        "id": "retencion",
+        "label": "Aplicación de retención",
+        "focus": [
+          "caller",
+          "engine"
+        ],
+        "note": "enforceRetention se evalúa más tarde, en cualquier instante, sobre la etiqueta ya clasificada."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "contextengine",
+      "type": "backend",
+      "label": "ContextEngine",
+      "sublabel": "CH-04"
+    },
+    {
+      "id": "engine",
+      "type": "security",
+      "label": "DataGovernanceEngine",
+      "sublabel": "CH-20"
+    },
+    {
+      "id": "label",
+      "type": "database",
+      "label": "DataGovernanceLabel",
+      "sublabel": "etiqueta vigente"
+    },
+    {
+      "id": "caller",
+      "type": "external",
+      "label": "Consultante futuro",
+      "sublabel": "cualquier componente, vía subjectRef"
+    }
+  ],
+  "segments": [
+    {
+      "from": 160,
+      "to": 210,
+      "label": "classifyData"
+    },
+    {
+      "from": 220,
+      "to": 240,
+      "label": "Etiqueta"
+    },
+    {
+      "from": 250,
+      "to": 300,
+      "label": "enforceRetention (más tarde)"
+    }
+  ],
+  "messages": [
+    {
+      "id": "context-block",
+      "from": "contextengine",
+      "to": "engine",
+      "y": 170,
+      "label": "ContextBlock(provenance = \"conversation_history\", ya seleccionado y autorizado)",
+      "variant": "emphasis",
+      "note": "classifyData(subjectRef, provenance, legalHold, execution, agentId)"
+    },
+    {
+      "id": "classify-error",
+      "from": "engine",
+      "to": "contextengine",
+      "y": 200,
+      "label": "HarnessError(DATA_GOVERNANCE_LABEL_MISSING_SUBJECT_REF | MISSING_PROVENANCE)",
+      "variant": "security"
+    },
+    {
+      "id": "label-built",
+      "from": "engine",
+      "to": "label",
+      "y": 230,
+      "label": "DataGovernanceLabel(id, subjectRef, classification, residencyRequirement, retentionDeadline, legalHold, lineageRef, classifiedAt)",
+      "variant": "return",
+      "note": "sin regla de gobernanza para esta procedencia → classification = RESTRICTED (fail-closed); emite AgentEvent(DATA_CLASSIFIED) si execution/agentId resueltos"
+    },
+    {
+      "id": "enforce-retention",
+      "from": "caller",
+      "to": "engine",
+      "y": 260,
+      "label": "enforceRetention(label, evaluatedAt, execution, agentId)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "retention-result",
+      "from": "engine",
+      "to": "caller",
+      "y": 290,
+      "label": "RetentionEnforcementResult(SUSPENDED_BY_LEGAL_HOLD | NOT_YET_DUE | DELETION_DUE)",
+      "variant": "return",
+      "note": "legalHold suspende el retentionDeadline; DELETION_DUE deja el borrado real como Preview; emite AgentEvent(RETENTION_ENFORCEMENT_EVALUATED) si execution/agentId resueltos"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "contextengine",
+      "from": 165,
+      "to": 205,
+      "type": "backend"
+    },
+    {
+      "participant": "engine",
+      "from": 165,
+      "to": 295,
+      "type": "security"
+    },
+    {
+      "participant": "label",
+      "from": 225,
+      "to": 235,
+      "type": "database"
+    },
+    {
+      "participant": "caller",
+      "from": 255,
+      "to": 295,
+      "type": "external"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Gobernanza independiente del modelo",
+      "items": [
+        "P-22 / INV-E11: el harness gobierna cualquier dato con requisitos exigibles, sin depender del razonamiento del modelo",
+        "classifyData y enforceRetention son las dos formalizaciones ejecutables de esa regla"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Fail-closed en la clasificación",
+      "items": [
+        "subjectRef vacío → DATA_GOVERNANCE_LABEL_MISSING_SUBJECT_REF",
+        "provenance vacío → DATA_GOVERNANCE_LABEL_MISSING_PROVENANCE",
+        "sin regla de gobernanza encontrada para la procedencia → classification = RESTRICTED, nunca un valor permisivo por defecto"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "legalHold suspende, no borra",
+      "items": [
+        "Con legalHold activo, el outcome es SUSPENDED_BY_LEGAL_HOLD y retentionDeadline permanece intacto",
+        "DELETION_DUE señala que el borrado es debido — ejecutarlo de verdad es Preview de este capítulo"
+      ]
+    }
+  ]
+}

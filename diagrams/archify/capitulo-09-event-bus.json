@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 9 — EventBus y la Distribución Desacoplada de un Evento Ya Producido",
+    "output": "capitulo-09-event-bus.html",
+    "viewBox": [960, 480],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "produccion", "label": "Producción del evento", "focus": ["producer", "eventbus"], "note": "El AgentEvent ya fue producido por cualquier componente anterior." },
+      { "id": "distribucion", "label": "Distribución", "focus": ["eventbus", "consumers"], "note": "distributeEvent entrega el evento solo a subscriptions ACTIVE cuyo filtro coincide." },
+      { "id": "retorno", "label": "Retorno de matched", "focus": ["eventbus", "producer"], "note": "matched puede ser una lista vacía — cero consumidores interesados no es un error." }
+    ]
+  },
+  "participants": [
+    { "id": "producer", "type": "security", "label": "PolicyEngine", "sublabel": "CH-05 · conceptual" },
+    { "id": "eventbus", "type": "messagebus", "label": "EventBus", "sublabel": "CH-09" },
+    { "id": "consumers", "type": "external", "label": "Logs / Tracing / Audit / ...", "sublabel": "Article X · conceptual" }
+  ],
+  "segments": [
+    { "from": 170, "to": 200, "label": "Evento producido" },
+    { "from": 210, "to": 260, "label": "distributeEvent" },
+    { "from": 270, "to": 310, "label": "Retorno" }
+  ],
+  "messages": [
+    {
+      "id": "event-produced",
+      "from": "producer",
+      "to": "eventbus",
+      "y": 190,
+      "label": "distributeEvent(event, activeSubscriptions)",
+      "variant": "default",
+      "note": "event ya producido por cualquier componente anterior — ej. PolicyEngine, CH-05, conceptual; ¿event == NULL? → HarnessError DISTRIBUTION_REQUESTED_WITHOUT_EVENT (VALIDATION)"
+    },
+    {
+      "id": "deliver",
+      "from": "eventbus",
+      "to": "consumers",
+      "y": 235,
+      "label": "deliver(subscription.subscriberRef, event)",
+      "variant": "emphasis",
+      "note": "recorre activeSubscriptions: subscription.status == ACTIVE Y eventMatchesFilter(event, subscription.filter) → deliver y agrega subscription a matched; si no, ignora esta subscription (no es un fallo)"
+    },
+    {
+      "id": "matched-return",
+      "from": "eventbus",
+      "to": "producer",
+      "y": 290,
+      "label": "RETURN matched: List<EventSubscription>",
+      "variant": "return",
+      "note": "puede ser una lista vacía — cero consumidores interesados no es un error; EventBus entrega event sin interpretar su contenido"
+    }
+  ],
+  "activations": [
+    { "participant": "producer", "from": 180, "to": 300, "type": "security" },
+    { "participant": "eventbus", "from": 185, "to": 296, "type": "messagebus" },
+    { "participant": "consumers", "from": 225, "to": 245, "type": "external" }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Qué decide distributeEvent",
+      "items": [
+        "Entrega solo si subscription ACTIVE + eventMatchesFilter",
+        "Cero consumidores interesados no es un error — matched puede volver vacío"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Validación",
+      "items": [
+        "event == NULL → DISTRIBUTION_REQUESTED_WITHOUT_EVENT (VALIDATION)"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "La primera puerta 100% real",
+      "items": [
+        "eventMatchesFilter es pseudocódigo real de principio a fin",
+        "EventFilter: dos campos opcionales, comparación directa"
+      ]
+    }
+  ]
+}

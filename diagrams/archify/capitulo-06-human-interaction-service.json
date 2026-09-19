@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "CH-06 — HumanInteractionService y la Reanudación de una Ejecución Pausada",
+    "output": "capitulo-06-human-interaction-service.html",
+    "viewBox": [
+      1085,
+      480
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    {
+      "id": "policy",
+      "type": "security",
+      "label": "PolicyEngine",
+      "sublabel": "CH-05"
+    },
+    {
+      "id": "human_service",
+      "type": "backend",
+      "label": "HumanInteractionService",
+      "sublabel": "CH-06"
+    },
+    {
+      "id": "channel",
+      "type": "external",
+      "label": "Channel Adapter",
+      "sublabel": "concepto"
+    },
+    {
+      "id": "human",
+      "type": "external",
+      "label": "Human",
+      "sublabel": "aprueba/rechaza"
+    },
+    {
+      "id": "resumption",
+      "type": "backend",
+      "label": "AgentLoop / ToolRuntime",
+      "sublabel": "Preview"
+    }
+  ],
+  "segments": [
+    {
+      "from": 160,
+      "to": 225,
+      "label": "Creación de la solicitud"
+    },
+    {
+      "from": 235,
+      "to": 345,
+      "label": "Transporte y decisión humana"
+    },
+    {
+      "from": 355,
+      "to": 390,
+      "label": "Resolución"
+    }
+  ],
+  "messages": [
+    {
+      "id": "policy-decision",
+      "from": "policy",
+      "to": "human_service",
+      "y": 172,
+      "label": "PolicyDecision (outcome = REQUIRE_APPROVAL)",
+      "variant": "emphasis",
+      "note": "producida de forma autónoma por PolicyEngine (CH-05) — este capítulo no cablea esa llamada"
+    },
+    {
+      "id": "human-interaction-request",
+      "from": "human_service",
+      "to": "channel",
+      "y": 212,
+      "label": "HumanInteractionRequest (PENDING)",
+      "variant": "dashed",
+      "note": "createHumanInteractionRequest: guard decision.outcome != REQUIRE_APPROVAL → HarnessError POLICY_DECISION_NOT_REQUIRE_APPROVAL; si no, construye la solicitud, persiste (persistHumanInteractionRequest) y emite AgentEvent HUMAN_INTERACTION_REQUESTED"
+    },
+    {
+      "id": "transport-to-human",
+      "from": "channel",
+      "to": "human",
+      "y": 254,
+      "label": "transporta la solicitud",
+      "variant": "dashed",
+      "note": "Channel Adapter — concepto, no componente; TUI/Web/Slack/Teams/Mobile/Email/API (Article VIII)"
+    },
+    {
+      "id": "human-decides",
+      "from": "human",
+      "to": "channel",
+      "y": 296,
+      "label": "aprueba | rechaza | provee un valor",
+      "variant": "default"
+    },
+    {
+      "id": "raw-response-back",
+      "from": "channel",
+      "to": "human_service",
+      "y": 338,
+      "label": "respuesta cruda del humano",
+      "variant": "dashed",
+      "note": "el Channel Adapter trae de vuelta la respuesta"
+    },
+    {
+      "id": "human-interaction-resolution",
+      "from": "human_service",
+      "to": "resumption",
+      "y": 380,
+      "label": "HumanInteractionResolution",
+      "variant": "return",
+      "note": "resolveHumanInteractionRequest: guards REQUEST_ALREADY_RESOLVED (VALIDATION) y OUTCOME_TYPE_MISMATCH (HUMAN_INTERACTION); persiste resolución + solicitud actualizada (status=RESOLVED); emite AgentEvent HUMAN_INTERACTION_RESOLVED; AgentLoop reanudaría (RUNNING) / ToolRuntime retomaría Execute — Preview"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "human_service",
+      "from": 165,
+      "to": 218,
+      "type": "backend"
+    },
+    {
+      "participant": "human_service",
+      "from": 332,
+      "to": 388,
+      "type": "backend"
+    },
+    {
+      "participant": "channel",
+      "from": 207,
+      "to": 344,
+      "type": "external"
+    },
+    {
+      "participant": "human",
+      "from": 291,
+      "to": 301,
+      "type": "external"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Lo que HumanInteractionService owns (Article III)",
+      "items": [
+        "representar solicitudes humanas, persistir interacciones pendientes",
+        "recibir resoluciones y permitir la reanudación"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Cuatro exclusiones (Article IV)",
+      "items": [
+        "decidir SI una acción requiere aprobación — PolicyEngine, ya introducido en CH-05",
+        "transportar la interacción por un canal concreto — Channel Adapter, concepto de borde, no componente",
+        "ejecutar la acción una vez resuelta — ToolRuntime, ya introducido en CH-02",
+        "decidir si otro turno debe ocurrir o si la ejecución se reanuda — AgentLoop, ya introducido en CH-01"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Dos guardas de validación",
+      "items": [
+        "createHumanInteractionRequest exige decision.outcome == REQUIRE_APPROVAL",
+        "resolveHumanInteractionRequest exige status != RESOLVED y outcome coherente con el type de la solicitud"
+      ]
+    }
+  ]
+}

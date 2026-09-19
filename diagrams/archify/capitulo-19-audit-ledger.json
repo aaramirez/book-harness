@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 19 — AuditLedger y la Evidencia de Auditoría Estructuralmente Inmutable",
+    "output": "capitulo-19-audit-ledger.html",
+    "viewBox": [
+      1080,
+      480
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "registro",
+        "label": "Registro de la decisión",
+        "focus": [
+          "policyengine",
+          "ledger"
+        ],
+        "note": "recordAuditEntry exige subjectRef, actor y un VersionSnapshot completo, o rechaza."
+      },
+      {
+        "id": "evidencia",
+        "label": "Evidencia inmutable",
+        "focus": [
+          "ledger",
+          "record"
+        ],
+        "note": "El AuditRecord no tiene ningún campo de estado; ninguna función del componente puede editarlo ni borrarlo."
+      },
+      {
+        "id": "notificacion-preview",
+        "label": "Notificación (Preview)",
+        "focus": [
+          "ledger",
+          "eventbus"
+        ],
+        "note": "AGENT_EVENT AUDIT_RECORD_CREATED es una notificación, nunca la evidencia misma."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "policyengine",
+      "type": "backend",
+      "label": "PolicyEngine",
+      "sublabel": "CH-05, conceptual"
+    },
+    {
+      "id": "ledger",
+      "type": "database",
+      "label": "AuditLedger",
+      "sublabel": "CH-19"
+    },
+    {
+      "id": "record",
+      "type": "database",
+      "label": "AuditRecord",
+      "sublabel": "evidencia inmutable"
+    },
+    {
+      "id": "eventbus",
+      "type": "messagebus",
+      "label": "EventBus",
+      "sublabel": "CH-09, Preview"
+    }
+  ],
+  "segments": [
+    {
+      "from": 160,
+      "to": 210,
+      "label": "Solicitud"
+    },
+    {
+      "from": 220,
+      "to": 240,
+      "label": "Evidencia"
+    },
+    {
+      "from": 250,
+      "to": 270,
+      "label": "Notificación (Preview)"
+    }
+  ],
+  "messages": [
+    {
+      "id": "policy-decision",
+      "from": "policyengine",
+      "to": "ledger",
+      "y": 170,
+      "label": "PolicyDecision(outcome = DENY)",
+      "variant": "emphasis",
+      "note": "recordAuditEntry(subjectRef, versionSnapshot, actor, execution, agentId)"
+    },
+    {
+      "id": "audit-record-error",
+      "from": "ledger",
+      "to": "policyengine",
+      "y": 200,
+      "label": "HarnessError(AUDIT_RECORD_MISSING_SUBJECT_REF | MISSING_ACTOR | INCOMPLETE_VERSION_SNAPSHOT)",
+      "variant": "security"
+    },
+    {
+      "id": "audit-record-built",
+      "from": "ledger",
+      "to": "record",
+      "y": 230,
+      "label": "AuditRecord(id, subjectRef, versionSnapshot, actor, context, recordedAt, contentHash)",
+      "variant": "return",
+      "note": "sin ningún campo de estado; estructuralmente inmutable desde este punto"
+    },
+    {
+      "id": "audit-event",
+      "from": "ledger",
+      "to": "eventbus",
+      "y": 260,
+      "label": "AgentEvent(AUDIT_RECORD_CREATED) — Preview",
+      "variant": "dashed",
+      "note": "solo si execution y agentId ambos resueltos; una notificación, nunca la evidencia misma"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "policyengine",
+      "from": 165,
+      "to": 205,
+      "type": "backend"
+    },
+    {
+      "participant": "ledger",
+      "from": 165,
+      "to": 265,
+      "type": "database"
+    },
+    {
+      "participant": "record",
+      "from": 225,
+      "to": 235,
+      "type": "database"
+    },
+    {
+      "participant": "eventbus",
+      "from": 255,
+      "to": 265,
+      "type": "messagebus"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Evidencia distinta de la telemetría",
+      "items": [
+        "P-25 / INV-E10: el harness preserva evidencia inmutable de una decisión crítica ya tomada",
+        "AuditRecord nunca tiene un campo de estado que pueda mutar después"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Tres campos obligatorios, fail-closed",
+      "items": [
+        "subjectRef vacío → AUDIT_RECORD_MISSING_SUBJECT_REF; actor vacío → AUDIT_RECORD_MISSING_ACTOR (INV-19)",
+        "VersionSnapshot incompleto (agentVersion/policyVersion/modelConfigVersion) → AUDIT_RECORD_INCOMPLETE_VERSION_SNAPSHOT"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "EventBus y los emisores reales son Preview",
+      "items": [
+        "EventBus (CH-09) podría distribuir el AUDIT_RECORD_CREATED emitido",
+        "PolicyEngine, OperationalController y AdmissionController invocarían recordAuditEntry de verdad sobre sus propias decisiones — integración futura"
+      ]
+    }
+  ]
+}

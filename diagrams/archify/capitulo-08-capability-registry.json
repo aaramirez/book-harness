@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 8 — CapabilityRegistry y la Resolución Real de una Tool Call",
+    "output": "capitulo-08-capability-registry.html",
+    "viewBox": [1080, 520],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "propuesta", "label": "Propuesta del modelo", "focus": ["model", "capreg"], "note": "ModelGateway ya produjo un ModelResponse con proposedToolCall." },
+      { "id": "resolucion", "label": "Resolución", "focus": ["capreg", "events"], "note": "resolveModelProposedToolCall valida el nombre y el esquema antes de construir el ToolCall." },
+      { "id": "siguiente", "label": "Siguiente eslabón (Preview)", "focus": ["capreg", "policy", "tools"], "note": "PolicyEngine evaluaría el ToolCall y ToolRuntime lo ejecutaría — ambos, todavía conceptuales." }
+    ]
+  },
+  "participants": [
+    { "id": "model", "type": "cloud", "label": "ModelGateway", "sublabel": "CH-03 · conceptual" },
+    { "id": "capreg", "type": "backend", "label": "CapabilityRegistry", "sublabel": "CH-08" },
+    { "id": "events", "type": "messagebus", "label": "EventBus", "sublabel": "CH-09" },
+    { "id": "policy", "type": "security", "label": "PolicyEngine", "sublabel": "CH-05 · Preview" },
+    { "id": "tools", "type": "backend", "label": "ToolRuntime", "sublabel": "CH-02 · conceptual" }
+  ],
+  "segments": [
+    { "from": 170, "to": 200, "label": "Entrada" },
+    { "from": 210, "to": 300, "label": "Resolución" },
+    { "from": 310, "to": 400, "label": "Cadena futura (Vista 1)" }
+  ],
+  "messages": [
+    {
+      "id": "proposal-in",
+      "from": "model",
+      "to": "capreg",
+      "y": 190,
+      "label": "ModelResponse.proposedToolCall (RawToolCallProposal)",
+      "variant": "dashed",
+      "note": "ya producido por ModelGateway — CH-03, conceptual; este capítulo no cablea la llamada real"
+    },
+    {
+      "id": "emit-resolved",
+      "from": "capreg",
+      "to": "events",
+      "y": 250,
+      "label": "EMIT AgentEvent (CAPABILITY_RESOLVED | CAPABILITY_RESOLUTION_FAILED)",
+      "variant": "emphasis",
+      "note": "resolveModelProposedToolCall: ¿response.proposedToolCall == NULL? → HarnessError RESOLUTION_REQUESTED_WITHOUT_PROPOSAL (VALIDATION). Busca en registeredCapabilities un CapabilityDescriptor cuyo name coincida con proposedToolCall.capabilityName: no encontrado → HarnessError CAPABILITY_NOT_FOUND (VALIDATION); encontrado con argumentsMatchSchema = FALSE → HarnessError TOOL_INPUT_SCHEMA_MISMATCH (VALIDATION); encontrado con argumentsMatchSchema = TRUE → construye ToolCall (capability tomado del descriptor resuelto)"
+    },
+    {
+      "id": "policy-preview",
+      "from": "capreg",
+      "to": "policy",
+      "y": 340,
+      "label": "ToolCall (resuelto)",
+      "variant": "dashed",
+      "note": "PolicyEngine evaluaría este ToolCall antes de que ToolRuntime lo ejecute — Preview, cableado formal de un capítulo de integración futuro"
+    },
+    {
+      "id": "tools-preview",
+      "from": "policy",
+      "to": "tools",
+      "y": 390,
+      "label": "ToolCall (ya autorizado)",
+      "variant": "dashed",
+      "note": "ToolRuntime ejecutaría el ToolCall ya autorizado — CH-02, conceptual (Vista 1 de este capítulo)"
+    }
+  ],
+  "activations": [
+    { "participant": "model", "from": 180, "to": 195, "type": "cloud" },
+    { "participant": "capreg", "from": 185, "to": 345, "type": "backend" },
+    { "participant": "events", "from": 245, "to": 258, "type": "messagebus" },
+    { "participant": "policy", "from": 335, "to": 395, "type": "security" },
+    { "participant": "tools", "from": 385, "to": 398, "type": "backend" }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Qué resuelve CapabilityRegistry",
+      "items": [
+        "resolveToolCall decide qué implementación satisface una capacidad solicitada",
+        "Conecta por primera vez un ModelResponse (CH-03) con un ToolCall (CH-02)"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Validación (todas VALIDATION)",
+      "items": [
+        "RESOLUTION_REQUESTED_WITHOUT_PROPOSAL — proposedToolCall == NULL",
+        "CAPABILITY_NOT_FOUND — ningún descriptor coincide por name",
+        "TOOL_INPUT_SCHEMA_MISMATCH — argumentsMatchSchema = FALSE"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Lo que no cablea todavía",
+      "items": [
+        "PolicyEngine (CH-05) evaluando el ToolCall resuelto — Preview",
+        "ToolRuntime (CH-02) ejecutando el ToolCall autorizado — Preview"
+      ]
+    }
+  ]
+}

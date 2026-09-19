@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "CH-00 — La Constitución Arquitectónica de un Arnés",
+    "output": "capitulo-00-constitucion.html",
+    "viewBox": [
+      1080,
+      480
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    {
+      "id": "model",
+      "type": "cloud",
+      "label": "Model",
+      "sublabel": "Probabilistic Intelligence"
+    },
+    {
+      "id": "harness",
+      "type": "backend",
+      "label": "Harness Runtime",
+      "sublabel": "Deterministic Runtime"
+    },
+    {
+      "id": "world",
+      "type": "external",
+      "label": "External World",
+      "sublabel": "side effects"
+    }
+  ],
+  "segments": [
+    {
+      "from": 170,
+      "to": 240,
+      "label": "proposes"
+    },
+    {
+      "from": 250,
+      "to": 320,
+      "label": "governs"
+    }
+  ],
+  "messages": [
+    {
+      "id": "proposes-intent",
+      "from": "model",
+      "to": "harness",
+      "y": 200,
+      "label": "proposes(intent)",
+      "variant": "emphasis",
+      "note": "Probabilistic Intelligence propone; nunca ejecuta ni gobierna directamente"
+    },
+    {
+      "id": "governs-intent",
+      "from": "harness",
+      "to": "world",
+      "y": 280,
+      "label": "governs(intent, budget)",
+      "variant": "default",
+      "note": "Deterministic Runtime gobierna la intención antes de que alcance el mundo externo; ver governTurnContinuation en §11"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "harness",
+      "from": 190,
+      "to": 290,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "El esqueleto de toda dependencia futura",
+      "items": [
+        "Probabilistic Intelligence → proposes → Deterministic Runtime → governs → External World",
+        "Ningún componente concreto existe todavía — Article III se llena capítulo a capítulo desde CH-01"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Por qué es deliberadamente mínimo",
+      "items": [
+        "Este capítulo no introduce runtime — registry/components.yaml permanece vacío",
+        "Los tres roles son genéricos; los once componentes reales de Article III solo aparecen como Preview"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Regla que se fija aquí",
+      "items": [
+        "Toda dependencia futura apunta hacia contratos/interfaces estables, nunca hacia implementaciones concretas",
+        "governTurnContinuation (§11) es la primera formalización ejecutable de \"Harness Runtime governs\""
+      ]
+    }
+  ]
+}

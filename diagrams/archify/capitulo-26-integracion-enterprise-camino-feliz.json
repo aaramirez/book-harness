@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 26 — Integración Enterprise: el Camino Feliz de una Activación Admitida y Gobernada",
+    "output": "capitulo-26-integracion-enterprise-camino-feliz.html",
+    "viewBox": [1080, 760],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "admision-arranque", "label": "Admisión y arranque", "focus": ["trigger", "admission", "auditledger", "agentcore"], "note": "AdmissionController admite; AuditLedger registra sin AgentEvent posible (CH-14 §14); ADMIT dispara AgentCore." },
+      { "id": "primer-turno", "label": "Primer turno: contexto y skill", "focus": ["agentcore", "contextgov", "skillmodel"], "note": "Contexto, gobierno de datos, skill y modelo — antes de WAITING_FOR_TOOL." },
+      { "id": "tool-call", "label": "Resolución y guardas", "focus": ["agentloopsession", "cappolicy", "guardas"], "note": "Resolución, autorización ALLOW, credencial e idempotencia antes de ejecutar." },
+      { "id": "ejecucion-evidencia", "label": "Ejecución y evidencia", "focus": ["guardas", "toolruntime", "auditledger"], "note": "ToolRuntime ejecuta; IdempotencyGuard y AuditLedger dejan evidencia real." },
+      { "id": "segundo-turno", "label": "Segundo turno: cierre", "focus": ["agentcore", "contextgov", "skillmodel", "agentloopsession"], "note": "El segundo turno cierra el ciclo: finished = TRUE, AgentState COMPLETED." }
+    ]
+  },
+  "participants": [
+    { "id": "trigger", "type": "external", "label": "ActivationRequest" },
+    { "id": "admission", "type": "security", "label": "AdmissionController", "sublabel": "CH-14" },
+    { "id": "auditledger", "type": "database", "label": "AuditLedger", "sublabel": "CH-19" },
+    { "id": "agentcore", "type": "backend", "label": "AgentCore + Exec.", "sublabel": "AgentCore + ExecutionController" },
+    { "id": "contextgov", "type": "security", "label": "Context + DataGov", "sublabel": "ContextEngine + DataGovernanceEngine" },
+    { "id": "skillmodel", "type": "cloud", "label": "Skill + Model", "sublabel": "SkillLibrary + ModelGateway" },
+    { "id": "agentloopsession", "type": "backend", "label": "Loop + Session", "sublabel": "AgentLoop + SessionManager" },
+    { "id": "cappolicy", "type": "security", "label": "Capability + Policy", "sublabel": "CapabilityRegistry + PolicyEngine" },
+    { "id": "guardas", "type": "security", "label": "Credential + Idemp.", "sublabel": "CredentialBroker + IdempotencyGuard" },
+    { "id": "toolruntime", "type": "backend", "label": "ToolRuntime", "sublabel": "CH-02" }
+  ],
+  "segments": [
+    { "from": 160, "to": 210, "label": "Admisión" },
+    { "from": 220, "to": 245, "label": "Arranque del run" },
+    { "from": 260, "to": 315, "label": "Primer turno: contexto, gobierno, skill, modelo" },
+    { "from": 330, "to": 350, "label": "WAITING_FOR_TOOL (patrón CH-12)" },
+    { "from": 365, "to": 385, "label": "Resolución + autorización de la tool call" },
+    { "from": 400, "to": 420, "label": "Guardas pre-ejecución" },
+    { "from": 435, "to": 525, "label": "Ejecución + evidencia" },
+    { "from": 540, "to": 665, "label": "Segundo turno: cierre" }
+  ],
+  "messages": [
+    { "id": "admission-eval", "from": "trigger", "to": "admission", "y": 175, "label": "evaluateAdmissionForActivationRequest → AdmissionDecision", "variant": "emphasis" },
+    { "id": "admission-audit", "from": "admission", "to": "auditledger", "y": 205, "label": "recordAuditEntry(execution = NULL) → AuditRecord", "variant": "default", "note": "sin AgentEvent posible — CH-14 §14; ¿outcome == ADMIT? NO → RETURN NULL (fin de la traza, sin AgentRun)" },
+    { "id": "run-started", "from": "auditledger", "to": "agentcore", "y": 240, "label": "ADMIT → activateAgent / beginAgentInitialization → AgentState", "variant": "emphasis", "note": "EMIT RUN_STARTED → EventBus" },
+    { "id": "assemble-context", "from": "agentcore", "to": "contextgov", "y": 275, "label": "assembleContextSnapshot (ContextEngine) → ContextSnapshot", "variant": "default", "note": "classifyData por ContextBlock (DataGovernanceEngine) → DataGovernanceLabel; EMIT DATA_CLASSIFIED" },
+    { "id": "resolve-skill", "from": "contextgov", "to": "skillmodel", "y": 310, "label": "resolveSkillForSituation (SkillLibrary) → SkillDescriptor", "variant": "default", "note": "EMIT SKILL_RESOLVED; luego invokeModelForTurn (ModelGateway)" },
+    { "id": "waiting-tool", "from": "skillmodel", "to": "agentloopsession", "y": 345, "label": "runTurn → WAITING_FOR_TOOL", "variant": "default", "note": "mismo patrón que CH-12 §11; AgentLoop persiste el AgentState vía SessionManager" },
+    { "id": "resolve-toolcall", "from": "agentloopsession", "to": "cappolicy", "y": 380, "label": "resolveModelProposedToolCall (CapabilityRegistry) → ToolCall", "variant": "default", "note": "evaluatePolicyForToolCall (PolicyEngine) → PolicyDecision(ALLOW)" },
+    { "id": "resolve-credential", "from": "cappolicy", "to": "guardas", "y": 415, "label": "ALLOW → resolveCredentialReference (CredentialBroker) → CredentialReference", "variant": "emphasis", "note": "EMIT CREDENTIAL_RESOLVED; checkIdempotency (IdempotencyGuard) → Optional<IdempotencyRecord>" },
+    { "id": "execute-tool", "from": "guardas", "to": "toolruntime", "y": 450, "label": "¿registro COMPLETED existente? NO → executeToolCall → ToolResult", "variant": "emphasis" },
+    { "id": "record-idempotent", "from": "toolruntime", "to": "guardas", "y": 485, "label": "recordIdempotentExecution (IdempotencyGuard) → IdempotencyRecord(COMPLETED)", "variant": "return", "note": "EMIT IDEMPOTENT_EXECUTION_RECORDED" },
+    { "id": "audit-real", "from": "guardas", "to": "auditledger", "y": 520, "label": "recordAuditEntry(execution real) → AuditRecord", "variant": "default", "note": "EMIT AUDIT_RECORD_CREATED → EventBus" },
+    { "id": "second-turn", "from": "auditledger", "to": "agentcore", "y": 555, "label": "segundo runTurn (ExecutionController)", "variant": "default" },
+    { "id": "assemble-context-2", "from": "agentcore", "to": "contextgov", "y": 590, "label": "assembleContextSnapshot + classifyData (segundo turno, mismo patrón)", "variant": "default" },
+    { "id": "invoke-model-2", "from": "contextgov", "to": "skillmodel", "y": 625, "label": "invokeModelForTurn (segundo turno)", "variant": "default" },
+    { "id": "run-completed", "from": "skillmodel", "to": "agentloopsession", "y": 660, "label": "runTurn → finished = TRUE", "variant": "emphasis", "note": "AgentLoop persiste AgentState(COMPLETED) vía SessionManager" }
+  ],
+  "activations": [
+    { "participant": "trigger", "from": 170, "to": 180, "type": "external" },
+    { "participant": "admission", "from": 170, "to": 210, "type": "security" },
+    { "participant": "auditledger", "from": 200, "to": 245, "type": "database" },
+    { "participant": "agentcore", "from": 235, "to": 280, "type": "backend" },
+    { "participant": "contextgov", "from": 270, "to": 315, "type": "security" },
+    { "participant": "skillmodel", "from": 305, "to": 350, "type": "cloud" },
+    { "participant": "agentloopsession", "from": 340, "to": 385, "type": "backend" },
+    { "participant": "cappolicy", "from": 375, "to": 420, "type": "security" },
+    { "participant": "guardas", "from": 410, "to": 525, "type": "security" },
+    { "participant": "toolruntime", "from": 445, "to": 490, "type": "backend" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Seis componentes de Amendment v1.1, un solo turno gobernado", "items": ["runGovernedEnterpriseTurn es la primera formalización ejecutable, en todo el libro, de un turno gobernado de nivel enterprise", "Construida exclusivamente a partir de funciones ya publicadas por CH-00..CH-24, sin modificar ninguna"] },
+    { "dot": "rose", "title": "Fail-closed y reuso en cada guarda", "items": ["¿outcome == ADMIT? NO → RETURN NULL, fin de la traza, sin AgentRun", "¿ya existe un registro IdempotencyRecord COMPLETED? SÍ → reusa ToolResult, NO ejecuta de nuevo"] },
+    { "dot": "amber", "title": "EventBus recibe cada evento producido", "items": ["RUN_STARTED, DATA_CLASSIFIED, SKILL_RESOLVED, CREDENTIAL_RESOLVED, IDEMPOTENT_EXECUTION_RECORDED, AUDIT_RECORD_CREATED — cada AgentEvent emitido llega a EventBus (CH-09)", "La admisión es la única llamada a AuditLedger sin AgentEvent posible (CH-14 §14)"] }
+  ]
+}

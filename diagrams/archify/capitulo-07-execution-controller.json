@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 7 — ExecutionController y los Límites Operacionales de una Ejecución",
+    "output": "capitulo-07-execution-controller.html",
+    "viewBox": [1040, 480],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "evaluacion", "label": "Evaluación de continuación", "focus": ["agentloop", "controller"], "note": "evaluateExecutionContinuation decide CONTINUE, STOP o CANCELLED antes de que el run siga." },
+      { "id": "evento", "label": "Evento emitido", "focus": ["controller", "events"], "note": "Cada evaluación emite un AgentEvent (EXECUTION_EVALUATED) hacia EventBus." }
+    ]
+  },
+  "participants": [
+    { "id": "agentloop", "type": "backend", "label": "AgentLoop", "sublabel": "CH-01 · sin cablear aún" },
+    { "id": "controller", "type": "backend", "label": "ExecutionController", "sublabel": "CH-07" },
+    { "id": "events", "type": "messagebus", "label": "EventBus", "sublabel": "CH-09" }
+  ],
+  "segments": [
+    { "from": 170, "to": 200, "label": "Invocación (Preview)" },
+    { "from": 210, "to": 340, "label": "Evaluación y decisión" }
+  ],
+  "messages": [
+    {
+      "id": "invoke-evaluate",
+      "from": "agentloop",
+      "to": "controller",
+      "y": 190,
+      "label": "evaluateExecutionContinuation(state, execution, budget, usage, cancellationRequested)",
+      "variant": "dashed",
+      "note": "AgentRun en curso, turno en progreso — Preview: este capítulo no cablea la invocación real desde AgentLoop.runTurn"
+    },
+    {
+      "id": "emit-evaluated",
+      "from": "controller",
+      "to": "events",
+      "y": 250,
+      "label": "EMIT AgentEvent (EXECUTION_EVALUATED)",
+      "variant": "dashed",
+      "note": "¿state.status ya es terminal? → HarnessError EXECUTION_EVALUATION_ON_TERMINAL_STATE (VALIDATION). Si no: ¿cancellationRequested? → outcome CANCELLED (HarnessError categoría CANCELLATION); si no, ¿alguna dimensión de ExecutionBudget excedida en el orden de Article IX? → outcome STOP (stopReason); si no → outcome CONTINUE"
+    },
+    {
+      "id": "return-decision",
+      "from": "controller",
+      "to": "agentloop",
+      "y": 310,
+      "label": "ExecutionDecision (runId, outcome, stopReason, reason, usage, evaluatedAt)",
+      "variant": "return",
+      "note": "AgentLoop consultaría esta ExecutionDecision antes de decidir la transición del siguiente turno — Preview, cableado formal de un capítulo posterior"
+    }
+  ],
+  "activations": [
+    { "participant": "agentloop", "from": 180, "to": 340, "type": "backend" },
+    { "participant": "controller", "from": 185, "to": 320, "type": "backend" },
+    { "participant": "events", "from": 240, "to": 260, "type": "messagebus" }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Qué decide evaluateExecutionContinuation",
+      "items": [
+        "outcome = CONTINUE, STOP (stopReason) o CANCELLED — nunca ejecuta ni autoriza",
+        "Orden fijo: estado terminal, luego cancelación, luego ExecutionBudget (Article IX)"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Validación y errores",
+      "items": [
+        "Terminal → EXECUTION_EVALUATION_ON_TERMINAL_STATE (VALIDATION)",
+        "CANCELLED → HarnessError categoría CANCELLATION",
+        "STOP → HarnessError categoría BUDGET con su stopReason"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Lo que no cablea todavía",
+      "items": [
+        "AgentLoop.runTurn no invoca aún esta función — Preview",
+        "AgentLoop consultaría esta ExecutionDecision en un capítulo posterior"
+      ]
+    }
+  ]
+}

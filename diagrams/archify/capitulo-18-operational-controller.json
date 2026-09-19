@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 18 — OperationalController y los Kill Switches Independientes de AgentLoop",
+    "output": "capitulo-18-operational-controller.html",
+    "viewBox": [
+      1080,
+      480
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "emision",
+        "label": "Emisión de la directiva",
+        "focus": [
+          "operator",
+          "controller"
+        ],
+        "note": "issueControlDirective nunca emite ningún AgentEvent — ningún ExecutionContext resuelto existe todavía."
+      },
+      {
+        "id": "kill-switch",
+        "label": "Kill switch sobre un run",
+        "focus": [
+          "controller",
+          "target"
+        ],
+        "note": "Solo KILL_SWITCH toca un AgentState concreto, forzándolo a CANCELLED sin pasar por AgentLoop."
+      },
+      {
+        "id": "otros-tipos",
+        "label": "Los otros tres tipos",
+        "focus": [
+          "controller",
+          "target"
+        ],
+        "note": "DISABLE_CAPABILITY / ISOLATE_TENANT / ROLLBACK tienen un alcance más amplio que un único run, sin AgentState afectado."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "operator",
+      "type": "external",
+      "label": "Operador / gobierno",
+      "sublabel": "externo, conceptual"
+    },
+    {
+      "id": "controller",
+      "type": "security",
+      "label": "OperationalController",
+      "sublabel": "CH-18"
+    },
+    {
+      "id": "target",
+      "type": "external",
+      "label": "Target",
+      "sublabel": "AgentState | Capability | Tenant | Rollout"
+    }
+  ],
+  "segments": [
+    {
+      "from": 160,
+      "to": 210,
+      "label": "issueControlDirective"
+    },
+    {
+      "from": 220,
+      "to": 330,
+      "label": "applyControlDirective"
+    },
+    {
+      "from": 340,
+      "to": 370,
+      "label": "Resultado"
+    }
+  ],
+  "messages": [
+    {
+      "id": "issue-directive",
+      "from": "operator",
+      "to": "controller",
+      "y": 170,
+      "label": "issueControlDirective(type, targetRef, issuedBy)",
+      "variant": "emphasis",
+      "note": "type ∈ {DISABLE_CAPABILITY, ISOLATE_TENANT, ROLLBACK, KILL_SWITCH}"
+    },
+    {
+      "id": "missing-target-ref",
+      "from": "controller",
+      "to": "operator",
+      "y": 200,
+      "label": "HarnessError(CONTROL_DIRECTIVE_MISSING_TARGET_REF)",
+      "variant": "security"
+    },
+    {
+      "id": "apply-directive",
+      "from": "controller",
+      "to": "target",
+      "y": 230,
+      "label": "ControlDirective(ISSUED) → applyControlDirective(directive, targetState, execution)",
+      "variant": "emphasis",
+      "note": "targetState/execution solo se resuelven para KILL_SWITCH"
+    },
+    {
+      "id": "already-applied",
+      "from": "target",
+      "to": "controller",
+      "y": 260,
+      "label": "HarnessError(CONTROL_DIRECTIVE_ALREADY_APPLIED)",
+      "variant": "security"
+    },
+    {
+      "id": "kill-switch-guard",
+      "from": "target",
+      "to": "controller",
+      "y": 290,
+      "label": "HarnessError(KILL_SWITCH_MISSING_TARGET_CONTEXT | KILL_SWITCH_ON_TERMINAL_AGENT_STATE)",
+      "variant": "security",
+      "note": "solo cuando directive.type == KILL_SWITCH; quien llega primero a un estado terminal, gana"
+    },
+    {
+      "id": "cancelled-state",
+      "from": "controller",
+      "to": "target",
+      "y": 320,
+      "label": "AgentState nuevo (status = CANCELLED)",
+      "variant": "return",
+      "note": "emite AgentEvent(CONTROL_DIRECTIVE_APPLIED) — SIN invocar evaluateExecutionContinuation ni ningún turno de AgentLoop"
+    },
+    {
+      "id": "wider-scope-result",
+      "from": "controller",
+      "to": "target",
+      "y": 350,
+      "label": "ControlDirectiveApplication(APPLIED, sin AgentState afectado)",
+      "variant": "dashed",
+      "note": "DISABLE_CAPABILITY / ISOLATE_TENANT / ROLLBACK: alcance más amplio que un único run, sin evento"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "operator",
+      "from": 165,
+      "to": 205,
+      "type": "external"
+    },
+    {
+      "participant": "controller",
+      "from": 165,
+      "to": 355,
+      "type": "security"
+    },
+    {
+      "participant": "target",
+      "from": 225,
+      "to": 355,
+      "type": "external"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Control operacional sin cooperación del modelo",
+      "items": [
+        "P-30 / INV-E14: el control puede detener, deshabilitar o aislar algo sin depender de AgentLoop ni del modelo",
+        "issueControlDirective nunca emite AgentEvent: ningún ExecutionContext resuelto existe en ese instante"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Fail-closed en tres frentes",
+      "items": [
+        "targetRef vacío nunca emite la directiva",
+        "una directiva ya APPLIED nunca se reaplica",
+        "KILL_SWITCH sobre un AgentState ya terminal se rechaza — gana quien llegó primero"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Solo KILL_SWITCH toca un AgentState",
+      "items": [
+        "Los otros tres tipos (DISABLE_CAPABILITY, ISOLATE_TENANT, ROLLBACK) tienen un alcance más amplio que un run",
+        "Ninguno de los tres afecta un AgentState ni emite AgentEvent"
+      ]
+    }
+  ]
+}

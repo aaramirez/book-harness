@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 23 — HandoffCoordinator y el Paquete Estructurado que Nunca Es Solo Prosa",
+    "output": "capitulo-23-handoff-coordinator.html",
+    "viewBox": [1080, 480],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "creacion", "label": "Creación del paquete", "focus": ["controller", "coordinator", "package"], "note": "createHandoffPackage construye un HandoffPackage estructurado — nunca solo prosa (INV-E12)." },
+      { "id": "notificacion", "label": "Notificación (Preview)", "focus": ["coordinator", "eventbus"], "note": "AgentEvent HANDOFF_PACKAGE_CREATED es Preview." },
+      { "id": "entrega", "label": "Entrega fuera de registro", "focus": ["package", "human"], "note": "Channel Adapter es un concepto, no un componente — misma infraestructura de borde de HumanInteractionService (CH-06)." }
+    ]
+  },
+  "participants": [
+    { "id": "controller", "type": "security", "label": "OperationalController", "sublabel": "CH-18, conceptual" },
+    { "id": "coordinator", "type": "backend", "label": "HandoffCoordinator", "sublabel": "CH-23" },
+    { "id": "package", "type": "database", "label": "HandoffPackage", "sublabel": "PENDING, por runId" },
+    { "id": "eventbus", "type": "messagebus", "label": "EventBus", "sublabel": "CH-09, Preview" },
+    { "id": "human", "type": "external", "label": "Human" }
+  ],
+  "segments": [
+    { "from": 160, "to": 250, "label": "Creación del paquete" },
+    { "from": 260, "to": 290, "label": "Notificación (Preview)" },
+    { "from": 300, "to": 350, "label": "Entrega (concepto, fuera de registro)" }
+  ],
+  "messages": [
+    { "id": "create-handoff", "from": "controller", "to": "coordinator", "y": 175, "label": "createHandoffPackage(runId, sessionId, reason=KILL_SWITCH, contextRef, transferTo, humanInteractionRef, execution, agentId)", "variant": "emphasis", "note": "producido a partir de ControlDirective(type=KILL_SWITCH, status=APPLIED), emitido de forma autónoma por OperationalController, CH-18 — este capítulo no cablea esta llamada; ¿runId ausente? → HarnessError HANDOFF_PACKAGE_MISSING_RUN_ID" },
+    { "id": "package-built", "from": "coordinator", "to": "package", "y": 225, "label": "HandoffPackage(id, runId, sessionId, reason, contextRef, transferTo, humanInteractionRef, status=PENDING, createdAt)", "variant": "return" },
+    { "id": "package-event", "from": "coordinator", "to": "eventbus", "y": 268, "label": "AgentEvent(HANDOFF_PACKAGE_CREATED) — Preview", "variant": "dashed" },
+    { "id": "deliver", "from": "package", "to": "human", "y": 320, "label": "entrega HandoffPackage vía Channel Adapter", "variant": "dashed", "note": "Channel Adapter es un concepto, no un componente — mismo concepto de infraestructura de borde que HumanInteractionService, CH-06" }
+  ],
+  "activations": [
+    { "participant": "controller", "from": 170, "to": 210, "type": "security" },
+    { "participant": "coordinator", "from": 170, "to": 273, "type": "backend" },
+    { "participant": "package", "from": 220, "to": 325, "type": "database" },
+    { "participant": "eventbus", "from": 263, "to": 273, "type": "messagebus" },
+    { "participant": "human", "from": 315, "to": 325, "type": "external" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Un paquete estructurado, no solo prosa (INV-E12)", "items": ["createHandoffPackage es la primera formalización ejecutable de que un traspaso humano transfiere un HandoffPackage estructurado, nunca solo prosa"] },
+    { "dot": "rose", "title": "Único fallo posible, fail-closed", "items": ["runId ausente → HarnessError HANDOFF_PACKAGE_MISSING_RUN_ID"] },
+    { "dot": "amber", "title": "Lo que este capítulo todavía no cablea", "items": ["OperationalController (CH-18) no invoca createHandoffPackage de verdad todavía", "Channel Adapter es un concepto, no un componente del árbol", "ACCEPTED y COMPLETED — las transiciones de status tras la entrega — no se cablean en este capítulo (Preview, §12/18)"] }
+  ]
+}

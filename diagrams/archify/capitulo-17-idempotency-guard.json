@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 17 — IdempotencyGuard y la Deduplicación de un Side Effect Crítico",
+    "output": "capitulo-17-idempotency-guard.html",
+    "viewBox": [
+      1080,
+      480
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "check",
+        "label": "checkIdempotency",
+        "focus": [
+          "toolruntime",
+          "guard"
+        ],
+        "note": "Antes de ejecutar el side effect: nada visto antes, mismatch de capability, o un registro ya existente."
+      },
+      {
+        "id": "record",
+        "label": "recordIdempotentExecution",
+        "focus": [
+          "guard",
+          "toolruntime"
+        ],
+        "note": "Después de ejecutar: el resultado se registra como COMPLETED, o se rechaza si ya era terminal."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "toolruntime",
+      "type": "backend",
+      "label": "ToolRuntime",
+      "sublabel": "CH-02, conceptual"
+    },
+    {
+      "id": "guard",
+      "type": "security",
+      "label": "IdempotencyGuard",
+      "sublabel": "CH-17"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 245,
+      "label": "checkIdempotency"
+    },
+    {
+      "from": 255,
+      "to": 335,
+      "label": "recordIdempotentExecution"
+    }
+  ],
+  "messages": [
+    {
+      "id": "tool-call-in",
+      "from": "toolruntime",
+      "to": "guard",
+      "y": 170,
+      "label": "ToolCall (con side effect, ya resuelto y ya autorizado)",
+      "variant": "emphasis",
+      "note": "checkIdempotency(toolCall, idempotencyKey, existingRecordForKey, execution, agentId)"
+    },
+    {
+      "id": "check-mismatch",
+      "from": "guard",
+      "to": "toolruntime",
+      "y": 200,
+      "label": "HarnessError(IDEMPOTENCY_KEY_CAPABILITY_MISMATCH)",
+      "variant": "security",
+      "note": "la idempotencyKey ya tiene un registro asociado a una capability distinta"
+    },
+    {
+      "id": "check-result",
+      "from": "guard",
+      "to": "toolruntime",
+      "y": 230,
+      "label": "NULL (proceder) | existingRecordForKey (PENDING: esperar — COMPLETED: reusar result)",
+      "variant": "return",
+      "note": "emite AgentEvent(IDEMPOTENT_EXECUTION_DETECTED | IDEMPOTENCY_CHECK_FAILED)"
+    },
+    {
+      "id": "tool-result-in",
+      "from": "toolruntime",
+      "to": "guard",
+      "y": 265,
+      "label": "ToolResult (side effect real ya ejecutado)",
+      "variant": "emphasis",
+      "note": "recordIdempotentExecution(toolCall, toolResult, idempotencyKey, existingRecordForKey, execution, agentId)"
+    },
+    {
+      "id": "record-conflict",
+      "from": "guard",
+      "to": "toolruntime",
+      "y": 295,
+      "label": "HarnessError(IDEMPOTENCY_RECORD_ALREADY_COMPLETED)",
+      "variant": "security",
+      "note": "nunca sobrescribe un registro ya terminal"
+    },
+    {
+      "id": "record-completed",
+      "from": "guard",
+      "to": "toolruntime",
+      "y": 325,
+      "label": "IdempotencyRecord(COMPLETED, result = toolResult)",
+      "variant": "return",
+      "note": "emite AgentEvent(IDEMPOTENT_EXECUTION_RECORDED | IDEMPOTENCY_RECORD_CONFLICT); listo para que la próxima entrega duplicada lo reuse"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "toolruntime",
+      "from": 165,
+      "to": 330,
+      "type": "backend"
+    },
+    {
+      "participant": "guard",
+      "from": 165,
+      "to": 235,
+      "type": "security"
+    },
+    {
+      "participant": "guard",
+      "from": 260,
+      "to": 330,
+      "type": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Ningún side effect crítico se repite sin saberlo",
+      "items": [
+        "INV-11 / P-24 / INV-E09: check antes de ejecutar, record después",
+        "existingRecordForKey == NULL es la única señal de 'puede proceder'"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Dos rechazos fail-closed distintos",
+      "items": [
+        "IDEMPOTENCY_KEY_CAPABILITY_MISMATCH: la key ya está asociada a otra capability",
+        "IDEMPOTENCY_RECORD_ALREADY_COMPLETED: un registro terminal nunca se sobrescribe"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "PENDING vs COMPLETED",
+      "items": [
+        "PENDING: esperar; COMPLETED: reusar existingRecordForKey.result en vez de ejecutar",
+        "Persistir un registro PENDING al arrancar es integración futura de ToolRuntime"
+      ]
+    }
+  ]
+}

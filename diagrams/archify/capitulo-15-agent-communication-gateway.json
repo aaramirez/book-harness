@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 15 — AgentCommunicationGateway y la Frontera Explícita entre Agentes",
+    "output": "capitulo-15-agent-communication-gateway.html",
+    "viewBox": [
+      1080,
+      480
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "emision",
+        "label": "Emisión del mensaje",
+        "focus": [
+          "sourcerun",
+          "grant",
+          "gateway"
+        ],
+        "note": "Un AgentRun de origen ya RUNNING emite un AgentCommunicationMessage, con o sin DelegationGrant."
+      },
+      {
+        "id": "autorizacion",
+        "label": "Autorización de frontera",
+        "focus": [
+          "gateway"
+        ],
+        "note": "authorizeAgentCommunicationMessage valida existencia, coincidencia, expiración y alcance del grant."
+      },
+      {
+        "id": "entrega-preview",
+        "label": "Entrega (Preview)",
+        "focus": [
+          "gateway",
+          "adapter",
+          "targetrun"
+        ],
+        "note": "Protocol/Transport Adapter y el AgentRun destino son infraestructura de borde, fuera de este registro."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "sourcerun",
+      "type": "external",
+      "label": "AgentRun origen",
+      "sublabel": "RUNNING, Preview"
+    },
+    {
+      "id": "grant",
+      "type": "external",
+      "label": "DelegationGrant",
+      "sublabel": "Preview, ya construido"
+    },
+    {
+      "id": "gateway",
+      "type": "cloud",
+      "label": "AgentCommunicationGateway",
+      "sublabel": "CH-15"
+    },
+    {
+      "id": "adapter",
+      "type": "external",
+      "label": "Protocol Adapter",
+      "sublabel": "borde, fuera de registry"
+    },
+    {
+      "id": "targetrun",
+      "type": "external",
+      "label": "AgentRun destino",
+      "sublabel": "sub-agente interno o externo"
+    }
+  ],
+  "segments": [
+    {
+      "from": 160,
+      "to": 210,
+      "label": "Emisión"
+    },
+    {
+      "from": 220,
+      "to": 270,
+      "label": "Autorización"
+    },
+    {
+      "from": 280,
+      "to": 320,
+      "label": "Entrega (Preview)"
+    }
+  ],
+  "messages": [
+    {
+      "id": "emit-grant",
+      "from": "sourcerun",
+      "to": "grant",
+      "y": 170,
+      "label": "emite DelegationGrant — Preview, ya construido",
+      "variant": "dashed"
+    },
+    {
+      "id": "acm-in",
+      "from": "sourcerun",
+      "to": "gateway",
+      "y": 200,
+      "label": "AgentCommunicationMessage(id, boundary, sourceAgentRef, targetAgentRef, content, delegationGrantId?, traceId, sentAt)",
+      "variant": "emphasis",
+      "note": "authorizeAgentCommunicationMessage(message, grant)"
+    },
+    {
+      "id": "delegation-error",
+      "from": "gateway",
+      "to": "sourcerun",
+      "y": 230,
+      "label": "HarnessError(DELEGATION_GRANT_NOT_FOUND | MISMATCH | EXPIRED | SCOPE_EXCEEDED)",
+      "variant": "security",
+      "note": "grant ausente, id no coincide, now() > expiresAt, o delegatedScope no cubre lo que el mensaje pide"
+    },
+    {
+      "id": "acm-authorized",
+      "from": "gateway",
+      "to": "adapter",
+      "y": 260,
+      "label": "AgentCommunicationMessage (ya autorizado a cruzar la frontera)",
+      "variant": "return",
+      "note": "si delegationGrantId == NULL, deja pasar sin evaluar ningún DelegationGrant; si no, ya pasó las cuatro validaciones"
+    },
+    {
+      "id": "deliver-preview",
+      "from": "adapter",
+      "to": "targetrun",
+      "y": 290,
+      "label": "traduce a A2A / entrega por HTTP, gRPC o cola — Preview",
+      "variant": "dashed",
+      "note": "ni el Protocol Adapter ni el Transport Adapter son responsabilidad de AgentCommunicationGateway"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "sourcerun",
+      "from": 165,
+      "to": 235,
+      "type": "external"
+    },
+    {
+      "participant": "gateway",
+      "from": 195,
+      "to": 265,
+      "type": "cloud"
+    },
+    {
+      "participant": "adapter",
+      "from": 255,
+      "to": 295,
+      "type": "external"
+    },
+    {
+      "participant": "targetrun",
+      "from": 285,
+      "to": 295,
+      "type": "external"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Ningún agente hereda autoridad automáticamente",
+      "items": [
+        "P-21: ningún agente hijo o remoto hereda automáticamente la autoridad de quien delega",
+        "delegationGrantId == NULL deja pasar el mensaje sin representar autoridad delegada"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Cuatro validaciones fail-closed sobre el grant",
+      "items": [
+        "DELEGATION_GRANT_NOT_FOUND, DELEGATION_GRANT_MISMATCH, DELEGATION_GRANT_EXPIRED, DELEGATION_SCOPE_EXCEEDED",
+        "Cualquiera de las cuatro detiene el mensaje antes de cruzar la frontera"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Protocol y Transport Adapter son Preview",
+      "items": [
+        "AgentCommunicationGateway nunca acopla un agente a la implementación de otro",
+        "Traducción A2A y entrega por HTTP/gRPC/cola son infraestructura de borde, fuera de este registro"
+      ]
+    }
+  ]
+}

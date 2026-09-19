@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "CH-01 — El Agent Loop y el Ciclo de Ejecución Cognitiva",
+    "output": "capitulo-01-agent-loop.html",
+    "viewBox": [
+      1080,
+      520
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "propuesta",
+        "label": "Propuesta del modelo",
+        "focus": [
+          "model",
+          "loop"
+        ],
+        "note": "El modelo propone modelFinished, modelProposesToolCall o continuar razonando."
+      },
+      {
+        "id": "decision",
+        "label": "runTurn decide",
+        "focus": [
+          "loop"
+        ],
+        "note": "AgentLoop decide entre WAITING_FOR_MODEL, WAITING_FOR_TOOL o COMPLETED."
+      },
+      {
+        "id": "salida",
+        "label": "Dos salidas posibles",
+        "focus": [
+          "loop",
+          "model",
+          "toolruntime"
+        ],
+        "note": "Solo una de las dos ramas dibujadas ocurre por turno; la tercera (COMPLETED) cierra el AgentRun sin más mensajes."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "model",
+      "type": "cloud",
+      "label": "Model",
+      "sublabel": "propone"
+    },
+    {
+      "id": "loop",
+      "type": "backend",
+      "label": "AgentLoop",
+      "sublabel": "CH-01"
+    },
+    {
+      "id": "toolruntime",
+      "type": "backend",
+      "label": "ToolRuntime",
+      "sublabel": "Preview — CH-02"
+    }
+  ],
+  "segments": [
+    {
+      "from": 170,
+      "to": 230,
+      "label": "Propuesta del modelo"
+    },
+    {
+      "from": 240,
+      "to": 380,
+      "label": "runTurn decide (ramas alternativas)"
+    }
+  ],
+  "messages": [
+    {
+      "id": "model-signal",
+      "from": "model",
+      "to": "loop",
+      "y": 200,
+      "label": "modelFinished | modelProposesToolCall | continúa razonando",
+      "variant": "emphasis",
+      "note": "runTurn(state, execution, modelFinished, modelProposesToolCall)"
+    },
+    {
+      "id": "turn-continued",
+      "from": "loop",
+      "to": "model",
+      "y": 280,
+      "label": "TURN_CONTINUED (WAITING_FOR_MODEL)",
+      "variant": "return",
+      "note": "Alternativa: runTurn decide COMPLETED y emite RUN_COMPLETED, cerrando el AgentRun sin más participantes involucrados"
+    },
+    {
+      "id": "waiting-for-tool",
+      "from": "loop",
+      "to": "toolruntime",
+      "y": 360,
+      "label": "WAITING_FOR_TOOL (sin resolver)",
+      "variant": "dashed",
+      "note": "Preview — ToolRuntime (CH-02) y PolicyEngine (CH-05) resuelven este estado en un capítulo posterior"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "loop",
+      "from": 190,
+      "to": 370,
+      "type": "backend"
+    },
+    {
+      "participant": "model",
+      "from": 195,
+      "to": 285,
+      "type": "cloud"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Lo que AgentLoop owns (Article III)",
+      "items": [
+        "turn lifecycle, model → action → observation cycle, continuation, completion",
+        "runTurn (§11) es la primera formalización ejecutable de esta decisión"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Lo que AgentLoop NO owns (Article IV)",
+      "items": [
+        "operational continuation (budgets/cancelación) — ExecutionController, Preview",
+        "ejecución de una tool call aprobada — ToolRuntime, Preview en este capítulo"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Tres salidas, dos dibujadas",
+      "items": [
+        "WAITING_FOR_MODEL vuelve a Model; WAITING_FOR_TOOL queda sin resolver (Preview)",
+        "COMPLETED no dibuja mensaje: cierra el AgentRun y emite RUN_COMPLETED sin más participantes"
+      ]
+    }
+  ]
+}

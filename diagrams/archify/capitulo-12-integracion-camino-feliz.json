@@ -1,0 +1,366 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 12 — Integración: el Camino Feliz de un AgentRun Completo",
+    "output": "capitulo-12-integracion-camino-feliz.html",
+    "viewBox": [
+      1080,
+      620
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "activacion",
+        "label": "Activación",
+        "focus": [
+          "core",
+          "controller"
+        ],
+        "note": "AgentActivationRequest produce AgentState CREATED, luego INITIALIZING → RUNNING."
+      },
+      {
+        "id": "turno1",
+        "label": "Turno 1: razonamiento y ejecución",
+        "focus": [
+          "controller",
+          "context",
+          "model",
+          "loop",
+          "session",
+          "capreg",
+          "policy",
+          "tools"
+        ],
+        "note": "El modelo propone una tool call; se resuelve, se autoriza y se ejecuta."
+      },
+      {
+        "id": "turno2",
+        "label": "Turno 2: cierre",
+        "focus": [
+          "controller",
+          "context",
+          "model",
+          "loop",
+          "session"
+        ],
+        "note": "El mismo patrón, esta vez con ModelResponse(finished=TRUE) → AgentState COMPLETED."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "core",
+      "type": "backend",
+      "label": "AgentCore",
+      "sublabel": "CH-11"
+    },
+    {
+      "id": "controller",
+      "type": "backend",
+      "label": "ExecCtrl",
+      "sublabel": "CH-07"
+    },
+    {
+      "id": "context",
+      "type": "backend",
+      "label": "ContextEngine",
+      "sublabel": "CH-04"
+    },
+    {
+      "id": "model",
+      "type": "cloud",
+      "label": "ModelGateway",
+      "sublabel": "CH-03"
+    },
+    {
+      "id": "loop",
+      "type": "backend",
+      "label": "AgentLoop",
+      "sublabel": "CH-01"
+    },
+    {
+      "id": "session",
+      "type": "backend",
+      "label": "SessionMgr",
+      "sublabel": "CH-10"
+    },
+    {
+      "id": "capreg",
+      "type": "backend",
+      "label": "CapReg",
+      "sublabel": "CH-08"
+    },
+    {
+      "id": "policy",
+      "type": "security",
+      "label": "PolicyEngine",
+      "sublabel": "CH-05"
+    },
+    {
+      "id": "tools",
+      "type": "backend",
+      "label": "ToolRuntime",
+      "sublabel": "CH-02"
+    }
+  ],
+  "segments": [
+    {
+      "from": 163,
+      "to": 187,
+      "label": "Activación"
+    },
+    {
+      "from": 192,
+      "to": 410,
+      "label": "Turno 1: razonamiento + ejecución"
+    },
+    {
+      "from": 415,
+      "to": 542,
+      "label": "Turno 2: cierre"
+    }
+  ],
+  "messages": [
+    {
+      "id": "activate-init",
+      "from": "core",
+      "to": "controller",
+      "y": 172,
+      "label": "activateAgent + beginAgentInitialization",
+      "variant": "emphasis",
+      "note": "AgentActivationRequest ya recibida; este capítulo transiciona a RUNNING; EMIT AgentEvent (RUN_STARTED) → EventBus — primera vez que este libro lo emite"
+    },
+    {
+      "id": "eval-continuation-1",
+      "from": "controller",
+      "to": "context",
+      "y": 200,
+      "label": "evaluateExecutionContinuation → CONTINUE",
+      "variant": "default",
+      "note": "EMIT AgentEvent (EXECUTION_EVALUATED) → EventBus"
+    },
+    {
+      "id": "assemble-context-1",
+      "from": "context",
+      "to": "model",
+      "y": 228,
+      "label": "assembleContextSnapshot → ContextSnapshot",
+      "variant": "default",
+      "note": "construye un AgentMessage a partir de cada ContextBlock; EMIT AgentEvent (CONTEXT_SNAPSHOT_ASSEMBLED) → EventBus"
+    },
+    {
+      "id": "invoke-model-1",
+      "from": "model",
+      "to": "loop",
+      "y": 256,
+      "label": "invokeModelForTurn → ModelResponse(toolCall)",
+      "variant": "emphasis",
+      "note": "EMIT AgentEvent (MODEL_RESPONSE_RECEIVED) → EventBus"
+    },
+    {
+      "id": "run-turn-1",
+      "from": "loop",
+      "to": "session",
+      "y": 284,
+      "label": "runTurn → WAITING_FOR_TOOL",
+      "variant": "emphasis",
+      "note": "EMIT AgentEvent (TURN_CONTINUED) → EventBus"
+    },
+    {
+      "id": "checkpoint-1",
+      "from": "session",
+      "to": "capreg",
+      "y": 312,
+      "label": "createOrUpdateSessionCheckpoint → SessionState",
+      "variant": "default",
+      "note": "EMIT AgentEvent (SESSION_CHECKPOINT_CREATED) → EventBus"
+    },
+    {
+      "id": "resolve-toolcall",
+      "from": "capreg",
+      "to": "policy",
+      "y": 340,
+      "label": "resolveModelProposedToolCall → ToolCall",
+      "variant": "default",
+      "note": "EMIT AgentEvent (CAPABILITY_RESOLVED) → EventBus"
+    },
+    {
+      "id": "evaluate-policy",
+      "from": "policy",
+      "to": "tools",
+      "y": 368,
+      "label": "evaluatePolicyForToolCall → ALLOW",
+      "variant": "security",
+      "note": "EMIT AgentEvent (POLICY_EVALUATED) → EventBus"
+    },
+    {
+      "id": "execute-tool",
+      "from": "tools",
+      "to": "controller",
+      "y": 396,
+      "label": "executeToolCall → ToolResult",
+      "variant": "emphasis",
+      "note": "construye la observación y transiciona de vuelta a RUNNING; EMIT AgentEvent (TOOL_CALL_COMPLETED) → EventBus"
+    },
+    {
+      "id": "eval-continuation-2",
+      "from": "controller",
+      "to": "context",
+      "y": 424,
+      "label": "evaluateExecutionContinuation → CONTINUE",
+      "variant": "default",
+      "note": "segundo turno, mismo patrón que el primero"
+    },
+    {
+      "id": "assemble-context-2",
+      "from": "context",
+      "to": "model",
+      "y": 452,
+      "label": "assembleContextSnapshot → ContextSnapshot",
+      "variant": "default"
+    },
+    {
+      "id": "invoke-model-2",
+      "from": "model",
+      "to": "loop",
+      "y": 480,
+      "label": "invokeModelForTurn → ModelResponse(finished)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "run-turn-2",
+      "from": "loop",
+      "to": "session",
+      "y": 508,
+      "label": "runTurn → COMPLETED",
+      "variant": "emphasis",
+      "note": "EMIT AgentEvent (RUN_COMPLETED) → EventBus"
+    },
+    {
+      "id": "checkpoint-2",
+      "from": "session",
+      "to": "core",
+      "y": 536,
+      "label": "createOrUpdateSessionCheckpoint → SessionState final",
+      "variant": "return",
+      "note": "EMIT AgentEvent (SESSION_CHECKPOINT_CREATED) → EventBus; AgentState(COMPLETED) — el AgentRun terminó de principio a fin, con código real en cada paso"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "core",
+      "from": 163,
+      "to": 178,
+      "type": "backend"
+    },
+    {
+      "participant": "core",
+      "from": 527,
+      "to": 544,
+      "type": "backend"
+    },
+    {
+      "participant": "controller",
+      "from": 168,
+      "to": 209,
+      "type": "backend"
+    },
+    {
+      "participant": "controller",
+      "from": 387,
+      "to": 433,
+      "type": "backend"
+    },
+    {
+      "participant": "context",
+      "from": 196,
+      "to": 237,
+      "type": "backend"
+    },
+    {
+      "participant": "context",
+      "from": 420,
+      "to": 461,
+      "type": "backend"
+    },
+    {
+      "participant": "model",
+      "from": 224,
+      "to": 265,
+      "type": "cloud"
+    },
+    {
+      "participant": "model",
+      "from": 448,
+      "to": 489,
+      "type": "cloud"
+    },
+    {
+      "participant": "loop",
+      "from": 252,
+      "to": 293,
+      "type": "backend"
+    },
+    {
+      "participant": "loop",
+      "from": 476,
+      "to": 517,
+      "type": "backend"
+    },
+    {
+      "participant": "session",
+      "from": 280,
+      "to": 321,
+      "type": "backend"
+    },
+    {
+      "participant": "session",
+      "from": 504,
+      "to": 545,
+      "type": "backend"
+    },
+    {
+      "participant": "capreg",
+      "from": 308,
+      "to": 349,
+      "type": "backend"
+    },
+    {
+      "participant": "policy",
+      "from": 336,
+      "to": 377,
+      "type": "security"
+    },
+    {
+      "participant": "tools",
+      "from": 364,
+      "to": 405,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "runAgentTurnEndToEnd (CH-12)",
+      "items": [
+        "Primera formalización de un AgentRun completo — invoca CH-01..CH-11 sin modificarlos"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Lo que no dibuja",
+      "items": [
+        "DENY y WAITING_FOR_HUMAN (CH-13); kill switch y escalación (CH-27)"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "EventBus en cada paso",
+      "items": [
+        "Los 15 pasos reales emiten su AgentEvent — ver nota de cada mensaje"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "CH-03 — ModelGateway y la Invocación Real del Modelo",
+    "output": "capitulo-03-model-gateway.html",
+    "viewBox": [
+      1080,
+      500
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "empaquetado",
+        "label": "Empaquetado del turno",
+        "focus": [
+          "loop",
+          "gateway"
+        ],
+        "note": "AgentLoop arma pendingMessages; ModelGateway lo empaqueta en un ModelRequest."
+      },
+      {
+        "id": "invocacion",
+        "label": "Invocación del provider",
+        "focus": [
+          "gateway",
+          "provider"
+        ],
+        "note": "Selección de provider y adaptación del request — el provider real es Preview."
+      },
+      {
+        "id": "normalizacion",
+        "label": "Normalización y retorno",
+        "focus": [
+          "gateway",
+          "loop"
+        ],
+        "note": "La respuesta cruda se normaliza a ModelResponse antes de volver a AgentLoop."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "loop",
+      "type": "backend",
+      "label": "AgentLoop",
+      "sublabel": "arma el turno"
+    },
+    {
+      "id": "gateway",
+      "type": "backend",
+      "label": "ModelGateway",
+      "sublabel": "CH-03"
+    },
+    {
+      "id": "provider",
+      "type": "external",
+      "label": "Provider real",
+      "sublabel": "Preview — no modelado"
+    }
+  ],
+  "segments": [
+    {
+      "from": 170,
+      "to": 215,
+      "label": "Preparación del turno"
+    },
+    {
+      "from": 225,
+      "to": 305,
+      "label": "Invocación del provider"
+    },
+    {
+      "from": 315,
+      "to": 375,
+      "label": "Normalización y retorno"
+    }
+  ],
+  "messages": [
+    {
+      "id": "invoke-model-for-turn",
+      "from": "loop",
+      "to": "gateway",
+      "y": 192,
+      "label": "invokeModelForTurn(state, execution, pendingMessages)",
+      "variant": "emphasis",
+      "note": "empaqueta pendingMessages + execution.budget → ModelRequest"
+    },
+    {
+      "id": "invoke-provider",
+      "from": "gateway",
+      "to": "provider",
+      "y": 250,
+      "label": "invoke(request, execution)",
+      "variant": "dashed",
+      "note": "selecciona provider / adapta el ModelRequest — Preview, provider real no modelado"
+    },
+    {
+      "id": "raw-response",
+      "from": "provider",
+      "to": "gateway",
+      "y": 285,
+      "label": "respuesta cruda del modelo",
+      "variant": "dashed",
+      "note": "Preview — provider real no modelado"
+    },
+    {
+      "id": "model-response",
+      "from": "gateway",
+      "to": "loop",
+      "y": 348,
+      "label": "ModelResponse",
+      "variant": "return",
+      "note": "normaliza la respuesta cruda; emite AgentEvent (MODEL_RESPONSE_RECEIVED | MODEL_INVOCATION_FAILED); el cableado formal hacia modelFinished/modelProposesToolCall es trabajo de un capítulo posterior"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "gateway",
+      "from": 182,
+      "to": 358,
+      "type": "backend"
+    },
+    {
+      "participant": "loop",
+      "from": 177,
+      "to": 353,
+      "type": "backend"
+    },
+    {
+      "participant": "provider",
+      "from": 245,
+      "to": 290,
+      "type": "external"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Lo que ModelGateway owns (Article III)",
+      "items": [
+        "selección de provider, adaptación de mensajes, invocación del modelo",
+        "streaming y normalización de respuestas"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Cuatro exclusiones (Article IV)",
+      "items": [
+        "decidir si otro turno debe ocurrir — AgentLoop, ya introducido en CH-01",
+        "ejecutar tools/side effects — ToolRuntime, ya introducido en CH-02",
+        "seleccionar/rankear/componer contexto — ContextEngine, Preview",
+        "policy/autorización de una acción — PolicyEngine, Preview"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "El primer tramo completo con tres componentes reales",
+      "items": [
+        "invoke (§11) formaliza cómo se invoca el modelo seleccionado",
+        "invokeModelForTurn muestra AgentLoop → ModelGateway → ModelResponse sin inventar nada"
+      ]
+    }
+  ]
+}

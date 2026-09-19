@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 10 — SessionManager y la Persistencia Durable de una Sesión",
+    "output": "capitulo-10-session-manager.html",
+    "viewBox": [
+      1080,
+      560
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "checkpoint",
+        "label": "Checkpoint",
+        "focus": [
+          "agentloop",
+          "sessionmgr",
+          "storage"
+        ],
+        "note": "createOrUpdateSessionCheckpoint embebe el AgentState sin modificarlo."
+      },
+      {
+        "id": "reconstruccion",
+        "label": "Reconstrucción",
+        "focus": [
+          "sessionmgr",
+          "storage",
+          "agentloop"
+        ],
+        "note": "reconstructSessionState reconstruye la sesión completa solo desde el checkpoint persistido — INV-13."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "agentloop",
+      "type": "backend",
+      "label": "AgentLoop",
+      "sublabel": "CH-01 · conceptual"
+    },
+    {
+      "id": "sessionmgr",
+      "type": "backend",
+      "label": "SessionManager",
+      "sublabel": "CH-10"
+    },
+    {
+      "id": "storage",
+      "type": "database",
+      "label": "Persistencia",
+      "sublabel": "primitiva asumida"
+    },
+    {
+      "id": "events",
+      "type": "messagebus",
+      "label": "EventBus",
+      "sublabel": "CH-09"
+    }
+  ],
+  "segments": [
+    {
+      "from": 165,
+      "to": 285,
+      "label": "Checkpoint"
+    },
+    {
+      "from": 300,
+      "to": 460,
+      "label": "Reconstrucción (tras un reinicio)"
+    }
+  ],
+  "messages": [
+    {
+      "id": "state-in",
+      "from": "agentloop",
+      "to": "sessionmgr",
+      "y": 185,
+      "label": "createOrUpdateSessionCheckpoint(existingSession, agentState, execution, agentId)",
+      "variant": "dashed",
+      "note": "agentState ya producido por AgentLoop tras un turno — CH-01, conceptual, este capítulo no cablea esa llamada"
+    },
+    {
+      "id": "persist-call",
+      "from": "sessionmgr",
+      "to": "storage",
+      "y": 215,
+      "label": "persistSessionState(...)",
+      "variant": "emphasis",
+      "note": "¿agentState.sessionId != execution.sessionId? → HarnessError SESSION_ID_MISMATCH (VALIDATION); construye un SessionCheckpoint nuevo embebiendo agentState sin modificarlo; actualiza runIds (agrega agentState.runId si todavía no estaba)"
+    },
+    {
+      "id": "persist-return",
+      "from": "storage",
+      "to": "sessionmgr",
+      "y": 245,
+      "label": "OK | falla",
+      "variant": "return",
+      "note": "falla → HarnessError SESSION_PERSISTENCE_FAILED (PERSISTENCE) + AgentEvent; éxito → continúa"
+    },
+    {
+      "id": "emit-checkpoint",
+      "from": "sessionmgr",
+      "to": "events",
+      "y": 275,
+      "label": "EMIT AgentEvent (SESSION_CHECKPOINT_CREATED)",
+      "variant": "dashed"
+    },
+    {
+      "id": "reconstruct-call",
+      "from": "agentloop",
+      "to": "sessionmgr",
+      "y": 330,
+      "label": "reconstructSessionState(checkpoint, runIds, execution, agentId)",
+      "variant": "dashed",
+      "note": "¿checkpoint == NULL? → HarnessError CHECKPOINT_REQUIRED_FOR_RECONSTRUCTION (VALIDATION)"
+    },
+    {
+      "id": "read-checkpoint",
+      "from": "sessionmgr",
+      "to": "storage",
+      "y": 360,
+      "label": "lee el SessionCheckpoint ya persistido",
+      "variant": "default"
+    },
+    {
+      "id": "checkpoint-return",
+      "from": "storage",
+      "to": "sessionmgr",
+      "y": 390,
+      "label": "SessionCheckpoint",
+      "variant": "return"
+    },
+    {
+      "id": "emit-reconstructed",
+      "from": "sessionmgr",
+      "to": "events",
+      "y": 420,
+      "label": "EMIT AgentEvent (SESSION_RECONSTRUCTED)",
+      "variant": "dashed"
+    },
+    {
+      "id": "reconstructed-return",
+      "from": "sessionmgr",
+      "to": "agentloop",
+      "y": 450,
+      "label": "SessionState (reconstruido — INV-13)",
+      "variant": "return",
+      "note": "reconstruye un SessionState completo, exclusivamente desde el checkpoint ya persistido"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "agentloop",
+      "from": 175,
+      "to": 460,
+      "type": "backend"
+    },
+    {
+      "participant": "sessionmgr",
+      "from": 180,
+      "to": 455,
+      "type": "backend"
+    },
+    {
+      "participant": "storage",
+      "from": 210,
+      "to": 395,
+      "type": "database"
+    },
+    {
+      "participant": "events",
+      "from": 270,
+      "to": 425,
+      "type": "messagebus"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Qué formaliza este capítulo",
+      "items": [
+        "createOrUpdateSessionCheckpoint, reconstructSessionState y branchSessionFromCheckpoint",
+        "Primera formalización ejecutable de persistir, reconstruir y ramificar una sesión"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Validación y fallos",
+      "items": [
+        "SESSION_ID_MISMATCH (VALIDATION) — sessionId no coincide",
+        "CHECKPOINT_REQUIRED_FOR_RECONSTRUCTION (VALIDATION) — checkpoint == NULL"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "INV-13 y lo que no cablea",
+      "items": [
+        "SessionState reconstruido viene exclusivamente del checkpoint persistido",
+        "AgentLoop (CH-01) sigue siendo conceptual en este capítulo"
+      ]
+    }
+  ]
+}

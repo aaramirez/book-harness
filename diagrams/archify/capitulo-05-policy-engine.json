@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "CH-05 — PolicyEngine y la Frontera de Autorización",
+    "output": "capitulo-05-policy-engine.html",
+    "viewBox": [
+      1080,
+      480
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    {
+      "id": "runtime",
+      "type": "backend",
+      "label": "ToolRuntime",
+      "sublabel": "CH-02"
+    },
+    {
+      "id": "policy",
+      "type": "security",
+      "label": "PolicyEngine",
+      "sublabel": "CH-05"
+    },
+    {
+      "id": "human",
+      "type": "external",
+      "label": "HumanInteraction",
+      "sublabel": "Preview"
+    }
+  ],
+  "segments": [
+    {
+      "from": 165,
+      "to": 205,
+      "label": "Evaluación de un ToolCall"
+    },
+    {
+      "from": 210,
+      "to": 343,
+      "label": "Cuatro desenlaces posibles (alternativos, no secuenciales)"
+    }
+  ],
+  "messages": [
+    {
+      "id": "evaluate-policy",
+      "from": "runtime",
+      "to": "policy",
+      "y": 163,
+      "label": "evaluatePolicyForToolCall(call, execution, agentId)",
+      "variant": "security",
+      "note": "ToolCall ya resuelto desde CH-02, evaluado antes de Execute"
+    },
+    {
+      "id": "deny-no-rule",
+      "from": "policy",
+      "to": "runtime",
+      "y": 206,
+      "label": "PolicyDecision: DENY (fail-closed)",
+      "variant": "dashed",
+      "note": "no existe policy rule aplicable a este ToolCall → HarnessError NO_APPLICABLE_POLICY_RULE"
+    },
+    {
+      "id": "deny-explicit",
+      "from": "policy",
+      "to": "runtime",
+      "y": 248,
+      "label": "PolicyDecision: DENY",
+      "variant": "dashed",
+      "note": "la regla aplicable no permite la acción → HarnessError POLICY_DENIED"
+    },
+    {
+      "id": "allow",
+      "from": "policy",
+      "to": "runtime",
+      "y": 291,
+      "label": "PolicyDecision: ALLOW",
+      "variant": "return",
+      "note": "la regla aplicable permite la acción y no exige aprobación humana"
+    },
+    {
+      "id": "require-approval",
+      "from": "policy",
+      "to": "human",
+      "y": 333,
+      "label": "PolicyDecision: REQUIRE_APPROVAL",
+      "variant": "dashed",
+      "note": "la regla aplicable exige aprobación humana; HumanInteractionService (Preview, CH-06) resolvería antes de Execute"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "policy",
+      "from": 170,
+      "to": 340,
+      "type": "security"
+    },
+    {
+      "participant": "runtime",
+      "from": 168,
+      "to": 298,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "amber",
+      "title": "Un ToolCall, cuatro desenlaces mutuamente excluyentes",
+      "items": [
+        "Las cuatro flechas desde PolicyEngine son alternativas del mismo árbol de decisión, no pasos en secuencia",
+        "construye siempre una PolicyDecision (callId, outcome, policyRuleId, reason, decidedAt) y emite AgentEvent POLICY_EVALUATED"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Lo que PolicyEngine owns (Article III)",
+      "items": [
+        "allow, deny, constraints, approval requirements, policy evaluation"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Cinco exclusiones (Article IV)",
+      "items": [
+        "ejecutar la acción evaluada — ToolRuntime, ya introducido en CH-02",
+        "invocar al modelo — ModelGateway, ya introducido en CH-03",
+        "seleccionar contexto — ContextEngine, ya introducido en CH-04",
+        "decidir continuación del turno — AgentLoop, ya introducido en CH-01",
+        "resolver la aprobación humana — HumanInteractionService, Preview en este capítulo"
+      ]
+    }
+  ]
+}

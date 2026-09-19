@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "CH-02 — ToolRuntime y la Ejecución Controlada de una Tool Call",
+    "output": "capitulo-02-tool-runtime.html",
+    "viewBox": [
+      1080,
+      480
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "recepcion",
+        "label": "Recepción del ToolCall",
+        "focus": [
+          "loop",
+          "runtime"
+        ],
+        "note": "AgentLoop, en WAITING_FOR_TOOL, entrega una intención ya resuelta."
+      },
+      {
+        "id": "resolucion",
+        "label": "Resolución de capability",
+        "focus": [
+          "runtime",
+          "capability"
+        ],
+        "note": "ToolRuntime resolvería la capability real — CapabilityRegistry sigue siendo Preview."
+      },
+      {
+        "id": "resultado",
+        "label": "Resultado normalizado",
+        "focus": [
+          "runtime",
+          "loop"
+        ],
+        "note": "executeToolCall coordina beforeToolCall/afterToolCall y devuelve un ToolResult."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "loop",
+      "type": "backend",
+      "label": "AgentLoop",
+      "sublabel": "WAITING_FOR_TOOL, CH-01"
+    },
+    {
+      "id": "runtime",
+      "type": "backend",
+      "label": "ToolRuntime",
+      "sublabel": "CH-02"
+    },
+    {
+      "id": "capability",
+      "type": "backend",
+      "label": "Capability real",
+      "sublabel": "CapabilityRegistry — Preview"
+    }
+  ],
+  "segments": [
+    {
+      "from": 170,
+      "to": 205,
+      "label": "ToolCall ya resuelto"
+    },
+    {
+      "from": 215,
+      "to": 280,
+      "label": "Resolución y hooks"
+    },
+    {
+      "from": 290,
+      "to": 325,
+      "label": "Ejecución y resultado"
+    }
+  ],
+  "messages": [
+    {
+      "id": "toolcall-received",
+      "from": "loop",
+      "to": "runtime",
+      "y": 185,
+      "label": "ToolCall (intención ya resuelta)",
+      "variant": "emphasis",
+      "note": "executeToolCall(call, execution, agentId, capabilityResolved, inputValid, executionSucceeded, executionOutput)"
+    },
+    {
+      "id": "resolve-capability",
+      "from": "runtime",
+      "to": "capability",
+      "y": 235,
+      "label": "resuelve capability / valida schema del input",
+      "variant": "dashed",
+      "note": "Preview — CapabilityRegistry no introducido en este capítulo"
+    },
+    {
+      "id": "execute-result",
+      "from": "runtime",
+      "to": "loop",
+      "y": 308,
+      "label": "ToolResult",
+      "variant": "return",
+      "note": "beforeToolCall(call) → coordina la ejecución → afterToolCall(result); emite AgentEvent (TOOL_CALL_COMPLETED | TOOL_CALL_FAILED); AgentLoop retomaría el ciclo con este ToolResult como observación — Preview, cableado real en un capítulo posterior"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "runtime",
+      "from": 178,
+      "to": 315,
+      "type": "backend"
+    },
+    {
+      "participant": "loop",
+      "from": 173,
+      "to": 312,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Lo que ToolRuntime owns (Article III)",
+      "items": [
+        "resolver tools/capabilities, validar llamadas, ejecutar hooks",
+        "coordinar ejecución y devolver resultados normalizados"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Cuatro exclusiones (Article IV)",
+      "items": [
+        "policy evaluation y autorización — PolicyEngine, Preview",
+        "aprobación humana — HumanInteractionService, Preview",
+        "enforcement de ExecutionBudget — ExecutionController, Preview",
+        "resolución de qué implementación satisface la capability — CapabilityRegistry, Preview"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Autónomo por diseño",
+      "items": [
+        "executeToolCall (§11) es la primera formalización ejecutable de esta decisión",
+        "AgentLoop no cambia una sola línea para que este capítulo sea correcto"
+      ]
+    }
+  ]
+}

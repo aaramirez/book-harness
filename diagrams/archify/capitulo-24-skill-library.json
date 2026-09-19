@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 24 — SkillLibrary y el Conocimiento Procedural que Nunca Fue una Capability",
+    "output": "capitulo-24-skill-library.html",
+    "viewBox": [1080, 600],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "resolucion", "label": "Resolución de la situación", "focus": ["agentloop", "library", "descriptor"], "note": "resolveSkillForSituation busca, dentro de registeredSkills, el SkillDescriptor cuyo name coincida con situationName." },
+      { "id": "contraste", "label": "Nunca una acción", "focus": ["library", "descriptor"], "note": "SkillDescriptor es consultable — nunca algo que ToolRuntime ejecute ni que PolicyEngine autorice, a diferencia de resolveToolCall (CH-08)." },
+      { "id": "consumo-futuro", "label": "Consumo futuro (conceptual)", "focus": ["library", "contextengine"], "note": "ContextEngine (CH-04) podría incluir el procedimiento resuelto en lo que ve el modelo — todavía no cableado." }
+    ]
+  },
+  "participants": [
+    { "id": "agentloop", "type": "external", "label": "AgentLoop", "sublabel": "CH-01, conceptual" },
+    { "id": "library", "type": "backend", "label": "SkillLibrary", "sublabel": "CH-24" },
+    { "id": "descriptor", "type": "database", "label": "SkillDescriptor", "sublabel": "consultable, no ejecutable" },
+    { "id": "eventbus", "type": "messagebus", "label": "EventBus", "sublabel": "CH-09, Preview" },
+    { "id": "contextengine", "type": "external", "label": "ContextEngine", "sublabel": "CH-04, conceptual" }
+  ],
+  "segments": [
+    { "from": 160, "to": 255, "label": "Resolución del procedimiento" },
+    { "from": 265, "to": 285, "label": "Notificación (Preview)" },
+    { "from": 300, "to": 320, "label": "Consumo futuro (conceptual)" }
+  ],
+  "messages": [
+    { "id": "situation", "from": "agentloop", "to": "library", "y": 170, "label": "resolveSkillForSituation(situationName, registeredSkills, execution, agentId)", "variant": "emphasis", "note": "¿situationName vacío o NULL? → HarnessError SKILL_RESOLUTION_REQUESTED_WITHOUT_SITUATION; situationName producido por AgentLoop o por el propio modelo — origen no cableado" },
+    { "id": "lookup", "from": "library", "to": "descriptor", "y": 205, "label": "busca SkillDescriptor cuyo name coincida con situationName", "variant": "default", "note": "no encontrado → HarnessError SKILL_NOT_FOUND (VALIDATION)" },
+    { "id": "found", "from": "descriptor", "to": "library", "y": 245, "label": "SkillDescriptor encontrado — RETURN, sin construir ninguna acción", "variant": "return" },
+    { "id": "event", "from": "library", "to": "eventbus", "y": 280, "label": "AgentEvent(SKILL_RESOLVED | SKILL_RESOLUTION_FAILED) — Preview", "variant": "dashed" },
+    { "id": "context", "from": "library", "to": "contextengine", "y": 315, "label": "podría incluirse en lo que ve el modelo", "variant": "dashed", "note": "conceptual, no cableado" }
+  ],
+  "activations": [
+    { "participant": "agentloop", "from": 165, "to": 178, "type": "external" },
+    { "participant": "library", "from": 165, "to": 285, "type": "backend" },
+    { "participant": "descriptor", "from": 200, "to": 250, "type": "database" },
+    { "participant": "eventbus", "from": 275, "to": 285, "type": "messagebus" },
+    { "participant": "contextengine", "from": 310, "to": 320, "type": "external" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Conocimiento procedural, nunca una capability", "items": ["SkillLibrary decide qué procedimiento reusable aplica a una situación — contrastado explícitamente contra resolveToolCall (CH-08 §11)", "P-07/P-13: SkillDescriptor nunca es ejecutable ni autorizable como una acción"] },
+    { "dot": "rose", "title": "Dos fallos posibles, fail-closed", "items": ["situationName vacío o NULL → HarnessError SKILL_RESOLUTION_REQUESTED_WITHOUT_SITUATION", "sin coincidencia en registeredSkills → HarnessError SKILL_NOT_FOUND (VALIDATION)"] },
+    { "dot": "amber", "title": "Orígenes y consumidores todavía no cableados", "items": ["AgentLoop (CH-01) consultaría la situación actual de un turno — todavía no cablea esta llamada", "ContextEngine (CH-04) podría incluir el SkillDescriptor resuelto en el contexto del modelo — conceptual"] }
+  ]
+}

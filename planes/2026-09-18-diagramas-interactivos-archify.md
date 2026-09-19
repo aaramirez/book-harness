@@ -186,3 +186,71 @@ HTML de `diagrams/archify/rendered/` se tratan como artefactos versionados en gi
 - Se combinaron `CredentialBroker`+`IdempotencyGuard` (y se anotó `AuditLedger`/`EventBus` como
   `tag`) en `turno-gobernado` para caber en las 6 columnas que permite `schema_version: 2` sin
   perder ningún nombre real de función.
+
+---
+
+## Ampliación (2026-09-19): los 28 diagramas por capítulo
+
+El usuario pidió explícitamente "todos los diagramas que hay en el libro", no solo la vista
+curada: cada uno de los 28 capítulos ya tiene una sección real **"10. Diagrama de Secuencia"**
+(obligatoria por `REGLAS_LIBRO_AGENT_HARNESS(1).md` §14, con 3 vistas: Componentes/Sequence/
+Pseudocódigo) — se convirtió cada una a Archify, sin inventar componentes ni llamadas.
+
+### Ejecución
+
+Cuatro agentes en paralelo, cada uno con ~7 capítulos asignados (CH-00..06, CH-07..13, CH-14..20,
+CH-21..27), siguiendo la misma convención de nombre `capitulo-NN-<slug>.json` (prefijo de dos
+dígitos obligatorio para el agrupamiento automático en `scripts/build-web`). 25 de 28 capítulos se
+completaron y comitearon en `7489581`. Los 3 restantes (CH-13, CH-26, CH-27 — precisamente los
+capítulos de integración con las trazas más largas) quedaron interrumpidos por el límite de uso de
+la sesión (rate limit) a mitad de `deliver`/`validate`; esta sesión los completó directamente:
+
+- **CH-13** (`workflow`, no `sequence`): los 3 caminos de gobierno (DENY / REQUIRE_APPROVAL /
+  STOP-CANCELLED) son alternativas independientes, no una sola línea de tiempo — se modelaron como
+  3 lanes de un workflow (`schema_version: 2`), cada una con sus funciones reales
+  (`runAgentTurnWithPolicyDenial`, `beginToolApprovalPause`/`resumeAfterHumanResolution`,
+  `terminateAgentRunOperationally`). El camino REJECTED (rama alternativa dentro de
+  `resumeAfterHumanResolution`) no se dibujó como arista propia — el enrutador `readable-v2` no
+  puede satisfacer una arista que salta sobre un nodo intermedio sin violar clearance mínima — se
+  documentó en el `sublabel` del nodo en su lugar, honesto en vez de forzar una geometría inválida.
+- **CH-26**: 10 participantes (varios ya fusionados 2-en-1 desde su primera versión, ej.
+  "AgentCore + ExecutionController") en un `sequence` de 22 mensajes reales. Encontró el mismo
+  límite que ya había aparecido en los 5 diagramas curados: el chequeo
+  `composition/desktop-readability` mide el texto MÁS PEQUEÑO del lienzo completo (`sublabel`s de
+  10 participantes densos), no solo si una etiqueta específica es demasiado larga — reducir el
+  `viewBox` para que los `label` cupieran empeoraba directamente ese chequeo (escala más baja).
+  Resuelto quitando `sublabel` de todos los participantes (el `label` principal, más grande, sigue
+  siendo legible) y acortando el texto de las `cards` — sin quitar ningún nombre de función real.
+- **CH-27** (`sequence`, 2 segmentos: kill switch / escalación por denegación severa, 5
+  participantes, 10 mensajes): mismo patrón de ajuste de `viewBox`/espaciado vertical entre
+  mensajes (mínimo 28px de separación) que los diagramas curados y CH-26.
+
+### Verificación final
+
+```
+rm -rf dist && ./scripts/build-all
+```
+Exit 0. `dist/web/diagramas.html` reporta **33 diagramas (5 vistas generales + 28 por capítulo)**.
+`dist/book.pdf`: **719 páginas** (idéntico, ningún cambio al contenido del libro). Los 28
+capítulos + mapa mental sin cambios. Cada uno de los 28 pares JSON+HTML per-capítulo pasó
+`validate --quality showcase` (0 errores/0 warnings), `deliver`, y `visual-check` (`status: pass`,
+sin overflow en 1440×900/1600×1000, claro y oscuro).
+
+`scripts/build-web` ya no mantiene ninguna lista hardcodeada: glob sobre `diagrams/archify/*.json`,
+lectura de `meta.title`/`meta.subtitle` de cada fuente, agrupamiento automático "Vistas Generales"
+vs. "Por Capítulo" (prefijo `capitulo-NN-`, ordenado numéricamente). Un nuevo capítulo con su
+propio diagrama Archify no requiere ningún cambio de código, solo agregar el par JSON+HTML.
+
+### Decisiones de diseño de los 4 lotes (resumen, ver reportes de cada agente para detalle completo)
+
+- Ramas de decisión (if/else) dentro de una función real, cuando el schema `sequence` no soporta
+  fragmentos `alt`, se representaron como flechas alternativas desde el mismo emisor con una nota
+  explícita de "alternativas, no secuenciales" (CH-01, CH-04, CH-05) — nunca como pasos temporales
+  falsos.
+- Componentes marcados "Preview, no introducido" en el propio capítulo se dibujaron con
+  `sublabel: "Preview"` y `variant: "dashed"`, nunca como una resolución real.
+- Actores externos/humanos (CH-14, CH-18) se modelaron como `participant type: "external"`, no se
+  omitieron.
+- CH-25 (epílogo, `introduces_components: []`, sin pseudocódigo tradicional) se representó con
+  datos 100% reales de `book/book.yaml` (el orden real de capítulos como evidencia de `P-09`), no
+  con un diagrama de interacción inventado.

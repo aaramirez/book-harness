@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "CH-27 — Integración Enterprise, los Caminos de Control y Traspaso",
+    "output": "capitulo-27-integracion-enterprise-caminos-de-control.html",
+    "viewBox": [
+      1240,
+      640
+    ],
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    {
+      "id": "controller",
+      "type": "security",
+      "label": "OpController"
+    },
+    {
+      "id": "policyengine",
+      "type": "security",
+      "label": "PolicyEngine"
+    },
+    {
+      "id": "handoff",
+      "type": "external",
+      "label": "HandoffCoord"
+    },
+    {
+      "id": "auditledger",
+      "type": "database",
+      "label": "AuditLedger"
+    },
+    {
+      "id": "eventbus",
+      "type": "messagebus",
+      "label": "EventBus"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 350,
+      "label": "Kill switch"
+    },
+    {
+      "from": 370,
+      "to": 520,
+      "label": "Escalación por denegación severa"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m1",
+      "from": "controller",
+      "to": "eventbus",
+      "y": 160,
+      "label": "EMIT CONTROL_DIRECTIVE_APPLIED",
+      "variant": "dashed"
+    },
+    {
+      "id": "m2",
+      "from": "controller",
+      "to": "auditledger",
+      "y": 195,
+      "label": "recordAuditEntry(targetRef)",
+      "variant": "default"
+    },
+    {
+      "id": "m3",
+      "from": "controller",
+      "to": "handoff",
+      "y": 230,
+      "label": "createHandoffPackage(KILL_SWITCH)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m4",
+      "from": "handoff",
+      "to": "eventbus",
+      "y": 265,
+      "label": "EMIT HANDOFF_PACKAGE_CREATED",
+      "variant": "dashed"
+    },
+    {
+      "id": "m5",
+      "from": "handoff",
+      "to": "auditledger",
+      "y": 300,
+      "label": "recordAuditEntry(contextRef)",
+      "variant": "default"
+    },
+    {
+      "id": "m6",
+      "from": "handoff",
+      "to": "controller",
+      "y": 335,
+      "label": "HandoffPackage(PENDING)",
+      "variant": "return"
+    },
+    {
+      "id": "m7",
+      "from": "policyengine",
+      "to": "handoff",
+      "y": 400,
+      "label": "createHandoffPackage(EXPLICIT_ESCALATION)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m8",
+      "from": "handoff",
+      "to": "eventbus",
+      "y": 435,
+      "label": "EMIT HANDOFF_PACKAGE_CREATED",
+      "variant": "dashed"
+    },
+    {
+      "id": "m9",
+      "from": "handoff",
+      "to": "auditledger",
+      "y": 470,
+      "label": "recordAuditEntry(contextRef)",
+      "variant": "default"
+    },
+    {
+      "id": "m10",
+      "from": "handoff",
+      "to": "policyengine",
+      "y": 505,
+      "label": "HandoffPackage(PENDING)",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "controller",
+      "from": 155,
+      "to": 341,
+      "type": "security"
+    },
+    {
+      "participant": "handoff",
+      "from": 225,
+      "to": 341,
+      "type": "backend"
+    },
+    {
+      "participant": "policyengine",
+      "from": 395,
+      "to": 511,
+      "type": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Dos disparadores, un mismo destino",
+      "items": [
+        "Primera formalización ejecutable de qué pasa cuando un run se interrumpe a la fuerza o una denegación no debe volver al modelo",
+        "Construidas solo con funciones ya publicadas por CH-00..CH-26, sin modificar ninguna"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Evidencia doble, nunca conflacionada",
+      "items": [
+        "Cada paso pasa por AuditLedger además de EventBus (P-25)",
+        "El kill switch fuerza CANCELLED sin invocar AgentLoop ni ExecutionController (INV-E14)"
+      ]
+    }
+  ]
+}

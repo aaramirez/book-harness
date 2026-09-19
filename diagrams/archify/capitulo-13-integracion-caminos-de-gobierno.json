@@ -1,0 +1,242 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "CH-13 — Integración, los Caminos de Gobierno de un AgentRun",
+    "output": "capitulo-13-integracion-caminos-de-gobierno.html",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1360,
+      560
+    ]
+  },
+  "lanes": [
+    {
+      "id": "deny",
+      "label": "Camino DENY"
+    },
+    {
+      "id": "approval",
+      "label": "Camino REQUIRE_APPROVAL",
+      "variant": "exception"
+    },
+    {
+      "id": "termination",
+      "label": "Camino STOP / CANCELLED"
+    }
+  ],
+  "phases": [
+    {
+      "id": "decision",
+      "label": "Decisión de gobierno",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "reaccion",
+      "label": "Reacción",
+      "fromCol": 1,
+      "toCol": 2
+    },
+    {
+      "id": "cierre",
+      "label": "Cierre del run",
+      "fromCol": 3,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "decisiondeny",
+    "denyhandler",
+    "resumeobs1",
+    "finalstate1"
+  ],
+  "nodes": [
+    {
+      "id": "decisiondeny",
+      "lane": "deny",
+      "col": 0,
+      "type": "security",
+      "label": "PolicyDecision",
+      "width": 150
+    },
+    {
+      "id": "denyhandler",
+      "lane": "deny",
+      "col": 1,
+      "type": "backend",
+      "label": "runAgentTurnWithPolicyDenial",
+      "width": 210
+    },
+    {
+      "id": "resumeobs1",
+      "lane": "deny",
+      "col": 3,
+      "type": "backend",
+      "label": "resumeTurnWithObservation",
+      "width": 190
+    },
+    {
+      "id": "finalstate1",
+      "lane": "deny",
+      "col": 5,
+      "type": "database",
+      "label": "AgentState",
+      "width": 150
+    },
+    {
+      "id": "decisionapproval",
+      "lane": "approval",
+      "col": 0,
+      "type": "security",
+      "label": "PolicyDecision",
+      "width": 150
+    },
+    {
+      "id": "beginpause",
+      "lane": "approval",
+      "col": 1,
+      "type": "backend",
+      "label": "beginToolApprovalPause",
+      "width": 150
+    },
+    {
+      "id": "waitinghuman",
+      "lane": "approval",
+      "col": 2,
+      "type": "external",
+      "label": "WAITING_FOR_HUMAN",
+      "width": 150
+    },
+    {
+      "id": "resumeafter",
+      "lane": "approval",
+      "col": 3,
+      "type": "backend",
+      "label": "resumeAfterHumanResolution",
+      "width": 200
+    },
+    {
+      "id": "toolcallapproved",
+      "lane": "approval",
+      "col": 4,
+      "type": "backend",
+      "label": "executeToolCall",
+      "width": 150
+    },
+    {
+      "id": "resumeobs2",
+      "lane": "approval",
+      "col": 5,
+      "type": "backend",
+      "label": "resumeTurnWithObservation",
+      "width": 190
+    },
+    {
+      "id": "execdecision",
+      "lane": "termination",
+      "col": 0,
+      "type": "security",
+      "label": "ExecutionDecision",
+      "width": 150
+    },
+    {
+      "id": "terminatefn",
+      "lane": "termination",
+      "col": 1,
+      "type": "backend",
+      "label": "terminateAgentRunOperationally",
+      "width": 220
+    },
+    {
+      "id": "finalstate3",
+      "lane": "termination",
+      "col": 3,
+      "type": "database",
+      "label": "AgentState",
+      "width": 150
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-deny-1",
+      "from": "decisiondeny",
+      "to": "denyhandler",
+      "variant": "security"
+    },
+    {
+      "id": "e-deny-2",
+      "from": "denyhandler",
+      "to": "resumeobs1",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-deny-3",
+      "from": "resumeobs1",
+      "to": "finalstate1",
+      "variant": "default"
+    },
+    {
+      "id": "e-appr-1",
+      "from": "decisionapproval",
+      "to": "beginpause",
+      "variant": "security"
+    },
+    {
+      "id": "e-appr-2",
+      "from": "beginpause",
+      "to": "waitinghuman",
+      "variant": "dashed"
+    },
+    {
+      "id": "e-appr-3",
+      "from": "waitinghuman",
+      "to": "resumeafter",
+      "label": "tiempo indefinido",
+      "variant": "dashed"
+    },
+    {
+      "id": "e-appr-4",
+      "from": "resumeafter",
+      "to": "toolcallapproved",
+      "label": "APPROVED",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-appr-5",
+      "from": "toolcallapproved",
+      "to": "resumeobs2",
+      "variant": "default"
+    },
+    {
+      "id": "e-term-1",
+      "from": "execdecision",
+      "to": "terminatefn",
+      "variant": "security"
+    },
+    {
+      "id": "e-term-2",
+      "from": "terminatefn",
+      "to": "finalstate3",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Tres desenlaces, cinco funciones",
+      "items": [
+        "Primera formalización ejecutable de qué pasa cuando el sistema dice que no, alguien decide en su lugar, o el tiempo/presupuesto se agota",
+        "Construidas solo con funciones ya publicadas por CH-01..CH-12, sin modificar ninguna"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Article VI y VIII, con código real",
+      "items": [
+        "DENY: executeToolCall nunca se invoca (Rule 3)",
+        "REQUIRE_APPROVAL: la función termina en la pausa, sin proceso esperando (Article VIII)"
+      ]
+    }
+  ]
+}

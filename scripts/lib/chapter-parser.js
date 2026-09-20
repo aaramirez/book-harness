@@ -33,6 +33,9 @@ const REQUIRED_SECTIONS = [
  * depender de la ortografía exacta del título en español.
  */
 function parseChapter(raw) {
+  // Tolerar CRLF (checkouts de git con core.autocrlf=true en Windows): el resto del parser
+  // asume saltos de línea \n (regex con ^/$, fences). Normalizar una sola vez al entrar.
+  raw = raw.replace(/\r\n/g, '\n');
   const fmMatch = raw.match(/^---\n([\s\S]*?)\n---\n?/);
   if (!fmMatch) {
     throw new Error('chapter.md no tiene bloque de frontmatter YAML delimitado por "---"');

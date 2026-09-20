@@ -200,6 +200,16 @@ function buildMarkdown(ir) {
   return header + '\n' + frontmatter + '\n' + chaptersBlock + '\n\n' + appendix + '\n\n' + mindMapAppendix;
 }
 
+function pandocMajorVersion() {
+  try {
+    const out = execFileSync('pandoc', ['--version'], { encoding: 'utf8' });
+    const m = out.match(/pandoc\s+(\d+)/);
+    return m ? parseInt(m[1], 10) : 0;
+  } catch {
+    return 0;
+  }
+}
+
 function main() {
   if (!fs.existsSync(IR_PATH)) {
     console.error(`build-pdf: no existe ${path.relative(ROOT, IR_PATH)}. Correr build-book-ir primero.`);
@@ -211,12 +221,18 @@ function main() {
   const md = buildMarkdown(ir);
   fs.writeFileSync(MD_PATH, md, 'utf8');
 
+  // pandoc >= 2.0 usa `--pdf-engine`; pandoc < 2.0 usaba `--latex-engine` (entorno original 1.19.2.4).
+  const version = pandocMajorVersion();
+  const engineFlag = version >= 2 ? '--pdf-engine=xelatex' : '--latex-engine=xelatex';
+  // Helvetica es la fuente del entorno original (macOS); en Windows no existe — Arial es su
+  // equivalente métrico y viene preinstalada. Dejar que fontspec filtre a la fuente del sistema.
+  const mainfont = process.platform === 'win32' ? 'Arial' : 'Helvetica';
   const args = [
     MD_PATH,
     '-f', 'markdown+raw_tex',
     '-o', PDF_PATH,
-    '--latex-engine=xelatex',
-    '-V', 'mainfont=Helvetica',
+    engineFlag,
+    '-V', `mainfont=${mainfont}`,
     '-V', 'geometry:margin=1in',
     '--toc',
     '--toc-depth=2',
@@ -224,7 +240,7 @@ function main() {
   ];
 
   try {
-    execFileSync('pandoc', args, { stdio: 'inherit' });
+    execFileSync('pandoc', args, { stdio: 'inherit', env: process.env });
   } catch (e) {
     console.error('build-pdf: pandoc falló:', e.message);
     process.exit(1);

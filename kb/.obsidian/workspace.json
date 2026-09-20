@@ -1,0 +1,52 @@
+{
+  "main": {
+    "id": "53c1b4f7c8f1a2d3",
+    "type": "split",
+    "children": [
+      {
+        "id": "a1b2c3d4e5f60718",
+        "type": "leaf",
+        "state": {
+          "type": "file",
+          "state": {
+            "file": "Index.md",
+            "mode": "source"
+          }
+        }
+      }
+    ],
+    "direction": "horizontal"
+  },
+  "left": {
+    "id": "left",
+    "type": "split",
+    "children": [
+      {
+        "id": "sidebar",
+        "type": "leaf",
+        "state": {
+          "type": "file-explorer",
+          "state": {}
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "right": {
+    "id": "right",
+    "type": "split",
+    "children": [
+      {
+        "id": "right-sidebar",
+        "type": "leaf",
+        "state": {
+          "type": "outgoing-link",
+          "state": {}
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "active": "a1b2c3d4e5f60718",
+  "lastOpenFiles": []
+}

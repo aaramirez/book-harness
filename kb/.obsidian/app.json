@@ -1,0 +1,10 @@
+{
+  "alwaysUpdateLinks": true,
+  "newFileLocation": "folder",
+  "newFileFolderPath": "Inbox",
+  "attachmentFolderPath": "07-Diagramas/_attachments",
+  "showUnsupportedFiles": false,
+  "useMarkdownLinks": false,
+  "readableLineLength": true,
+  "promptDelete": true
+}

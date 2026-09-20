@@ -1,5 +1,6 @@
 reference/
 dist/
+__pycache__/
 
 
 # Evidencia de archify visual-check (sidecars .png/.json/.html) — no son artefactos entregados,

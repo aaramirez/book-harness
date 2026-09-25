@@ -109,6 +109,16 @@ function frontmatterMarkdown(page) {
  * xelatex ya soportan imágenes PDF como figura vectorial, sin rasterizar). Usa el mismo helper
  * compartido (`render-diagram.js`) que build-web, para no duplicar la llamada a `dot`.
  */
+/**
+ * Ruta de imagen para el markdown que consume pandoc, con separadores POSIX. En Windows,
+ * `path.join` produce `\` y en markdown `\.` es un escape: pandoc perdía el separador antes de
+ * `.build` (`dist\.build` → `dist.build`) y ningún mapa mental llegaba al PDF. `/` funciona en
+ * todas las plataformas y conserva la ruta absoluta.
+ */
+function markdownImagePath(p) {
+  return p.split(path.sep).join('/');
+}
+
 function mindMapChapterMarkdown(chapter) {
   if (!chapter.mindMapDiagramPath) return '';
   const diagramPath = path.join(ROOT, chapter.mindMapDiagramPath);
@@ -120,7 +130,7 @@ function mindMapChapterMarkdown(chapter) {
   // del repo — una ruta relativa a dist/.build/ no resolvía (reproducido durante esta ejecución,
   // ver Registro de ejecución del plan).
   let out = '\\newpage\n\n## Mapa Mental hasta este Capítulo\n\n';
-  out += `![Mapa mental acumulado hasta ${chapter.id}](${pdfPath})\n\n`;
+  out += `![Mapa mental acumulado hasta ${chapter.id}](${markdownImagePath(pdfPath)})\n\n`;
   return out;
 }
 
@@ -179,7 +189,7 @@ function fullBookMindMapAppendixMarkdown(ir) {
   renderDiagram(diagramPath, pdfPath, 'pdf');
   let out = '\\newpage\n\n# Apéndice: Mapa Mental Completo del Libro\n\n';
   out += 'El grafo completo de conceptos, contratos y componentes introducidos a lo largo de todo el libro.\n\n';
-  out += `![Mapa mental completo del libro](${pdfPath})\n\n`;
+  out += `![Mapa mental completo del libro](${markdownImagePath(pdfPath)})\n\n`;
   return out;
 }
 

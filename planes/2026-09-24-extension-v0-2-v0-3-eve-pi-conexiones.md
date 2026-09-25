@@ -426,3 +426,4 @@ Cada ficha es el **Paso 2 ("Alcance decidido")** del plan propio del capítulo. 
 | Incremento | Fecha | Commit | build-all | Notas |
 | --- | --- | --- | --- | --- |
 | Línea base | 2026-09-24 | `d16e2c7` | ✅ exit 0 (29 warnings, T0.1) | Entorno: Graphviz 16.1, pandoc 3.11, TinyTeX 2026 + `caption`, gs 10.07 |
+| T0.1 | 2026-09-24 | (este commit) | ✅ exit 0, 0 warnings | `markdownImagePath()` en `scripts/build-pdf` normaliza a `/` las rutas de los mapas mentales; `dist/book.pdf` pasa de 2,2 MB a 4,0 MB (ahora incluye los 29 mapas) |

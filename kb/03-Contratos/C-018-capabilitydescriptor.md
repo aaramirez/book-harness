@@ -2,17 +2,17 @@
 id: "C-018"
 tipo: contrato
 nombre: "CapabilityDescriptor"
-version: "v1"
+version: "v2"
 capitulo: "CH-08"
 tags: [contrato, c-018]
 used_by: ["CMP-008"]
-modified_by: []
+modified_by: ["CH-30"]
 articulos_constitucionales: ["P-03", "P-26", "INV-04", "INV-20"]
 ---
 
 # CapabilityDescriptor (C-018)
 
-> Contrato v1 — introducido en [[ch-08-capability-registry|CH-08]].
+> Contrato **v2** — introducido en [[ch-08-capability-registry|CH-08]], modificado en [[ch-30-politica-de-replay|CH-30]] (ADR-002).
 
 ## Definición canónica
 
@@ -23,6 +23,7 @@ STRUCT CapabilityDescriptor
     version: Text
     inputSchema: Value
     implementationRef: Text
+    replayPolicy: Optional<ReplayPolicy>
 END
 ```
 
@@ -32,7 +33,7 @@ END
 
 ## Modificado por
 
-Ninguno
+[[ch-30-politica-de-replay|CH-30]]: agrega `replayPolicy` (ver [[C-039-replaypolicy|ReplayPolicy]]; NULL = NEVER)
 
 ## Impacto constitucional
 

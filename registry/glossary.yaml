@@ -1432,3 +1432,21 @@ terms:
     introduced_in: CH-29
     kind: contract
     ref: C-038
+
+  - term: Unknown Outcome
+    definition: >
+      El caso en que un efecto externo empezó pero su resultado nunca se registró — por ejemplo, un
+      IdempotencyRecord (CH-17) en PENDING cuya ejecución ya no está en curso tras un corte. El arnés
+      nunca asume que el efecto ocurrió ni que falló: lo reporta al modelo como ToolResult con
+      outcome = UNKNOWN (INV-07), salvo que la capability declare replayPolicy = SAFE (INV-E17, CH-30).
+    introduced_in: CH-30
+    kind: concept
+
+  - term: ReplayPolicy
+    definition: >
+      Lo que una capability declara que el arnés debe hacer si no se sabe si su efecto ocurrió: NEVER
+      (reportar el resultado desconocido, nunca re-ejecutar — el default cuando no se declara) o SAFE
+      (re-ejecutar es seguro). Distinta de la deduplicación por clave de IdempotencyGuard (CH-17).
+    introduced_in: CH-30
+    kind: contract
+    ref: C-039

@@ -13,7 +13,7 @@ articulos_constitucionales: ["P-01", "P-02", "P-08", "P-14", "INV-07", "INV-12",
 
 ## Navegación
 
-⬅ [[ch-28-steering-follow-up|CH-28]] · **CH-29**
+⬅ [[ch-28-steering-follow-up|CH-28]] · **CH-29** · [[ch-30-politica-de-replay|CH-30]] ➡
 
 ## Resultado esperado
 

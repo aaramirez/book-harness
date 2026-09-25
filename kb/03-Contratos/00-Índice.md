@@ -48,5 +48,6 @@ Los **35 contratos** canónicos del libro, en orden de introducción.
 | C-036 | [[C-036-pendinginput|PendingInput]] | [[ch-28-steering-follow-up|CH-28]] |
 | C-037 | [[C-037-compactionsummary|CompactionSummary]] | [[ch-29-compactacion-sesiones-arbol|CH-29]] |
 | C-038 | [[C-038-branchsummary|BranchSummary]] | [[ch-29-compactacion-sesiones-arbol|CH-29]] |
+| C-039 | [[C-039-replaypolicy|ReplayPolicy]] | [[ch-30-politica-de-replay|CH-30]] |
 
 Ver también: [[Index|Mapa del libro]]

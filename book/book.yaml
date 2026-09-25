@@ -74,3 +74,5 @@ chapters:
     file: chapters/28-steering-follow-up/chapter.md
   - id: CH-29
     file: chapters/29-compactacion-sesiones-arbol/chapter.md
+  - id: CH-30
+    file: chapters/30-politica-de-replay/chapter.md

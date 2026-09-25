@@ -1,7 +1,7 @@
 # Plan — Extensión del libro v0.2 y v0.3: lecciones de eve, aportes de pi y conexión del arnés con el mundo
 
 **Fecha:** 2026-09-24
-**Estado:** 🚧 En ejecución. Fase 0 completa (T0.1–T0.6); CH-28 ✅, CH-29 ✅; siguiente: CH-30 (requiere aprobar ADR-002). Se ejecuta sobre `d16e2c7` (CH-00..CH-27, 22 componentes, 35 contratos).
+**Estado:** 🚧 En ejecución. Fase 0 completa (T0.1–T0.6); CH-28 ✅, CH-29 ✅, CH-30 ✅; siguiente: CH-31 (requiere aprobar ADR-001). Se ejecuta sobre `d16e2c7` (CH-00..CH-27, 22 componentes, 35 contratos).
 
 **Depende de:**
 - `2026-08-23-book-harness-como-construir-un-arnes.md`: plan base (pipeline, registries, scripts, DoD).
@@ -434,3 +434,4 @@ Cada ficha es el **Paso 2 ("Alcance decidido")** del plan propio del capítulo. 
 | CH-28 | 2026-09-25 | rama `cap-28-steering-follow-up` → `main` | ✅ exit 0, 0 fetch warnings | C-036 `PendingInput`; 0 componentes (amplía AgentLoop dentro de su owns); `runTurn` sin cambios. Plan: `planes/2026-09-25-capitulo-28-steering-follow-up.md` |
 | T0.7 | 2026-09-25 | rama `tooling-t07-monofont` → `main` | ✅ exit 0 | **Hallazgo preexistente:** el PDF emite `[WARNING] Missing character` por los glifos de dibujo de cajas (`─ │ ├ └ ▼`) de los diagramas de texto: 1733 en `main` antes de CH-28 y 1768 después (+35 del §10 de CH-28, mismo patrón que todos los capítulos). La fuente monoespaciada por defecto no los trae. Propuesta de tooling: `-V monofont="Consolas"` (o DejaVu Sans Mono) en `scripts/build-pdf`. **Aprobado por el autor y aplicado:** `monofont` Consolas (Windows) / Menlo (macOS), con override por `BOOK_PDF_MONOFONT`. Advertencias `Missing character`: **1768 → 6**. Las 6 restantes son los subíndices `ₖ`/`ₙ` (U+2096/U+2099) de un diagrama de texto de CH-10 (`chapter.md:1035-1042`), que Consolas no trae; no se tocó contenido de capítulos existentes |
 | CH-29 | 2026-09-25 | rama `cap-29-compactacion-sesiones-arbol` → `main` | ✅ exit 0, 30/30 capítulos | C-037 `CompactionSummary`, C-038 `BranchSummary`; **C-020 v1 → v2** (primera modificación real de un contrato; ADR-003 v2 Accepted). CH-00..CH-28 siguen en verde |
+| CH-30 | 2026-09-25 | rama `cap-30-politica-de-replay` → `main` | ✅ exit 0, 31/31 capítulos | C-039 `ReplayPolicy`; **C-018 y C-009 → v2** (ADR-002 Accepted). Un resultado desconocido es un `PENDING` huérfano de CH-17; default `NEVER` (INV-E17) |

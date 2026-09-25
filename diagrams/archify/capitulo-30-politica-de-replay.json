@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 30 — Política de Replay",
+    "output": "capitulo-30-politica-de-replay.html",
+    "viewBox": [
+      1080,
+      570
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "decidir",
+        "label": "Decidir ante el resultado desconocido",
+        "focus": [
+          "integracion",
+          "capabilityregistry",
+          "idempotencyguard"
+        ],
+        "note": "Un PENDING huérfano: IdempotencyGuard lee replayPolicy del descriptor y decide REEXECUTE o REPORT_UNKNOWN."
+      },
+      {
+        "id": "reejecutar",
+        "label": "SAFE: re-ejecutar",
+        "focus": [
+          "integracion",
+          "toolruntime",
+          "idempotencyguard"
+        ],
+        "note": "Solo una capability SAFE se re-ejecuta: executeToolCall y recordIdempotentExecution cierran el registro en COMPLETED."
+      },
+      {
+        "id": "reportar",
+        "label": "NEVER: reportar lo desconocido",
+        "focus": [
+          "integracion",
+          "idempotencyguard",
+          "agentloop"
+        ],
+        "note": "buildUnknownOutcomeResult produce un ToolResult con outcome = UNKNOWN que vuelve al ciclo como observación (INV-07)."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "integracion",
+      "type": "external",
+      "label": "Integración",
+      "sublabel": "CH-32, recuperación"
+    },
+    {
+      "id": "capabilityregistry",
+      "type": "database",
+      "label": "CapabilityRegistry",
+      "sublabel": "CH-08, descriptor v2"
+    },
+    {
+      "id": "idempotencyguard",
+      "type": "backend",
+      "label": "IdempotencyGuard",
+      "sublabel": "CH-17, decide"
+    },
+    {
+      "id": "toolruntime",
+      "type": "backend",
+      "label": "ToolRuntime",
+      "sublabel": "CH-02, ejecuta"
+    },
+    {
+      "id": "agentloop",
+      "type": "external",
+      "label": "AgentLoop",
+      "sublabel": "CH-01, observa"
+    }
+  ],
+  "segments": [
+    {
+      "from": 172,
+      "to": 310,
+      "label": "Decidir ante el resultado desconocido"
+    },
+    {
+      "from": 326,
+      "to": 489,
+      "label": "Actuar según la decisión"
+    }
+  ],
+  "messages": [
+    {
+      "id": "lookup",
+      "from": "integracion",
+      "to": "capabilityregistry",
+      "y": 185,
+      "label": "descriptor de toolCall.capability",
+      "variant": "default",
+      "note": "encuentra un IdempotencyRecord en PENDING y la ejecución que lo abrió ya no existe"
+    },
+    {
+      "id": "descriptor",
+      "from": "capabilityregistry",
+      "to": "integracion",
+      "y": 213,
+      "label": "CapabilityDescriptor v2 (replayPolicy)",
+      "variant": "return"
+    },
+    {
+      "id": "decide",
+      "from": "integracion",
+      "to": "idempotencyguard",
+      "y": 241,
+      "label": "decideUnknownOutcome(…, pendingRecord, executionStillInFlight = FALSE)",
+      "variant": "emphasis",
+      "note": "valida: record PENDING; misma capability en record, descriptor y toolCall"
+    },
+    {
+      "id": "detected",
+      "from": "idempotencyguard",
+      "to": "integracion",
+      "y": 269,
+      "label": "emite TOOL_OUTCOME_UNKNOWN_DETECTED",
+      "variant": "dashed",
+      "note": "effectiveReplayPolicy(descriptor): SAFE → REEXECUTE · NEVER o NULL → REPORT_UNKNOWN"
+    },
+    {
+      "id": "decided",
+      "from": "idempotencyguard",
+      "to": "integracion",
+      "y": 297,
+      "label": "TOOL_REPLAY_DECIDED → UnknownOutcomeDecision(policy, action)",
+      "variant": "return"
+    },
+    {
+      "id": "reexecute",
+      "from": "integracion",
+      "to": "toolruntime",
+      "y": 336,
+      "label": "SAFE → REEXECUTE: executeToolCall(toolCall)",
+      "variant": "default",
+      "note": "pasa por PolicyEngine (CH-05) como cualquier ejecución"
+    },
+    {
+      "id": "reexecuted",
+      "from": "toolruntime",
+      "to": "integracion",
+      "y": 364,
+      "label": "ToolResult",
+      "variant": "return"
+    },
+    {
+      "id": "record",
+      "from": "integracion",
+      "to": "idempotencyguard",
+      "y": 392,
+      "label": "recordIdempotentExecution → COMPLETED",
+      "variant": "default"
+    },
+    {
+      "id": "report",
+      "from": "integracion",
+      "to": "idempotencyguard",
+      "y": 420,
+      "label": "NEVER → REPORT_UNKNOWN: buildUnknownOutcomeResult(toolCall, decision)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "unknown",
+      "from": "idempotencyguard",
+      "to": "integracion",
+      "y": 448,
+      "label": "ToolResult(succeeded = FALSE, outcome = UNKNOWN)",
+      "variant": "return"
+    },
+    {
+      "id": "observe",
+      "from": "integracion",
+      "to": "agentloop",
+      "y": 476,
+      "label": "observación explícita (INV-07): el modelo decide el paso siguiente",
+      "variant": "default"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "capabilityregistry",
+      "from": 181,
+      "to": 217,
+      "type": "database"
+    },
+    {
+      "participant": "idempotencyguard",
+      "from": 237,
+      "to": 301,
+      "type": "backend"
+    },
+    {
+      "participant": "toolruntime",
+      "from": 332,
+      "to": 368,
+      "type": "backend"
+    },
+    {
+      "participant": "idempotencyguard",
+      "from": 416,
+      "to": 452,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Tres acciones",
+      "items": [
+        "WAIT: la ejecución sigue en curso (semántica de CH-17)",
+        "REEXECUTE: ya no está en curso y la capability es SAFE",
+        "REPORT_UNKNOWN: ya no está en curso y la política es NEVER"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "NEVER por defecto",
+      "items": [
+        "INV-E17: solo se re-ejecuta si la capability es SAFE; replayPolicy NULL = NEVER",
+        "El modelo no puede cambiar la política; REEXECUTE sigue pasando por PolicyEngine"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Evidencia",
+      "items": [
+        "book/chapters/30-politica-de-replay/chapter.md",
+        "§10 (Vista 2), §11 (pseudocódigo), §15 · ADR-002"
+      ]
+    }
+  ]
+}

@@ -148,20 +148,24 @@ contracts:
     modified_by: []
     constitutional_impact: [P-03, INV-04, INV-05]
 
+  # C-009 v2 (CH-30, ADR-002 Accepted 2026-09-25): agrega outcome (Optional<ToolOutcome>:
+  # SUCCEEDED/FAILED/UNKNOWN). NULL se deriva de succeeded, como en v1: CH-02..CH-29 siguen válidos.
+  # UNKNOWN es la observación explícita (INV-07) de un efecto cuyo resultado externo no se sabe.
   - id: C-009
     name: ToolResult
-    version: v1
+    version: v2
     introduced_in: CH-02
     current_definition: |
       STRUCT ToolResult
           callId: ToolCallId
           succeeded: Boolean
+          outcome: Optional<ToolOutcome>
           output: Optional<Value>
           error: Optional<HarnessError>
           completedAt: Timestamp
       END
-    used_by: [CMP-002]
-    modified_by: []
+    used_by: [CMP-002, CMP-015]
+    modified_by: [CH-30]
     constitutional_impact: [INV-07, INV-20, P-04]
 
   - id: C-010
@@ -340,9 +344,12 @@ contracts:
   # concreta — que CapabilityRegistry resuelve contra el capabilityName de una RawToolCallProposal
   # (embebida en ModelResponse, C-007, CH-03) para producir, por primera vez con una resolución
   # real, un ToolCall (C-008, CH-02) válido.
+  # C-018 v2 (CH-30, ADR-002 Accepted 2026-09-25): agrega replayPolicy (Optional<ReplayPolicy>).
+  # NULL equivale a NEVER (fail-closed) vía effectiveReplayPolicy: ningún descriptor ya registrado
+  # cambia de comportamiento. Vuelve a cambiar en CH-39 (sourceConnectionId, ADR-005).
   - id: C-018
     name: CapabilityDescriptor
-    version: v1
+    version: v2
     introduced_in: CH-08
     current_definition: |
       STRUCT CapabilityDescriptor
@@ -351,9 +358,10 @@ contracts:
           version: Text
           inputSchema: Value
           implementationRef: Text
+          replayPolicy: Optional<ReplayPolicy>
       END
-    used_by: [CMP-008]
-    modified_by: []
+    used_by: [CMP-008, CMP-015]
+    modified_by: [CH-30]
     constitutional_impact: [P-03, P-26, INV-04, INV-20]
 
   # C-019 (EventSubscription): sexto id verdaderamente NUEVO del libro (el correlativo continúa
@@ -908,3 +916,21 @@ contracts:
     used_by: [CMP-010, CMP-004]
     modified_by: []
     constitutional_impact: [P-08, INV-12, INV-13]
+
+  # C-039 (ReplayPolicy): lo que una capability declara que el arnés debe hacer si no se sabe si su
+  # efecto ocurrió (INV-E17, Amendment v1.2). NEVER: reportar el resultado desconocido al modelo,
+  # nunca re-ejecutar; SAFE: re-ejecutar es seguro (p.ej. una lectura). Dos valores y no un Boolean
+  # "idempotent": re-ejecutable (esto) y deduplicable por clave (IdempotencyRecord, CH-17) son
+  # preguntas distintas. Ver planes/2026-09-25-capitulo-30-politica-de-replay.md.
+  - id: C-039
+    name: ReplayPolicy
+    version: v1
+    introduced_in: CH-30
+    current_definition: |
+      ENUM ReplayPolicy
+          NEVER
+          SAFE
+      END
+    used_by: [CMP-008, CMP-015]
+    modified_by: []
+    constitutional_impact: [P-24, INV-E09, INV-E17]

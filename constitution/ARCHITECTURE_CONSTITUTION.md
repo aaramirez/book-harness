@@ -999,3 +999,48 @@ The platform MUST support cancellation, capability disablement, tenant isolation
 8. Observability & Governance Plane
 9. Execution Fabric
 
+# Amendment v1.2 — Durable Operation, Identity, Connectivity and Authoring
+
+This amendment is normative and extends the Constitution and Amendment v1.1 without invalidating P-01 through P-30.
+
+## P-31 — Identity travels with every turn
+The verified principal that admission produced MUST accompany every turn of a run as an explicit caller snapshot (initiator and current). Tenant, user-scoped credentials, policy and memory MUST derive from that snapshot, never from prompts, tool arguments or external responses.
+
+## P-32 — A step is the unit of durability and recovery
+A turn MUST be decomposed into steps (one model call and its inline tool calls). Each step MUST be recorded as committed before its effects are considered durable, and recovery MUST reason per step, not per turn.
+
+## P-33 — Waiting is durable and consumes no compute
+Approvals, questions, interactive authorizations and budget limits MUST park the run durably. A parked run MUST NOT hold compute, and MUST be resumable by a delivery arriving through any authorized channel.
+
+## P-34 — External conversations are addressed, not inferred
+Every external conversation (a thread, an issue, a socket session, a schedule) MUST map to a durable session through an explicit continuation address with exclusive ownership. The runtime MUST NOT guess which run a stimulus continues.
+
+## P-35 — Secrets never enter model-controlled compute
+Credentials MUST remain outside both model context and the isolated environment where model-requested code executes. Authenticated egress MUST be brokered at the boundary.
+
+## P-36 — The runtime may evolve under open sessions only at idle boundaries
+A session MAY move to a new runtime version (agent, policy, model configuration, capability contracts, session format) only when it holds no live work. The version in effect MUST be recorded with the session.
+
+## P-37 — Observability capture is bounded by audience
+Every session MUST be classified by audience at creation. A trace capture ceiling derived from that audience MUST bound every telemetry destination; no destination may restore content the ceiling excludes.
+
+## P-38 — External capabilities enter only through declared connections
+Capabilities provided by external systems (for example MCP servers or OpenAPI services) MUST enter through declared connections and be resolved as capability descriptors. Protocols remain adapters; the core MUST NOT depend on a protocol SDK.
+
+## P-39 — An agent is authored as inspectable, conventionally located files
+An agent's configuration, capabilities, connections, data sources, entry channels and policies SHOULD be authored as files in conventional locations whose path determines identity. The runtime MUST NOT infer configuration that the authored files do not declare, and MUST expose what it discovered.
+
+## Additional Enterprise Invariants (v1.2)
+- INV-E15: An unconfigured harness admits nothing, in any environment; development admission depends on process mode, never on the request.
+- INV-E16: A committed step is never re-executed during recovery.
+- INV-E17: An effect whose outcome is unknown is re-executed only if its capability declares replayPolicy = SAFE.
+- INV-E18: A delivery resumes only the wait it addresses, and only if its responder is authorized for it.
+- INV-E19: A continuation address has at most one owning session at a time.
+- INV-E20: Credentials are never materialized inside the isolated execution environment.
+- INV-E21: A child budget never exceeds its parent's remaining budget.
+- INV-E22: Live work (pending waits, uncommitted steps, active child runs) never migrates between runtime versions.
+- INV-E23: No trace destination may capture content above the session's capture ceiling.
+- INV-E24: No hook point may return an authorization outcome.
+- INV-E25: No external tool reaches the model except as a CapabilityDescriptor resolved by CapabilityRegistry and evaluated by PolicyEngine.
+- INV-E26: Every data source declares a classification; an undeclared source is RESTRICTED.
+- INV-E27: An authoring diagnostic of level ERROR prevents any activation of that agent.

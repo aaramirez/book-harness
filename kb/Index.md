@@ -37,6 +37,7 @@ tags: [moc, indice, libro]
 - [[Article-XI-Evolution|Artículo XI — Evolución]]
 - [[Article-XII-Boundary|Artículo XII — Frontera determinística vs. agéntica]]
 - [[Amendment-v11|Enmienda v1.1 — Enterprise (P-16..P-30, INV-E01..INV-E14)]]
+- [[Amendment-v12|Enmienda v1.2 — Durabilidad, identidad, conectividad y autoría (P-31..P-39, INV-E15..INV-E27)]]
 
 ## 🧩 Componentes del runtime (resumen)
 

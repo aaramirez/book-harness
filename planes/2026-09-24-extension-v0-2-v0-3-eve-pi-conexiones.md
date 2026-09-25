@@ -1,7 +1,7 @@
 # Plan — Extensión del libro v0.2 y v0.3: lecciones de eve, aportes de pi y conexión del arnés con el mundo
 
 **Fecha:** 2026-09-24
-**Estado:** 📝 Propuesto. No hay ningún incremento ejecutado. Se ejecuta sobre `d16e2c7` (CH-00..CH-27, 22 componentes, 35 contratos).
+**Estado:** 🚧 En ejecución. Fase 0 completa (T0.1–T0.6); siguiente: CH-28. Se ejecuta sobre `d16e2c7` (CH-00..CH-27, 22 componentes, 35 contratos).
 
 **Depende de:**
 - `2026-08-23-book-harness-como-construir-un-arnes.md`: plan base (pipeline, registries, scripts, DoD).
@@ -428,6 +428,6 @@ Cada ficha es el **Paso 2 ("Alcance decidido")** del plan propio del capítulo. 
 | Línea base | 2026-09-24 | `d16e2c7` | ✅ exit 0 (29 warnings, T0.1) | Entorno: Graphviz 16.1, pandoc 3.11, TinyTeX 2026 + `caption`, gs 10.07 |
 | T0.1 | 2026-09-24 | `a572e44` | ✅ exit 0, 0 warnings | `markdownImagePath()` en `scripts/build-pdf` normaliza a `/` las rutas de los mapas mentales; `dist/book.pdf` pasa de 2,2 MB a 4,0 MB (ahora incluye los 29 mapas) |
 | T0.2 | 2026-09-24 | rama `spike/contract-v2` (descartada, no mergeada) | ✅ exit 0, 0 warnings | Con C-004 en `v2` (con `caller: Optional<CallerSnapshot>`, tipo aún inexistente), `modified_by: [CH-27]` y `modifies_contracts: [C-004]` en CH-27: (a) ✅ `validate-chapter` acepta `modifies_contracts`; (b) ✅ `validate-contracts` acepta `v2` + `modified_by`; (c) ✅ **CH-00..CH-27 siguen en verde**. `build-mind-map` dibuja la arista `CH-27 → C-004 [MODIFIES]`. **Hallazgo:** ningún validador revisa los tipos dentro de `current_definition` (se aceptó `CallerSnapshot` sin definir). No bloquea: el capítulo que modifica el contrato define el tipo en su propio pseudocódigo, que sí se valida. Mejora opcional de tooling: que `validate-contracts` verifique los tipos de `current_definition` contra los contratos introducidos hasta el último capítulo de `modified_by` |
-| T0.3 | 2026-09-24 | (este commit) | — | `docs/adr/ADR-001..005` en estado `Proposed`, con las 9 secciones del formato de la constitución (`:867-884`) |
-| T0.4 | 2026-09-24 | (este commit, solo la propuesta) | — | ⏳ Texto en `planes/2026-09-24-amendment-v1-2.md`. **Pendiente de aprobación humana.** **Bloquea CH-30:** `validate-chapter` exige que los P / INV citados existan en la constitución (`scripts/lib/registries.js:76-86`), y CH-30 cita INV-E17. CH-28 y CH-29 solo citan artículos existentes |
-| T0.6 | — | — | — | ⏳ Pendiente de decisión humana: versión del libro (afecta `starting_version` / `ending_version` de cada capítulo), CH-46 como capítulo o apéndice, y nombres de los tramos en CH-25 |
+| T0.3 | 2026-09-24 | `7497ad7` | — | `docs/adr/ADR-001..005` en estado `Proposed`, con las 9 secciones del formato de la constitución (`:867-884`) |
+| T0.4 | 2026-09-25 | `Ratificar Amendment v1.2` | ✅ exit 0, 0 warnings | Aprobado tal cual por el autor. P-31..P-39 e INV-E15..E27 en la constitución (`:1002`) y en `kb/01-Constitucion/Amendment-v12.md`. Desbloquea CH-30+ |
+| T0.6 | 2026-09-25 | — | — | ✅ Decisiones del autor: (1) **versión** 0.2 y luego 0.3: CH-28..CH-36 con `starting_version: "0.1"`, `ending_version: "0.2"`; CH-37..CH-47 con `"0.2"` → `"0.3"`; `book.yaml` sube al cerrar cada release. (2) **CH-46 es un capítulo** en v0.3. (3) Los nombres de los tramos en CH-25 se fijan al cerrar v0.2 |

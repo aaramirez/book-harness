@@ -37,6 +37,7 @@ El **modelo** decide *qué intentar*. El **harness** decide *qué puede ocurrir,
 | [[Article-XI-Evolution|XI]] | Evolución | EVO-01..EVO-10 |
 | [[Article-XII-Boundary|XII]] | Frontera determinística vs. agéntica | decisión suprema |
 | [[Amendment-v11|Enmienda v1.1]] | Enterprise | P-16..P-30 · INV-E01..INV-E14 · 8 planes |
+| [[Amendment-v12|Enmienda v1.2]] | Durabilidad, identidad, conectividad y autoría | P-31..P-39 · INV-E15..INV-E27 |
 
 ## Cómo se usa
 

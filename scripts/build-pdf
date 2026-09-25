@@ -237,12 +237,19 @@ function main() {
   // Helvetica es la fuente del entorno original (macOS); en Windows no existe — Arial es su
   // equivalente métrico y viene preinstalada. Dejar que fontspec filtre a la fuente del sistema.
   const mainfont = process.platform === 'win32' ? 'Arial' : 'Helvetica';
+  // Los diagramas de texto del libro usan caracteres de dibujo de cajas (─ │ ├ └ ▼). La fuente
+  // monoespaciada por defecto de xelatex (Latin Modern Mono) no los trae: pandoc los reportaba
+  // como "Missing character" y el PDF los omitía (T0.7, plan de extensión 2026-09-24). Consolas
+  // (Windows) y Menlo (macOS) sí los incluyen. BOOK_PDF_MONOFONT permite fijar otra en cualquier
+  // entorno (p.ej. "DejaVu Sans Mono" en Linux).
+  const monofont = process.env.BOOK_PDF_MONOFONT || (process.platform === 'win32' ? 'Consolas' : 'Menlo');
   const args = [
     MD_PATH,
     '-f', 'markdown+raw_tex',
     '-o', PDF_PATH,
     engineFlag,
     '-V', `mainfont=${mainfont}`,
+    '-V', `monofont=${monofont}`,
     '-V', 'geometry:margin=1in',
     '--toc',
     '--toc-depth=2',

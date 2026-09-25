@@ -46,5 +46,7 @@ Los **35 contratos** canónicos del libro, en orden de introducción.
 | C-034 | [[C-034-handoffpackage|HandoffPackage]] | [[ch-23-handoff-coordinator|CH-23]] |
 | C-035 | [[C-035-skilldescriptor|SkillDescriptor]] | [[ch-24-skill-library|CH-24]] |
 | C-036 | [[C-036-pendinginput|PendingInput]] | [[ch-28-steering-follow-up|CH-28]] |
+| C-037 | [[C-037-compactionsummary|CompactionSummary]] | [[ch-29-compactacion-sesiones-arbol|CH-29]] |
+| C-038 | [[C-038-branchsummary|BranchSummary]] | [[ch-29-compactacion-sesiones-arbol|CH-29]] |
 
 Ver también: [[Index|Mapa del libro]]

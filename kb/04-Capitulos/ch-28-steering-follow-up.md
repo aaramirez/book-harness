@@ -12,7 +12,7 @@ articulos_constitucionales: ["P-10", "P-12", "P-13", "INV-07", "INV-08", "INV-10
 
 ## Navegación
 
-⬅ [[ch-27-enterprise-control|CH-27]] · **CH-28**
+⬅ [[ch-27-enterprise-control|CH-27]] · **CH-28** · [[ch-29-compactacion-sesiones-arbol|CH-29]] ➡
 
 ## Resultado esperado
 

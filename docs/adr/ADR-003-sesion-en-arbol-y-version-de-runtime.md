@@ -2,7 +2,7 @@
 
 - **ADR-ID:** ADR-003
 - **Title:** La sesión es un árbol navegable con versión de runtime
-- **Status:** Proposed (2026-09-24). Se acepta en dos partes: la v2 con CH-29 y la v3 con CH-43, cada una con aprobación humana.
+- **Status:** **Accepted — parte v2** (2026-09-25, aprobado por el autor; aplicada en CH-29). La parte v3 sigue `Proposed` y se acepta con CH-43.
 
 ## Context
 
@@ -13,8 +13,10 @@
 ## Decision
 
 1. **v2 (CH-29):**
-   - `SessionState` agrega `activeCheckpointId: Optional<SessionCheckpointId>`;
-   - ContextEngine produce **C-038 `BranchSummary`** al navegar.
+   - `SessionState` agrega `activeCheckpointId: Optional<SessionCheckpointId>`: el checkpoint desde el cual continúa el próximo turno. Si es `NULL`, se usa `latestCheckpoint`, como hasta CH-28.
+   - `SessionState` agrega `branchSummaries: List<BranchSummary>`: los resúmenes de las ramas abandonadas al navegar. Una sesión sin el campo se trata como lista vacía. **Ajuste respecto al borrador:** sin esta lista, el resumen de la rama abandonada no tendría dónde persistirse junto a la sesión.
+   - ContextEngine produce **C-038 `BranchSummary`** al navegar. El texto del resumen lo propone el modelo; ContextEngine valida la estructura (Article XII).
+   - Navegar **no borra** nada: `latestCheckpoint` y los checkpoints de la rama abandonada siguen direccionables.
 2. **v3 (CH-43):**
    - `SessionState` agrega `runtimeVersion: Optional<RuntimeVersionSnapshot>` (C-060), que incluye la versión del **formato** de sesión;
    - la migración solo ocurre en una frontera inactiva (INV-E22).
@@ -35,5 +37,5 @@ P-08, P-23, P-36 (Amendment v1.2), INV-12, INV-13, INV-E10, INV-E22 (Amendment v
 
 ## Migration Strategy
 
-- Ambos campos son `Optional`. Una sesión sin `runtimeVersion` se trata como de la versión inicial.
+- `activeCheckpointId` es `Optional` y `branchSummaries` se lee como vacía si falta. Una sesión sin `runtimeVersion` (v3) se trata como de la versión inicial.
 - `registry/contracts.yaml`: C-020 queda en `v2` con `modified_by: [CH-29]` y luego en `v3` con `modified_by: [CH-29, CH-43]`.

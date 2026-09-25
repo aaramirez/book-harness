@@ -39,5 +39,6 @@ Los **28 capítulos** del libro *¿Cómo construir un arnés?* (CH-00 a CH-27).
 | CH-26 | [[ch-26-enterprise-feliz|Integración Enterprise: el Camino Feliz de una Activación Admitida y Gobernada]] |
 | CH-27 | [[ch-27-enterprise-control|Integración Enterprise: los Caminos de Control y Traspaso de un Turno Gobernado]] |
 | CH-28 | [[ch-28-steering-follow-up|Entradas que Llegan Durante el Turno: Steering y Follow-up]] |
+| CH-29 | [[ch-29-compactacion-sesiones-arbol|Compactar sin Perder el Hilo: Resúmenes Estructurados y Sesiones en Árbol]] |
 
 Ver también: [[Index|Mapa del libro]]

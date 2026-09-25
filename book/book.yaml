@@ -72,3 +72,5 @@ chapters:
     file: chapters/27-integracion-enterprise-caminos-de-control/chapter.md
   - id: CH-28
     file: chapters/28-steering-follow-up/chapter.md
+  - id: CH-29
+    file: chapters/29-compactacion-sesiones-arbol/chapter.md

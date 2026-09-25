@@ -1387,3 +1387,48 @@ terms:
     introduced_in: CH-28
     kind: contract
     ref: C-036
+
+  - term: History Compaction
+    definition: >
+      Compactar el historial de un run (no candidato por candidato, como CH-04) en dos fases: primero
+      recortar sin modelo los resultados de tools demasiado grandes y, solo si no alcanza, resumir con
+      el modelo la región antigua en un resumen estructurado. El modelo propone el resumen;
+      ContextEngine decide dónde cortar y si el resumen es válido (CH-29).
+    introduced_in: CH-29
+    kind: concept
+
+  - term: Safe Cut Point
+    definition: >
+      El índice del historial desde el cual todo se conserva literal. Nunca cae en un mensaje TOOL:
+      si lo hiciera, retrocede hasta incluir la tool call que lo originó, para que un resultado nunca
+      quede separado de su llamada (INV-07). Modelado como findSafeCutIndex (CH-29).
+    introduced_in: CH-29
+    kind: concept
+
+  - term: Branch Navigation
+    definition: >
+      Volver, dentro de una misma sesión, a un checkpoint anterior para continuar desde ahí, sin
+      borrar la rama que se abandona: latestCheckpoint queda intacto, activeCheckpointId indica desde
+      dónde sigue el próximo turno y un BranchSummary resume lo abandonado. Distinto de
+      branchSessionFromCheckpoint (CH-10), que crea una sesión nueva (CH-29).
+    introduced_in: CH-29
+    kind: concept
+
+  - term: CompactionSummary
+    definition: >
+      La forma estructurada del resumen de la región antigua de un historial: goal, constraints,
+      progress, decisions, nextSteps, criticalContext, touchedFiles, firstKeptMessageId (desde dónde
+      se conserva literal) y provenance. El texto lo propone el modelo; la estructura y el punto de
+      corte los valida ContextEngine.
+    introduced_in: CH-29
+    kind: contract
+    ref: C-037
+
+  - term: BranchSummary
+    definition: >
+      El resumen de la rama que se abandona al navegar dentro de una sesión: la punta abandonada
+      (abandonedTipId, que sigue direccionable), el checkpoint desde el que continúa el próximo turno
+      (resumedFromId), el resumen (summary: CompactionSummary) y cuándo se creó (createdAt).
+    introduced_in: CH-29
+    kind: contract
+    ref: C-038

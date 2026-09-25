@@ -3,7 +3,7 @@ digraph BookMindMap {
   size="6.5,9"; ratio=compress;
   node [fontname="Helvetica", fontsize=11, style=filled, target="_top"];
   edge [fontname="Helvetica", fontsize=9];
-  labelloc="t"; fontsize=14; fontname="Helvetica-Bold"; label="Mapa mental completo del libro";
+  labelloc="t"; fontsize=14; fontname="Helvetica-Bold"; label="Mapa mental hasta CH-29";
   "CH-00" [label="La Constitución Arquitectónica de un Arnés", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-00.html", style="filled,bold"];
   "C-001" [label="AgentMessage", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-00.html#C-001", style="filled"];
   "C-002" [label="AgentConfig", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-00.html#C-002", style="filled"];
@@ -171,12 +171,12 @@ digraph BookMindMap {
   "CONCEPT-steering" [label="Steering", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-28.html#CONCEPT-steering", style="filled"];
   "CONCEPT-follow-up" [label="Follow-up", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-28.html#CONCEPT-follow-up", style="filled"];
   "CONCEPT-turn-boundary" [label="Turn Boundary", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-28.html#CONCEPT-turn-boundary", style="filled"];
-  "CH-29" [label="Compactar sin Perder el Hilo: Resúmenes Estructurados y Sesiones en Árbol", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-29.html", style="filled,bold"];
-  "C-037" [label="CompactionSummary", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-29.html#C-037", style="filled"];
-  "C-038" [label="BranchSummary", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-29.html#C-038", style="filled"];
-  "CONCEPT-history-compaction" [label="History Compaction", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-29.html#CONCEPT-history-compaction", style="filled"];
-  "CONCEPT-safe-cut-point" [label="Safe Cut Point", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-29.html#CONCEPT-safe-cut-point", style="filled"];
-  "CONCEPT-branch-navigation" [label="Branch Navigation", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-29.html#CONCEPT-branch-navigation", style="filled"];
+  "CH-29" [label="Compactar sin Perder el Hilo: Resúmenes Estructurados y Sesiones en Árbol", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-29.html", style="filled,bold", penwidth=3, color="#d62728"];
+  "C-037" [label="CompactionSummary", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-29.html#C-037", style="filled,bold", penwidth=3, color="#d62728"];
+  "C-038" [label="BranchSummary", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-29.html#C-038", style="filled,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-history-compaction" [label="History Compaction", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-29.html#CONCEPT-history-compaction", style="filled,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-safe-cut-point" [label="Safe Cut Point", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-29.html#CONCEPT-safe-cut-point", style="filled,bold", penwidth=3, color="#d62728"];
+  "CONCEPT-branch-navigation" [label="Branch Navigation", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-29.html#CONCEPT-branch-navigation", style="filled,bold", penwidth=3, color="#d62728"];
   "CH-00" -> "C-001" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-002" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-003" [label="INTRODUCES", color="#2a5fa5", style="bold"];

@@ -1,0 +1,236 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 29 — Compactación y Sesiones en Árbol",
+    "output": "capitulo-29-compactacion-sesiones-arbol.html",
+    "viewBox": [
+      1080,
+      570
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "plan",
+        "label": "Planear la compactación",
+        "focus": [
+          "integracion",
+          "contextengine"
+        ],
+        "note": "ContextEngine decide si compactar y dónde cortar (nunca sobre un TOOL); la fase 1 recorta tools sin modelo."
+      },
+      {
+        "id": "resumen",
+        "label": "El modelo propone, el arnés valida",
+        "focus": [
+          "integracion",
+          "modelgateway",
+          "contextengine"
+        ],
+        "note": "ModelGateway propone un CompactionSummary; applyHistoryCompaction valida goal y firstKeptMessageId contra el corte."
+      },
+      {
+        "id": "navegar",
+        "label": "Volver a un punto anterior",
+        "focus": [
+          "integracion",
+          "modelgateway",
+          "sessionmanager"
+        ],
+        "note": "navigateToCheckpoint mueve activeCheckpointId y guarda un BranchSummary; latestCheckpoint no cambia."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "integracion",
+      "type": "external",
+      "label": "Integración",
+      "sublabel": "CH-36, Preview"
+    },
+    {
+      "id": "contextengine",
+      "type": "backend",
+      "label": "ContextEngine",
+      "sublabel": "CH-04, corte seguro"
+    },
+    {
+      "id": "modelgateway",
+      "type": "cloud",
+      "label": "ModelGateway",
+      "sublabel": "CH-03, propone"
+    },
+    {
+      "id": "sessionmanager",
+      "type": "database",
+      "label": "SessionManager",
+      "sublabel": "CH-10, árbol"
+    }
+  ],
+  "segments": [
+    {
+      "from": 172,
+      "to": 336,
+      "label": "Compactar el historial"
+    },
+    {
+      "from": 352,
+      "to": 486,
+      "label": "Volver a un punto anterior"
+    }
+  ],
+  "messages": [
+    {
+      "id": "plan-call",
+      "from": "integracion",
+      "to": "contextengine",
+      "y": 185,
+      "label": "planHistoryCompaction(history, estimatedTokens, budget, policy)",
+      "variant": "default",
+      "note": "shouldCompactHistory → TRUE · findSafeCutIndex → cut (nunca sobre TOOL) · trimOversizedToolResults: fase 1, sin modelo"
+    },
+    {
+      "id": "plan-return",
+      "from": "contextengine",
+      "to": "integracion",
+      "y": 213,
+      "label": "CompactionPlan: ¿cabe ya? NO → needsSummary = TRUE",
+      "variant": "return"
+    },
+    {
+      "id": "summary-ask",
+      "from": "integracion",
+      "to": "modelgateway",
+      "y": 241,
+      "label": "invokeModelForTurn: «resume la región antigua»",
+      "variant": "default"
+    },
+    {
+      "id": "summary-proposal",
+      "from": "modelgateway",
+      "to": "integracion",
+      "y": 269,
+      "label": "propuesta CompactionSummary (firstKeptMessageId)",
+      "variant": "return"
+    },
+    {
+      "id": "apply-call",
+      "from": "integracion",
+      "to": "contextengine",
+      "y": 297,
+      "label": "applyHistoryCompaction(plan, propuesta)",
+      "variant": "emphasis",
+      "note": "valida: goal no vacío; firstKeptMessageId == primer mensaje de la región reciente"
+    },
+    {
+      "id": "apply-return",
+      "from": "contextengine",
+      "to": "integracion",
+      "y": 325,
+      "label": "CONTEXT_HISTORY_COMPACTED → [SYSTEM resumen] + región reciente literal",
+      "variant": "return",
+      "note": "el historial compactado entra como candidatos a assembleContextSnapshot (CH-04, sin cambios)"
+    },
+    {
+      "id": "branch-summary-ask",
+      "from": "integracion",
+      "to": "modelgateway",
+      "y": 362,
+      "label": "resumen de la rama que se deja (vía ContextEngine)",
+      "variant": "default",
+      "note": "Usuario: «volvamos al checkpoint de antes de migrar la base»"
+    },
+    {
+      "id": "branch-summary",
+      "from": "modelgateway",
+      "to": "integracion",
+      "y": 390,
+      "label": "abandonedSummary (CompactionSummary)",
+      "variant": "return"
+    },
+    {
+      "id": "navigate",
+      "from": "integracion",
+      "to": "sessionmanager",
+      "y": 418,
+      "label": "navigateToCheckpoint(session, target, abandonedSummary)",
+      "variant": "emphasis",
+      "note": "target en esta sesión · activeCheckpointId = target.id · branchSummaries += BranchSummary · latestCheckpoint sin cambios"
+    },
+    {
+      "id": "navigated",
+      "from": "sessionmanager",
+      "to": "integracion",
+      "y": 446,
+      "label": "SESSION_BRANCH_NAVIGATED",
+      "variant": "return"
+    },
+    {
+      "id": "resume",
+      "from": "integracion",
+      "to": "sessionmanager",
+      "y": 474,
+      "label": "próximo turno: resolveResumeCheckpoint(session) → target.id",
+      "variant": "default"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "contextengine",
+      "from": 181,
+      "to": 217,
+      "type": "backend"
+    },
+    {
+      "participant": "modelgateway",
+      "from": 237,
+      "to": 273,
+      "type": "cloud"
+    },
+    {
+      "participant": "contextengine",
+      "from": 293,
+      "to": 329,
+      "type": "backend"
+    },
+    {
+      "participant": "modelgateway",
+      "from": 358,
+      "to": 394,
+      "type": "cloud"
+    },
+    {
+      "participant": "sessionmanager",
+      "from": 414,
+      "to": 478,
+      "type": "database"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "El modelo propone, el arnés decide",
+      "items": [
+        "El corte lo fija ContextEngine; otro firstKeptMessageId → COMPACTION_SUMMARY_CUT_MISMATCH",
+        "INV-07: el corte seguro nunca cae sobre un mensaje TOOL"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Navegar no borra",
+      "items": [
+        "latestCheckpoint intacto: la rama abandonada sigue direccionable",
+        "No es branchSessionFromCheckpoint (CH-10); SessionState v2 (ADR-003)"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Evidencia",
+      "items": [
+        "book/chapters/29-compactacion-sesiones-arbol/chapter.md",
+        "§10 (Vistas 2 y 2b), §11 (pseudocódigo), §15 (política)"
+      ]
+    }
+  ]
+}

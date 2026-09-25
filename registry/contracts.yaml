@@ -391,9 +391,13 @@ contracts:
   # propio, mismo patrón que ContextBlock/ExecutionUsage/EventFilter— puede reconstruirse, y su
   # linaje opcional de ramificación) — nunca el estado operativo de una ejecución en curso, que sigue
   # siendo AgentState (C-003), propiedad exclusiva de AgentLoop.
+  # C-020 v2 (CH-29, ADR-003 parte v2 — Accepted 2026-09-25): primera modificación real de un
+  # contrato en el libro. Agrega activeCheckpointId (desde dónde continúa el próximo turno; NULL
+  # = latestCheckpoint, como hasta CH-28) y branchSummaries (resúmenes de ramas abandonadas al
+  # navegar). Ambos compatibles: CH-10..CH-28 siguen válidos sin tocarlos. Navegar no borra nada.
   - id: C-020
     name: SessionState
-    version: v1
+    version: v2
     introduced_in: CH-10
     current_definition: |
       STRUCT SessionState
@@ -401,11 +405,13 @@ contracts:
           runIds: List<RunId>
           latestCheckpoint: SessionCheckpoint
           parentCheckpointId: Optional<SessionCheckpointId>
+          activeCheckpointId: Optional<SessionCheckpointId>
+          branchSummaries: List<BranchSummary>
           createdAt: Timestamp
           updatedAt: Timestamp
       END
     used_by: [CMP-010]
-    modified_by: []
+    modified_by: [CH-29]
     constitutional_impact: [P-08, P-23, INV-12, INV-13]
 
   # C-021 (AgentActivationRequest): octavo id verdaderamente NUEVO del libro (el correlativo
@@ -855,3 +861,50 @@ contracts:
     used_by: [CMP-001]
     modified_by: []
     constitutional_impact: [P-10, INV-08, INV-07]
+
+  # C-037 (CompactionSummary): ContextEngine (CMP-004) ya posee "compaction" (Article III) y CH-04
+  # decidió no crear un componente Compactor/Summarizer. Este contrato fija la FORMA del resumen de
+  # la región antigua de un historial: el texto de cada campo lo propone el modelo (agéntico,
+  # Article XII); ContextEngine valida la estructura y decide dónde cortar (determinístico).
+  # firstKeptMessageId marca desde dónde el historial se conserva literal; provenance cumple
+  # EVO-09 ("context has provenance"). Ver planes/2026-09-25-capitulo-29-compactacion-sesiones-arbol.md.
+  - id: C-037
+    name: CompactionSummary
+    version: v1
+    introduced_in: CH-29
+    current_definition: |
+      STRUCT CompactionSummary
+          goal: Text
+          constraints: List<Text>
+          progress: List<Text>
+          decisions: List<Text>
+          nextSteps: List<Text>
+          criticalContext: List<Text>
+          touchedFiles: List<Text>
+          firstKeptMessageId: MessageId
+          provenance: Text
+      END
+    used_by: [CMP-004, CMP-010]
+    modified_by: []
+    constitutional_impact: [P-01, P-14, INV-07]
+
+  # C-038 (BranchSummary): el resumen de la rama que se abandona al navegar dentro de una sesión
+  # hacia un checkpoint anterior (SessionManager, CMP-010, owns "branching"). Reutiliza
+  # CompactionSummary como forma — una rama abandonada se resume igual que una región antigua.
+  # abandonedTipId es la punta que se deja (sigue direccionable: navegar no borra); resumedFromId es
+  # el checkpoint desde el que continúa el próximo turno. Distinto de branchSessionFromCheckpoint
+  # (CH-10), que crea una SESIÓN nueva; esto navega DENTRO de la misma sesión.
+  - id: C-038
+    name: BranchSummary
+    version: v1
+    introduced_in: CH-29
+    current_definition: |
+      STRUCT BranchSummary
+          abandonedTipId: SessionCheckpointId
+          resumedFromId: SessionCheckpointId
+          summary: CompactionSummary
+          createdAt: Timestamp
+      END
+    used_by: [CMP-010, CMP-004]
+    modified_by: []
+    constitutional_impact: [P-08, INV-12, INV-13]

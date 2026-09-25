@@ -1,7 +1,7 @@
 # Plan — Extensión del libro v0.2 y v0.3: lecciones de eve, aportes de pi y conexión del arnés con el mundo
 
 **Fecha:** 2026-09-24
-**Estado:** 🚧 En ejecución. Fase 0 completa (T0.1–T0.6); siguiente: CH-28. Se ejecuta sobre `d16e2c7` (CH-00..CH-27, 22 componentes, 35 contratos).
+**Estado:** 🚧 En ejecución. Fase 0 completa (T0.1–T0.6); CH-28 ✅; siguiente: CH-29. Se ejecuta sobre `d16e2c7` (CH-00..CH-27, 22 componentes, 35 contratos).
 
 **Depende de:**
 - `2026-08-23-book-harness-como-construir-un-arnes.md`: plan base (pipeline, registries, scripts, DoD).
@@ -431,3 +431,5 @@ Cada ficha es el **Paso 2 ("Alcance decidido")** del plan propio del capítulo. 
 | T0.3 | 2026-09-24 | `7497ad7` | — | `docs/adr/ADR-001..005` en estado `Proposed`, con las 9 secciones del formato de la constitución (`:867-884`) |
 | T0.4 | 2026-09-25 | `Ratificar Amendment v1.2` | ✅ exit 0, 0 warnings | Aprobado tal cual por el autor. P-31..P-39 e INV-E15..E27 en la constitución (`:1002`) y en `kb/01-Constitucion/Amendment-v12.md`. Desbloquea CH-30+ |
 | T0.6 | 2026-09-25 | — | — | ✅ Decisiones del autor: (1) **versión** 0.2 y luego 0.3: CH-28..CH-36 con `starting_version: "0.1"`, `ending_version: "0.2"`; CH-37..CH-47 con `"0.2"` → `"0.3"`; `book.yaml` sube al cerrar cada release. (2) **CH-46 es un capítulo** en v0.3. (3) Los nombres de los tramos en CH-25 se fijan al cerrar v0.2 |
+| CH-28 | 2026-09-25 | rama `cap-28-steering-follow-up` → `main` | ✅ exit 0, 0 fetch warnings | C-036 `PendingInput`; 0 componentes (amplía AgentLoop dentro de su owns); `runTurn` sin cambios. Plan: `planes/2026-09-25-capitulo-28-steering-follow-up.md` |
+| T0.7 (propuesta) | 2026-09-25 | — | — | **Hallazgo preexistente:** el PDF emite `[WARNING] Missing character` por los glifos de dibujo de cajas (`─ │ ├ └ ▼`) de los diagramas de texto: 1733 en `main` antes de CH-28 y 1768 después (+35 del §10 de CH-28, mismo patrón que todos los capítulos). La fuente monoespaciada por defecto no los trae. Propuesta de tooling: `-V monofont="Consolas"` (o DejaVu Sans Mono) en `scripts/build-pdf`. Pendiente de aprobación |

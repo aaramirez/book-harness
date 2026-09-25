@@ -12,7 +12,7 @@ articulos_constitucionales: ["P-05", "P-10", "P-13", "P-25", "P-30", "INV-06", "
 
 ## Navegación
 
-⬅ [[ch-26-enterprise-feliz|CH-26]] · **CH-27**
+⬅ [[ch-26-enterprise-feliz|CH-26]] · **CH-27** · [[ch-28-steering-follow-up|CH-28]] ➡
 
 ## Resultado esperado
 

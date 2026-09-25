@@ -1,0 +1,268 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 28 — Steering y Follow-up",
+    "output": "capitulo-28-steering-follow-up.html",
+    "viewBox": [
+      1080,
+      570
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "encolado",
+        "label": "Encolar durante el turno",
+        "focus": [
+          "usuario",
+          "canal",
+          "agentloop"
+        ],
+        "note": "El usuario escribe un STEER y un FOLLOW_UP mientras el turno corre; AgentLoop los encola y emite PENDING_INPUT_QUEUED."
+      },
+      {
+        "id": "steer",
+        "label": "Frontera BEFORE_MODEL_CALL",
+        "focus": [
+          "toolruntime",
+          "agentloop",
+          "contextengine",
+          "modelgateway"
+        ],
+        "note": "La tool en curso termina (INV-07); solo entonces el STEER entra a los candidatos de ContextEngine."
+      },
+      {
+        "id": "followup",
+        "label": "Frontera WOULD_COMPLETE",
+        "focus": [
+          "agentloop",
+          "modelgateway",
+          "contextengine"
+        ],
+        "note": "modelFinished = TRUE es una propuesta: con un FOLLOW_UP pendiente el arnés decide FALSE y sigue el turno (P-10)."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "usuario",
+      "type": "external",
+      "label": "Usuario",
+      "sublabel": "durante el turno"
+    },
+    {
+      "id": "canal",
+      "type": "frontend",
+      "label": "Canal",
+      "sublabel": "CH-34, Preview"
+    },
+    {
+      "id": "agentloop",
+      "type": "backend",
+      "label": "AgentLoop",
+      "sublabel": "CH-01, cola"
+    },
+    {
+      "id": "toolruntime",
+      "type": "backend",
+      "label": "ToolRuntime",
+      "sublabel": "CH-02, sin cortes"
+    },
+    {
+      "id": "contextengine",
+      "type": "backend",
+      "label": "ContextEngine",
+      "sublabel": "CH-04"
+    },
+    {
+      "id": "modelgateway",
+      "type": "cloud",
+      "label": "ModelGateway",
+      "sublabel": "CH-03"
+    }
+  ],
+  "segments": [
+    {
+      "from": 172,
+      "to": 252,
+      "label": "Encolado a mitad del turno"
+    },
+    {
+      "from": 264,
+      "to": 372,
+      "label": "Frontera BEFORE_MODEL_CALL"
+    },
+    {
+      "from": 384,
+      "to": 492,
+      "label": "Frontera WOULD_COMPLETE"
+    }
+  ],
+  "messages": [
+    {
+      "id": "steer-in",
+      "from": "usuario",
+      "to": "canal",
+      "y": 185,
+      "label": "escribe STEER y FOLLOW_UP durante el turno",
+      "variant": "default",
+      "note": "STEER: «no, usa el archivo de producción» · FOLLOW_UP: «cuando termines, resume los cambios»"
+    },
+    {
+      "id": "steer-enqueue",
+      "from": "canal",
+      "to": "agentloop",
+      "y": 213,
+      "label": "enqueuePendingInput(STEER) → PENDING_INPUT_QUEUED",
+      "variant": "emphasis",
+      "note": "run terminal → HarnessError PENDING_INPUT_ON_TERMINAL_RUN; otro runId → PENDING_INPUT_RUN_MISMATCH"
+    },
+    {
+      "id": "followup-enqueue",
+      "from": "canal",
+      "to": "agentloop",
+      "y": 241,
+      "label": "enqueuePendingInput(FOLLOW_UP) → PENDING_INPUT_QUEUED",
+      "variant": "emphasis"
+    },
+    {
+      "id": "tool-done",
+      "from": "toolruntime",
+      "to": "agentloop",
+      "y": 278,
+      "label": "ToolResult — la tool en curso nunca se interrumpe (INV-07)",
+      "variant": "return"
+    },
+    {
+      "id": "steer-apply",
+      "from": "agentloop",
+      "to": "contextengine",
+      "y": 306,
+      "label": "selectPendingInputsAtBoundary(BEFORE_MODEL_CALL) → STEER aplicado",
+      "variant": "emphasis",
+      "note": "PENDING_INPUT_APPLIED; sus messages entran a los candidatos de ContextEngine (modo ONE_AT_A_TIME o ALL)"
+    },
+    {
+      "id": "model-call-1",
+      "from": "agentloop",
+      "to": "modelgateway",
+      "y": 334,
+      "label": "invocación con la corrección ya en contexto",
+      "variant": "default"
+    },
+    {
+      "id": "model-done-1",
+      "from": "modelgateway",
+      "to": "agentloop",
+      "y": 362,
+      "label": "modelFinished = TRUE (propuesta del modelo)",
+      "variant": "return"
+    },
+    {
+      "id": "followup-apply",
+      "from": "agentloop",
+      "to": "contextengine",
+      "y": 398,
+      "label": "selectPendingInputsAtBoundary(WOULD_COMPLETE) → FOLLOW_UP aplicado",
+      "variant": "emphasis",
+      "note": "antes: resolveCompletionWithPendingInput(TRUE, queue) → FALSE; runTurn(modelFinished = FALSE) → WAITING_FOR_MODEL"
+    },
+    {
+      "id": "model-call-2",
+      "from": "agentloop",
+      "to": "modelgateway",
+      "y": 426,
+      "label": "otro turno: el modelo resume los cambios",
+      "variant": "default"
+    },
+    {
+      "id": "model-done-2",
+      "from": "modelgateway",
+      "to": "agentloop",
+      "y": 454,
+      "label": "modelFinished = TRUE, cola vacía",
+      "variant": "return"
+    },
+    {
+      "id": "completed",
+      "from": "agentloop",
+      "to": "canal",
+      "y": 482,
+      "label": "runTurn → COMPLETED",
+      "variant": "return",
+      "note": "resolveCompletionWithPendingInput(TRUE, cola vacía) → TRUE: decide el arnés, no el modelo (P-10)"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "canal",
+      "from": 181,
+      "to": 245,
+      "type": "frontend"
+    },
+    {
+      "participant": "agentloop",
+      "from": 209,
+      "to": 486,
+      "type": "backend"
+    },
+    {
+      "participant": "toolruntime",
+      "from": 272,
+      "to": 282,
+      "type": "backend"
+    },
+    {
+      "participant": "contextengine",
+      "from": 302,
+      "to": 310,
+      "type": "backend"
+    },
+    {
+      "participant": "modelgateway",
+      "from": 330,
+      "to": 366,
+      "type": "cloud"
+    },
+    {
+      "participant": "contextengine",
+      "from": 394,
+      "to": 402,
+      "type": "backend"
+    },
+    {
+      "participant": "modelgateway",
+      "from": 422,
+      "to": 458,
+      "type": "cloud"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Solo dos fronteras del turno",
+      "items": [
+        "BEFORE_MODEL_CALL: el steering entra cuando las tools del paso ya devolvieron su ToolResult (INV-07)",
+        "WOULD_COMPLETE: steering primero, luego follow-up; con cola no vacía el turno no termina"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Lo que una PendingInput no es",
+      "items": [
+        "No es resolución humana: «sí, aprobado» no es HumanInteractionResolution (INV-15)",
+        "No es cancelación: «detente» no cancela el run (INV-10)",
+        "No es autorización: nunca cambia una PolicyDecision (P-13)"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Evidencia",
+      "items": [
+        "book/chapters/28-steering-follow-up/chapter.md §10 (Vista 2) y §11 (pseudocódigo)",
+        "§4 y §15 — P-10, P-13, INV-07, INV-10, INV-15"
+      ]
+    }
+  ]
+}

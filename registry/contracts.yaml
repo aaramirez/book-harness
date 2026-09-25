@@ -830,3 +830,28 @@ contracts:
     used_by: [CMP-022]
     modified_by: []
     constitutional_impact: [P-07, INV-19]
+
+  # C-036 (PendingInput): primer id del Tramo 4 (Amendment v1.2 ya ratificado; el correlativo
+  # continúa después de C-035, CH-24 — CH-25..CH-27 no introdujeron contratos). Ver decisión de
+  # diseño en planes/2026-09-25-capitulo-28-steering-follow-up.md: una entrada del usuario que llega
+  # MIENTRAS el turno todavía corre — nunca una resolución humana (HumanInteractionResolution, CH-06)
+  # ni una cancelación (ExecutionController/OperationalController). `kind` (PendingInputKind,
+  # embebido: STEER/FOLLOW_UP) decide en qué frontera del turno se aplica; el modo de entrega
+  # (ONE_AT_A_TIME/ALL) vive en la cola (PendingInputQueue, embebida), no en cada entrada — un
+  # mensaje no elige cómo se le entrega. `message` reusa AgentMessage (C-001) tal cual: la entrada
+  # pendiente ES un mensaje de rol USER que todavía no entró al contexto.
+  - id: C-036
+    name: PendingInput
+    version: v1
+    introduced_in: CH-28
+    current_definition: |
+      STRUCT PendingInput
+          id: PendingInputId
+          runId: RunId
+          kind: PendingInputKind
+          message: AgentMessage
+          receivedAt: Timestamp
+      END
+    used_by: [CMP-001]
+    modified_by: []
+    constitutional_impact: [P-10, INV-08, INV-07]

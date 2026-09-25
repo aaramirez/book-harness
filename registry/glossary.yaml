@@ -1350,3 +1350,40 @@ terms:
     introduced_in: CH-24
     kind: component
     ref: CMP-022
+
+  - term: Steering
+    definition: >
+      Una corrección que el usuario envía mientras el turno todavía corre, y que el arnés aplica en
+      la frontera "después de las tools, antes de la próxima llamada al modelo" — nunca
+      interrumpiendo una tool en ejecución (INV-07). Modelada como PendingInput con
+      kind = STEER (CH-28).
+    introduced_in: CH-28
+    kind: concept
+
+  - term: Follow-up
+    definition: >
+      Un mensaje que el usuario deja "para después" mientras el turno corre, y que el arnés aplica
+      solo cuando el agente iba a terminar: el modelFinished del modelo pasa a ser una propuesta que
+      AgentLoop anula mientras quede un follow-up pendiente (P-10). Modelado como PendingInput con
+      kind = FOLLOW_UP (CH-28).
+    introduced_in: CH-28
+    kind: concept
+
+  - term: Turn Boundary
+    definition: >
+      El punto exacto del turno en el que una entrada pendiente puede aplicarse. Modelado como
+      TurnBoundary (ENUM embebido de dos valores: BEFORE_MODEL_CALL para el steering y
+      WOULD_COMPLETE para el follow-up, CH-28) — fuera de esas dos fronteras ninguna entrada
+      pendiente altera el turno.
+    introduced_in: CH-28
+    kind: concept
+
+  - term: PendingInput
+    definition: >
+      Una entrada del usuario que llegó durante un turno en curso: su identificador, el run al que
+      pertenece (runId), su tipo (kind: PendingInputKind — STEER/FOLLOW_UP), el mensaje en sí
+      (message: AgentMessage, rol USER) y cuándo llegó (receivedAt). No es una resolución humana ni
+      una cancelación.
+    introduced_in: CH-28
+    kind: contract
+    ref: C-036

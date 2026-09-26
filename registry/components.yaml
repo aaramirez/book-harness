@@ -767,3 +767,31 @@ components:
     produces: [C-010, C-011, C-042, C-043]
     introduced_in: CH-32
     constitutional_articles: [P-23, P-32, INV-13, INV-E16, INV-E17, INV-18, INV-19, INV-20]
+
+  - id: CMP-024
+    name: ResumptionCoordinator
+    responsibility: >
+      Estacionar durablemente un run que espera — una aprobación, una respuesta, una autorización
+      interactiva o una decisión sobre un límite de presupuesto — sin retener cómputo, y decidir,
+      cuando llega una entrega por cualquier canal, qué espera estacionada reanuda y si quien responde
+      está autorizado para ella — sin representar ni resolver la solicitud humana, sin decidir si una
+      acción requiere aprobación, sin ejecutar la acción, sin transportar la entrega por un canal
+      concreto y sin tocar jamás un token.
+    owns:
+      - "Approvals, questions, interactive authorizations and budget limits MUST park the run durably. A parked run MUST NOT hold compute, and MUST be resumable by a delivery arriving through any authorized channel (cita literal, P-33)"
+      - "A delivery resumes only the wait it addresses, and only if its responder is authorized for it (cita literal, INV-E18) — encontrar la espera por su waitId explícito, nunca inferirla, y validar al que responde contra la regla de la espera"
+      - "decidir el AgentRunStatus de un run estacionado: WAITING_FOR_HUMAN para aprobaciones y preguntas, PAUSED para autorizaciones y límites de presupuesto (primer uso real de PAUSED, C-013)"
+      - "representar la espera de una autorización interactiva (AuthorizationChallenge) sin contener credenciales"
+      - "rechazar por defecto (fail-closed) una entrega a una espera ya reanudada, vencida o no dirigida, y una autorización que pueda responder alguien distinto del usuario que debe autorizar"
+    does_not_own:
+      - "representar la solicitud humana, persistirla y recibir su resolución (HumanInteractionService, CMP-006, ya introducido en CH-06 — la frontera más importante de este capítulo: HumanInteractionService es dueño de la SOLICITUD y de su RESOLUCIÓN; ResumptionCoordinator es dueño de la ESPERA — qué run está estacionado, quién puede responder y qué entrega lo reanuda)"
+      - "decidir SI una acción requiere aprobación (PolicyEngine, CMP-005, ya introducido en CH-05)"
+      - "ejecutar la acción una vez aprobada (ToolRuntime, CMP-002, ya introducido en CH-02) ni decidir si el turno continúa (AgentLoop, CMP-001, ya introducido en CH-01)"
+      - "detectar que falta una credencial ni guardar el token que produce una autorización (CredentialBroker, CMP-014, ya introducido en CH-16 — INV-E08)"
+      - "decidir si un run puede seguir contra su presupuesto ni ampliarlo (ExecutionController, CMP-007, ya introducido en CH-07)"
+      - "transportar la entrega por un canal concreto — UI, chat, API, RPC, callback HTTP (Channel Adapter, P-11 — infraestructura de borde, no un componente del registry)"
+    dependencies: []
+    consumes: [C-003, C-004, C-015, C-040]
+    produces: [C-010, C-011, C-044, C-045]
+    introduced_in: CH-33
+    constitutional_articles: [P-23, P-33, INV-14, INV-15, INV-E18, INV-18, INV-19, INV-20]

@@ -80,3 +80,5 @@ chapters:
     file: chapters/31-identidad-del-llamante/chapter.md
   - id: CH-32
     file: chapters/32-pasos-durables/chapter.md
+  - id: CH-33
+    file: chapters/33-esperas-durables/chapter.md

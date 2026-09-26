@@ -163,5 +163,9 @@ Vocabulario técnico canónico del libro *¿Cómo construir un arnés?* — extr
 | **Write-Ahead Step** | Cada hecho de un paso se registra ANTES del efecto siguiente: la tool call se registra antes de ejecutarse. Una tool call sin resultado significa "el efecto pudo haber empezado"; una respuesta sin tool call registrada, "ningún efecto empezó". | [[ch-32-pasos-durables|CH-32]] | concepto |
 | **StepRecord** `C-042` | El registro durable de un paso: status (STARTED / COMMITTED), salida parcial del modelo, respuesta, tool call y resultado. | [[ch-32-pasos-durables|CH-32]] | contrato |
 | **RecoveryDecision** `C-043` | Qué hace la recuperación con un paso del journal; un paso COMMITTED siempre se reproduce desde el registro y nunca se re-ejecuta (INV-E16). | [[ch-32-pasos-durables|CH-32]] | contrato |
+| **Parked Wait** | Un run estacionado durablemente a la espera de una aprobación, una respuesta, una autorización interactiva o una decisión sobre su presupuesto. No retiene cómputo: el proceso termina y la espera sobrevive reinicios (P-33). | [[ch-33-esperas-durables|CH-33]] | concepto |
+| **Addressed Delivery** | Una respuesta que nombra explícitamente la espera que reanuda (su waitId) y trae la identidad verificada de quien responde. Nunca se infiere a qué espera va dirigida (INV-E18). | [[ch-33-esperas-durables|CH-33]] | concepto |
+| **ParkedWait** `C-044` | La espera estacionada: tipo (TOOL_APPROVAL, QUESTION, AUTHORIZATION, BUDGET_LIMIT), quién la pidió, quién puede responderla y su estado. | [[ch-33-esperas-durables|CH-33]] | contrato |
+| **AuthorizationChallenge** `C-045` | La solicitud de una autorización interactiva por usuario hacia un servicio externo; nunca contiene un token, que el callback entrega directo a CredentialBroker. | [[ch-33-esperas-durables|CH-33]] | contrato |
 
 Ver también: [[Index|Mapa del libro]]

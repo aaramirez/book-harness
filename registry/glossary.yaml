@@ -1515,3 +1515,34 @@ terms:
     introduced_in: CH-32
     kind: contract
     ref: C-043
+
+  - term: Parked Wait
+    definition: >
+      Un run estacionado durablemente a la espera de una aprobación, una respuesta, una autorización
+      interactiva o una decisión sobre su presupuesto. No retiene cómputo: el proceso termina y la
+      espera sobrevive reinicios (P-33, CH-33).
+    introduced_in: CH-33
+    kind: concept
+
+  - term: Addressed Delivery
+    definition: >
+      Una respuesta que nombra explícitamente la espera que reanuda (su waitId) y trae la identidad
+      verificada de quien responde. Nunca se infiere a qué espera va dirigida (INV-E18, CH-33).
+    introduced_in: CH-33
+    kind: concept
+
+  - term: ParkedWait
+    definition: >
+      La espera estacionada: tipo (TOOL_APPROVAL, QUESTION, AUTHORIZATION, BUDGET_LIMIT), quién la
+      pidió, quién puede responderla y su estado (C-044, CH-33).
+    introduced_in: CH-33
+    kind: contract
+    ref: C-044
+
+  - term: AuthorizationChallenge
+    definition: >
+      La solicitud de una autorización interactiva por usuario hacia un servicio externo; nunca
+      contiene un token, que el callback entrega directo a CredentialBroker (C-045, CH-33).
+    introduced_in: CH-33
+    kind: contract
+    ref: C-045

@@ -282,9 +282,13 @@ contracts:
   # planes/2026-09-14-capitulo-06-human-interaction-service.md: el primer par solicitud/resolución
   # que representa y resuelve una PolicyDecision con outcome = REQUIRE_APPROVAL (CH-05),
   # deliberadamente sin ningún campo de canal (INV-14, Article VIII Human Interaction Rule).
+  # C-015 v2 (CH-33): agrega waitId (Optional<WaitId>), la espera estacionada que esta solicitud
+  # abrió. Optional para que CH-06..CH-32 sigan válidos: una solicitud sin waitId es una solicitud
+  # que todavía retiene el proceso, como en v1. HumanInteractionService sigue siendo dueño de la
+  # solicitud y su resolución; ResumptionCoordinator (CMP-024) es dueño de la espera.
   - id: C-015
     name: HumanInteractionRequest
-    version: v1
+    version: v2
     introduced_in: CH-06
     current_definition: |
       STRUCT HumanInteractionRequest
@@ -292,10 +296,11 @@ contracts:
           type: HumanInteractionType
           callId: ToolCallId
           status: HumanInteractionStatus
+          waitId: Optional<WaitId>
           requestedAt: Timestamp
       END
-    used_by: [CMP-006]
-    modified_by: []
+    used_by: [CMP-006, CMP-024]
+    modified_by: [CH-33]
     constitutional_impact: [INV-14, INV-15, INV-18, INV-19]
 
   - id: C-016
@@ -1024,3 +1029,51 @@ contracts:
     used_by: [CMP-023]
     modified_by: []
     constitutional_impact: [P-32, INV-13, INV-E16, INV-E17, INV-19]
+
+  # C-044 (ParkedWait): una espera estacionada — aprobación, pregunta, autorización interactiva o
+  # límite de presupuesto — que no retiene cómputo (P-33). requestedBy es el caller.current del
+  # momento de estacionar (CH-31); responderRule y designatedResponder dicen quién puede responder
+  # (INV-E18). Una sola abstracción para los cuatro tipos, como en eve. CH-33.
+  - id: C-044
+    name: ParkedWait
+    version: v1
+    introduced_in: CH-33
+    current_definition: |
+      STRUCT ParkedWait
+          waitId: WaitId
+          runId: RunId
+          sessionId: SessionId
+          kind: WaitKind
+          requestId: Optional<HumanInteractionRequestId>
+          challengeId: Optional<AuthorizationChallengeId>
+          requestedBy: Principal
+          responderRule: ResponderRule
+          designatedResponder: Optional<Principal>
+          status: WaitStatus
+          parkedAt: Timestamp
+          expiresAt: Optional<Timestamp>
+          resumedAt: Optional<Timestamp>
+      END
+    used_by: [CMP-024]
+    modified_by: []
+    constitutional_impact: [P-23, P-33, INV-E18, INV-19]
+
+  # C-045 (AuthorizationChallenge): la solicitud de una autorización interactiva por usuario (p.ej.
+  # un flujo OAuth) hacia un servicio externo. Nunca contiene un token: el callback entrega la
+  # credencial directo a CredentialBroker (INV-E08) y a la espera solo le llega "autorizado o no".
+  - id: C-045
+    name: AuthorizationChallenge
+    version: v1
+    introduced_in: CH-33
+    current_definition: |
+      STRUCT AuthorizationChallenge
+          challengeId: AuthorizationChallengeId
+          principal: Principal
+          connectionRef: Text
+          callbackRef: Text
+          createdAt: Timestamp
+          expiresAt: Timestamp
+      END
+    used_by: [CMP-024]
+    modified_by: []
+    constitutional_impact: [P-31, P-33, INV-E08, INV-E18]

@@ -1,7 +1,7 @@
 # Plan — Extensión del libro v0.2 y v0.3: lecciones de eve, aportes de pi y conexión del arnés con el mundo
 
 **Fecha:** 2026-09-24
-**Estado:** 🚧 En ejecución. Fase 0 completa (T0.1–T0.6); CH-28 ✅, CH-29 ✅, CH-30 ✅, CH-31 ✅, CH-32 ✅; siguiente: CH-33 (esperas durables: ResumptionCoordinator). Se ejecuta sobre `d16e2c7` (CH-00..CH-27, 22 componentes, 35 contratos).
+**Estado:** 🚧 En ejecución. Fase 0 completa (T0.1–T0.6); CH-28 ✅, CH-29 ✅, CH-30 ✅, CH-31 ✅, CH-32 ✅, CH-33 ✅; siguiente: CH-34 (canales y direcciones de continuación: ContinuationRegistry). Se ejecuta sobre `d16e2c7` (CH-00..CH-27, 22 componentes, 35 contratos).
 
 **Depende de:**
 - `2026-08-23-book-harness-como-construir-un-arnes.md`: plan base (pipeline, registries, scripts, DoD).
@@ -437,3 +437,4 @@ Cada ficha es el **Paso 2 ("Alcance decidido")** del plan propio del capítulo. 
 | CH-30 | 2026-09-25 | rama `cap-30-politica-de-replay` → `main` | ✅ exit 0, 31/31 capítulos | C-039 `ReplayPolicy`; **C-018 y C-009 → v2** (ADR-002 Accepted). Un resultado desconocido es un `PENDING` huérfano de CH-17; default `NEVER` (INV-E17) |
 | CH-31 | 2026-09-25 | rama `cap-31-identidad-del-llamante` → `main` | ✅ exit 0, 32/32 capítulos | C-040 `Principal`, C-041 `CallerSnapshot`; **C-004 y C-023 → v2** (ADR-001 Accepted). Arranque cerrado (INV-E15) por `ProcessMode` del proceso; `requireTenantCaller` única fuente del tenant; propiedad de sesión explícita |
 | CH-32 | 2026-09-25 | rama `cap-32-pasos-durables` → `main` | ✅ exit 0, 33/33 capítulos | **CMP-023 ExecutionJournal** (primer componente de v0.2), C-042 `StepRecord`, C-043 `RecoveryDecision`. Write-ahead de la tool call; INV-E16 por `REPLAY_RECORDED`; el efecto pendiente se **delega** a IdempotencyGuard (`RESOLVE_PENDING_TOOL`, INV-E17) en vez de duplicar la decisión de CH-30 |
+| CH-33 | 2026-09-25 | rama `cap-33-esperas-durables` → `main` | ✅ exit 0, 34/34 capítulos | **CMP-024 ResumptionCoordinator**, C-044 `ParkedWait`, C-045 `AuthorizationChallenge`; **C-015 → v2** (`waitId`). Una espera para cuatro tipos; entrega dirigida por `waitId` y validada con `Principal` (INV-E18); primer uso real de `PAUSED`; `resumeAfterHumanResolution` (CH-13) por fin cableada |

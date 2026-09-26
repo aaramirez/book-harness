@@ -13,7 +13,7 @@ articulos_constitucionales: ["P-23", "P-24", "P-32", "INV-07", "INV-11", "INV-13
 
 ## Navegación
 
-⬅ [[ch-31-identidad-del-llamante|CH-31]] · **CH-32**
+⬅ [[ch-31-identidad-del-llamante|CH-31]] · **CH-32** · [[ch-33-esperas-durables|CH-33]] ➡
 
 ## Resultado esperado
 

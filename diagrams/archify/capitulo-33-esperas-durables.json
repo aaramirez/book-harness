@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 33 — Esperas Durables",
+    "output": "capitulo-33-esperas-durables.html",
+    "viewBox": [
+      1080,
+      570
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "estacionar",
+        "label": "Estacionar sin cómputo (P-33)",
+        "focus": [
+          "integracion",
+          "his",
+          "coordinator"
+        ],
+        "note": "La solicitud nace en HumanInteractionService; parkRun la convierte en una ParkedWait durable y el proceso termina: nada queda esperando."
+      },
+      {
+        "id": "entrega",
+        "label": "La entrega que nombra su espera",
+        "focus": [
+          "canal",
+          "coordinator",
+          "integracion",
+          "his"
+        ],
+        "note": "Cualquier canal entrega una WaitDelivery con waitId explícito; findAddressedWait nunca infiere y acceptDelivery reanuda solo esa espera."
+      },
+      {
+        "id": "responder",
+        "label": "Quién puede responder (INV-E18)",
+        "focus": [
+          "canal",
+          "coordinator"
+        ],
+        "note": "Conocer el waitId no basta: responderMayResolve exige que el Principal cumpla la ResponderRule; la espera rechazada sigue PARKED."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "integracion",
+      "type": "external",
+      "label": "Integración",
+      "sublabel": "turno, CH-13 · CH-36"
+    },
+    {
+      "id": "his",
+      "type": "backend",
+      "label": "HumanInteractionService",
+      "sublabel": "CMP-006, la solicitud"
+    },
+    {
+      "id": "coordinator",
+      "type": "database",
+      "label": "ResumptionCoordinator",
+      "sublabel": "CMP-024, la espera"
+    },
+    {
+      "id": "canal",
+      "type": "external",
+      "label": "Canal (cualquiera)",
+      "sublabel": "chat, correo, UI, callback"
+    }
+  ],
+  "segments": [
+    {
+      "from": 172,
+      "to": 282,
+      "label": "Estacionar sin cómputo"
+    },
+    {
+      "from": 298,
+      "to": 400,
+      "label": "Entrega dirigida"
+    },
+    {
+      "from": 418,
+      "to": 500,
+      "label": "Entrega no autorizada"
+    }
+  ],
+  "messages": [
+    {
+      "id": "pause",
+      "from": "integracion",
+      "to": "his",
+      "y": 185,
+      "label": "beginToolApprovalPause(…) → request",
+      "variant": "default",
+      "note": "CH-13 crea la HumanInteractionRequest y retorna el estado pausado del run (WAITING_FOR_HUMAN)"
+    },
+    {
+      "id": "park",
+      "from": "integracion",
+      "to": "coordinator",
+      "y": 213,
+      "label": "parkRun(state, TOOL_APPROVAL, request.id, …, DESIGNATED_PRINCIPAL)",
+      "variant": "emphasis",
+      "note": "runStatusForWait: TOOL_APPROVAL y QUESTION → WAITING_FOR_HUMAN; AUTHORIZATION y BUDGET_LIMIT → PAUSED (primer uso real)"
+    },
+    {
+      "id": "parked",
+      "from": "coordinator",
+      "to": "integracion",
+      "y": 241,
+      "label": "ParkedWait PARKED + RUN_PARKED",
+      "variant": "return",
+      "note": "una AUTHORIZATION que no sea SAME_PRINCIPAL se rechaza; datos inconsistentes → INVALID_PARKED_WAIT"
+    },
+    {
+      "id": "link",
+      "from": "integracion",
+      "to": "his",
+      "y": 269,
+      "label": "linkRequestToWait(request, wait) → request.waitId (C-015 v2)",
+      "variant": "default",
+      "note": "después, el proceso termina: la espera no retiene cómputo; waitId = NULL equivale a una solicitud de CH-06"
+    },
+    {
+      "id": "delivery",
+      "from": "canal",
+      "to": "coordinator",
+      "y": 308,
+      "label": "WaitDelivery(waitId, responder, APPROVED)",
+      "variant": "emphasis",
+      "note": "días después, por cualquier canal; responder ya viene verificado por el adaptador de identidad (CH-31); channelRef no decide nada"
+    },
+    {
+      "id": "find",
+      "from": "integracion",
+      "to": "coordinator",
+      "y": 336,
+      "label": "findAddressedWait(waits, delivery) → resumeToolApprovalWait(…)",
+      "variant": "default",
+      "note": "nunca infiere: sin waitId que nombre una espera → WAIT_NOT_ADDRESSED; ya reanudada → WAIT_ALREADY_RESUMED; vencida → WAIT_EXPIRED"
+    },
+    {
+      "id": "accept",
+      "from": "coordinator",
+      "to": "integracion",
+      "y": 364,
+      "label": "acceptDelivery: responderMayResolve → RESUMED + RUN_RESUMED",
+      "variant": "return",
+      "note": "la espera pasa de PARKED a RESUMED y registra resumedAt"
+    },
+    {
+      "id": "resume",
+      "from": "integracion",
+      "to": "his",
+      "y": 392,
+      "label": "resumeAfterHumanResolution (CH-13) → ejecuta la tool",
+      "variant": "emphasis",
+      "note": "el run vuelve a RUNNING y el turno sigue; la ejecución es de ToolRuntime, no del coordinador"
+    },
+    {
+      "id": "intruder",
+      "from": "canal",
+      "to": "coordinator",
+      "y": 431,
+      "label": "WaitDelivery(waitId, otroPrincipal, APPROVED)",
+      "variant": "emphasis",
+      "note": "un enlace de aprobación reenviado a otra persona: conoce el waitId, no la autoridad"
+    },
+    {
+      "id": "reject",
+      "from": "coordinator",
+      "to": "canal",
+      "y": 459,
+      "label": "RESPONDER_NOT_AUTHORIZED + WAIT_DELIVERY_REJECTED",
+      "variant": "dashed",
+      "note": "rejectDelivery: rechazar una entrega no es un fallo del run; el canal no da autoridad, el Principal verificado sí"
+    },
+    {
+      "id": "still",
+      "from": "coordinator",
+      "to": "integracion",
+      "y": 487,
+      "label": "la espera sigue PARKED: el aprobador designado aún responde",
+      "variant": "return",
+      "note": "INV-E18: una entrega reanuda solo la espera que nombra y solo si su responder está autorizado"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "his",
+      "from": 181,
+      "to": 189,
+      "type": "backend"
+    },
+    {
+      "participant": "coordinator",
+      "from": 209,
+      "to": 245,
+      "type": "database"
+    },
+    {
+      "participant": "his",
+      "from": 265,
+      "to": 273,
+      "type": "backend"
+    },
+    {
+      "participant": "coordinator",
+      "from": 304,
+      "to": 368,
+      "type": "database"
+    },
+    {
+      "participant": "his",
+      "from": 388,
+      "to": 396,
+      "type": "backend"
+    },
+    {
+      "participant": "coordinator",
+      "from": 427,
+      "to": 491,
+      "type": "database"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "ParkedWait (C-044)",
+      "items": [
+        "Cuatro WaitKind: TOOL_APPROVAL, QUESTION, AUTHORIZATION, BUDGET_LIMIT",
+        "responderRule: SAME_PRINCIPAL · SAME_TENANT · DESIGNATED_PRINCIPAL"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "AuthorizationChallenge (C-045)",
+      "items": [
+        "Nunca contiene un token: solo connectionRef y un callbackRef opaco",
+        "El callback entrega el token a CredentialBroker; el run solo sabe sí o no (INV-E08)"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Frontera HumanInteractionService / ResumptionCoordinator",
+      "items": [
+        "HumanInteractionService es dueño de la SOLICITUD y su resolución",
+        "ResumptionCoordinator es dueño de la ESPERA y de quién responde · chapter.md §8, §11"
+      ]
+    }
+  ]
+}

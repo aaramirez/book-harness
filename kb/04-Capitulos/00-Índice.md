@@ -43,5 +43,6 @@ Los **28 capítulos** del libro *¿Cómo construir un arnés?* (CH-00 a CH-27).
 | CH-30 | [[ch-30-politica-de-replay|Cuando No se Sabe si Ocurrió: Política de Replay]] |
 | CH-31 | [[ch-31-identidad-del-llamante|La Identidad del Llamante y el Arranque que No Admite Nada]] |
 | CH-32 | [[ch-32-pasos-durables|Pasos Durables y la Recuperación a Mitad de Turno]] |
+| CH-33 | [[ch-33-esperas-durables|Esperas Durables y la Reanudación desde Cualquier Canal]] |
 
 Ver también: [[Index|Mapa del libro]]

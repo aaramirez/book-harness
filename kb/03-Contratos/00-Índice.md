@@ -53,5 +53,7 @@ Los **35 contratos** canónicos del libro, en orden de introducción.
 | C-041 | [[C-041-callersnapshot|CallerSnapshot]] | [[ch-31-identidad-del-llamante|CH-31]] |
 | C-042 | [[C-042-steprecord|StepRecord]] | [[ch-32-pasos-durables|CH-32]] |
 | C-043 | [[C-043-recoverydecision|RecoveryDecision]] | [[ch-32-pasos-durables|CH-32]] |
+| C-044 | [[C-044-parkedwait|ParkedWait]] | [[ch-33-esperas-durables|CH-33]] |
+| C-045 | [[C-045-authorizationchallenge|AuthorizationChallenge]] | [[ch-33-esperas-durables|CH-33]] |
 
 Ver también: [[Index|Mapa del libro]]

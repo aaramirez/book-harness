@@ -29,7 +29,7 @@ Ningún componente ni contrato. Cinco funciones de integración que componen CH-
 - `resumeDurableApproval` — reanuda una aprobación registrando la tool call antes de ejecutarla
 - `resolvePendingStepOnRecovery` — [[CMP-015-idempotencyguard|IdempotencyGuard]] (`decideUnknownOutcome`, CH-30)
 
-**Hallazgo:** `beginToolApprovalPause` y `resumeAfterHumanResolution` (CH-13) no se pueden envolver con el journal (no exponen la solicitud ni el `ToolResult`); el turno durable compone sus mismas piezas sin modificarlas.
+**Hallazgo (resuelto en v0.2.1, D-014):** `beginToolApprovalPause` y `resumeAfterHumanResolution` ([[ch-13-integracion-caminos-de-gobierno|CH-13]]) no exponían la solicitud ni un punto entre resolver y ejecutar. La revisión de CH-13 agregó `beginToolApprovalPauseForDecision`, `resolveApprovalForResume` y `observationForApproval`, y el turno durable ahora las invoca.
 
 ## Artículos constitucionales relevantes
 

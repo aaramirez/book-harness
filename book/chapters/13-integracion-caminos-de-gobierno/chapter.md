@@ -563,6 +563,27 @@ necesario introducir ninguna primitiva de generación de identificador nueva: `n
 después de este capítulo, exactamente en los veintiún contratos que CH-05/CH-06 dejaron
 registrados.
 
+### Revisión v0.2.1 (2026-09-26): dos tipos embebidos para exponer lo que el journal necesita
+
+CH-36 encontró que `beginToolApprovalPause` no devuelve la solicitud que crea y que
+`resumeAfterHumanResolution` ejecuta la tool dentro de la misma llamada que continúa el turno. Para
+que un turno durable pueda invocarlas en vez de rearmarlas (deuda D-014), este capítulo agrega dos
+tipos embebidos, sin `C-XXX` propio:
+
+```pseudocode
+STRUCT ApprovalPause
+    pausedState: AgentState
+    request: HumanInteractionRequest
+END
+```
+
+```pseudocode
+STRUCT ApprovalResume
+    resumedState: AgentState
+    resolution: HumanInteractionResolution
+END
+```
+
 ## 7. Nuevos Contratos / Interfaces (New Contracts / Interfaces)
 
 **Este capítulo no introduce ningún contrato nuevo.** `introduces_contracts: []` en el
@@ -726,6 +747,19 @@ por CH-01..CH-12, sin modificar ninguna.
 
 ## 11. Pseudocódigo (Pseudocode)
 
+> **Revisión v0.2.1 (2026-09-26, deuda D-014).** `beginToolApprovalPause` y
+> `resumeAfterHumanResolution` conservan su firma y su comportamiento, pero ahora se arman con
+> cuatro funciones que exponen lo que antes quedaba adentro:
+> - `beginToolApprovalPauseForDecision` recibe la `PolicyDecision` ya tomada y devuelve la
+>   solicitud junto con el estado pausado (`ApprovalPause`);
+> - `resolveApprovalForResume` resuelve la solicitud y devuelve el estado reanudado
+>   (`ApprovalResume`), **sin** ejecutar la tool;
+> - `observationForApproval` construye la observación a partir de la resolución y del `ToolResult`,
+>   si lo hubo.
+>
+> Entre resolver y construir la observación queda un punto explícito donde se ejecuta la tool:
+> ahí un turno durable (CH-36) registra la tool call antes y el resultado después.
+
 Usa exclusivamente entidades ya registradas desde CH-00..CH-12, más `ExecutionUsage`,
 `HumanInteractionOutcome` y `ActorId` (seccion 6, disponibles por referencia, no por
 introducción).
@@ -864,16 +898,13 @@ ese paso porque no varía entre el camino feliz y el camino `DENY` — lo único
 resultado de `evaluatePolicyForToolCall` en adelante.
 
 ```pseudocode
-FUNCTION beginToolApprovalPause(
+FUNCTION beginToolApprovalPauseForDecision(
     turnState: AgentState,
     execution: ExecutionContext,
-    call: ToolCall,
+    decision: PolicyDecision,
     session: Optional<SessionState>,
     activeSubscriptions: List<EventSubscription>
-) -> AgentState
-
-    decision: PolicyDecision = evaluatePolicyForToolCall(call, execution, turnState.agentId)
-    emitAndDistribute(POLICY_EVALUATED, execution, turnState.agentId, decision, activeSubscriptions)
+) -> ApprovalPause
 
     IF decision.outcome != REQUIRE_APPROVAL
         error: HarnessError = HarnessError(
@@ -912,7 +943,104 @@ FUNCTION beginToolApprovalPause(
     // la funcion termina aqui: ningun proceso queda esperando la resolucion humana; la reanudacion
     // real ocurre, mas tarde y por separado, en resumeAfterHumanResolution.
 
-    RETURN pausedState
+    RETURN ApprovalPause(pausedState = pausedState, request = request)
+END
+```
+
+```pseudocode
+FUNCTION beginToolApprovalPause(
+    turnState: AgentState,
+    execution: ExecutionContext,
+    call: ToolCall,
+    session: Optional<SessionState>,
+    activeSubscriptions: List<EventSubscription>
+) -> AgentState
+
+    decision: PolicyDecision = evaluatePolicyForToolCall(call, execution, turnState.agentId)
+    emitAndDistribute(POLICY_EVALUATED, execution, turnState.agentId, decision, activeSubscriptions)
+
+    pause: ApprovalPause = beginToolApprovalPauseForDecision(
+        turnState, execution, decision, session, activeSubscriptions
+    )
+
+    RETURN pause.pausedState
+END
+```
+
+```pseudocode
+FUNCTION resolveApprovalForResume(
+    pausedState: AgentState,
+    execution: ExecutionContext,
+    request: HumanInteractionRequest,
+    outcome: HumanInteractionOutcome,
+    resolvedBy: ActorId,
+    activeSubscriptions: List<EventSubscription>
+) -> ApprovalResume
+
+    resolution: HumanInteractionResolution = resolveHumanInteractionRequest(
+        request, outcome, NULL, resolvedBy, execution, pausedState.agentId
+    )
+    emitAndDistribute(
+        HUMAN_INTERACTION_RESOLVED, execution, pausedState.agentId, resolution, activeSubscriptions
+    )
+
+    resumedState: AgentState = AgentState(
+        runId = pausedState.runId,
+        sessionId = pausedState.sessionId,
+        agentId = pausedState.agentId,
+        status = RUNNING,
+        currentTurn = pausedState.currentTurn
+    )
+
+    RETURN ApprovalResume(resumedState = resumedState, resolution = resolution)
+END
+```
+
+```pseudocode
+FUNCTION observationForApproval(
+    resolution: HumanInteractionResolution,
+    result: Optional<ToolResult>
+) -> AgentMessage
+
+    IF resolution.outcome == APPROVED
+        IF result == NULL
+            THROW HarnessError(
+                category = VALIDATION,
+                code = "APPROVED_WITHOUT_TOOL_RESULT",
+                message = "Una aprobación APPROVED necesita el ToolResult de la tool ejecutada para construir la observación",
+                recoverable = FALSE,
+                retryable = FALSE,
+                metadata = {}
+            )
+        END
+
+        RETURN AgentMessage(
+            id = newMessageId(),
+            role = TOOL,
+            content = result,
+            timestamp = now()
+        )
+    END
+
+    // resolution.outcome == REJECTED: la accion no se ejecuta, exactamente como en el camino
+    // DENY — pero aqui la rechazo un humano, no una policy rule. HumanInteractionResolution
+    // no trae un HarnessError propio (rechazar es un desenlace valido, no un fallo de
+    // HumanInteractionService), asi que esta funcion construye la observacion equivalente.
+    rejection: HarnessError = HarnessError(
+        category = POLICY,
+        code = "HUMAN_APPROVAL_REJECTED",
+        message = "La aprobacion humana requerida para este ToolCall fue rechazada",
+        recoverable = FALSE,
+        retryable = FALSE,
+        metadata = {}
+    )
+
+    RETURN AgentMessage(
+        id = newMessageId(),
+        role = TOOL,
+        content = rejection,
+        timestamp = now()
+    )
 END
 ```
 
@@ -933,66 +1061,30 @@ FUNCTION resumeAfterHumanResolution(
     finalModelContent: Value
 ) -> AgentState
 
-    resolution: HumanInteractionResolution = resolveHumanInteractionRequest(
-        request, outcome, NULL, resolvedBy, execution, pausedState.agentId
-    )
-    emitAndDistribute(
-        HUMAN_INTERACTION_RESOLVED, execution, pausedState.agentId, resolution, activeSubscriptions
+    resume: ApprovalResume = resolveApprovalForResume(
+        pausedState, execution, request, outcome, resolvedBy, activeSubscriptions
     )
 
-    resumedState: AgentState = AgentState(
-        runId = pausedState.runId,
-        sessionId = pausedState.sessionId,
-        agentId = pausedState.agentId,
-        status = RUNNING,
-        currentTurn = pausedState.currentTurn
-    )
+    result: Optional<ToolResult> = NULL
 
-    candidates: List<AgentMessage> = candidatesSoFar
-
-    IF resolution.outcome == APPROVED
-        result: ToolResult = executeToolCall(
-            call, execution, resumedState.agentId, TRUE, TRUE,
+    IF resume.resolution.outcome == APPROVED
+        result = executeToolCall(
+            call, execution, resume.resumedState.agentId, TRUE, TRUE,
             toolExecutionSucceeded, toolExecutionOutput
         )
 
         IF result.succeeded
-            emitAndDistribute(TOOL_CALL_COMPLETED, execution, resumedState.agentId, result, activeSubscriptions)
+            emitAndDistribute(TOOL_CALL_COMPLETED, execution, resume.resumedState.agentId, result, activeSubscriptions)
         ELSE
-            emitAndDistribute(TOOL_CALL_FAILED, execution, resumedState.agentId, result, activeSubscriptions)
+            emitAndDistribute(TOOL_CALL_FAILED, execution, resume.resumedState.agentId, result, activeSubscriptions)
         END
-
-        observation: AgentMessage = AgentMessage(
-            id = newMessageId(),
-            role = TOOL,
-            content = result,
-            timestamp = now()
-        )
-        candidates.append(observation)
-    ELSE
-        // resolution.outcome == REJECTED: la accion no se ejecuta, exactamente como en el camino
-        // DENY — pero aqui la rechazo un humano, no una policy rule. HumanInteractionResolution
-        // no trae un HarnessError propio (rechazar es un desenlace valido, no un fallo de
-        // HumanInteractionService), asi que esta funcion construye la observacion equivalente.
-        rejection: HarnessError = HarnessError(
-            category = POLICY,
-            code = "HUMAN_APPROVAL_REJECTED",
-            message = "La aprobacion humana requerida para este ToolCall fue rechazada",
-            recoverable = FALSE,
-            retryable = FALSE,
-            metadata = {}
-        )
-        denialMessage: AgentMessage = AgentMessage(
-            id = newMessageId(),
-            role = TOOL,
-            content = rejection,
-            timestamp = now()
-        )
-        candidates.append(denialMessage)
     END
 
+    candidates: List<AgentMessage> = candidatesSoFar
+    candidates.append(observationForApproval(resume.resolution, result))
+
     RETURN resumeTurnWithObservation(
-        resumedState, execution, candidates, session, activeSubscriptions, usage, finalModelContent
+        resume.resumedState, execution, candidates, session, activeSubscriptions, usage, finalModelContent
     )
 END
 ```
@@ -1220,7 +1312,15 @@ TEST ResumeAfterHumanResolutionProducesTheSamePolicyObservationShapeWhenRejected
 TEST TerminateAgentRunOperationallyMapsCancelledStopReasonAndMaxRuntimeExceededToTheCorrectAgentRunStatus
 TEST TerminateAgentRunOperationallyThrowsWhenExecutionDecisionOutcomeIsContinue
 TEST NoneOfTheFiveNewFunctionsModifiesAnyAlreadyPublishedComponentFunction
+TEST BeginToolApprovalPauseForDecisionReturnsTheRequestItCreated
+TEST BeginToolApprovalPauseBehavesExactlyAsBeforeTheRevision
+TEST ResolveApprovalForResumeNeverInvokesExecuteToolCall
+TEST ObservationForApprovalRejectsApprovedWithoutToolResult
+TEST ResumeAfterHumanResolutionBehavesExactlyAsBeforeTheRevision
 ```
+
+Los cinco últimos tests son de la revisión v0.2.1: verifican que las firmas y el comportamiento
+publicados no cambian y que las funciones nuevas exponen lo que CH-36 necesita.
 
 Ejemplo concreto para el último camino (seccion 11, `terminateAgentRunOperationally`): un
 `ExecutionUsage` con `runtimeMsElapsed >= budget.maxRuntimeMs` produce

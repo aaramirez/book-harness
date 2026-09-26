@@ -68,7 +68,7 @@
 
 ## 8. Deuda (entra al cierre de v0.2 o a v0.3)
 
-- Revisar CH-13 para que `beginToolApprovalPause` devuelva su solicitud y `resumeAfterHumanResolution` exponga el `ToolResult`; así se invocarían en vez de componerse. No se hizo para no reabrir pseudocódigo publicado.
+- ~~Revisar CH-13 para que `beginToolApprovalPause` devuelva su solicitud y `resumeAfterHumanResolution` exponga el `ToolResult`~~ — resuelto en v0.2.1 (D-014, `2026-09-26-revision-ch13-aprobacion-expuesta.md`).
 - `PendingInput` (CH-28) durable entre pasos.
 - Reanudación durable de preguntas, autorizaciones y límites de presupuesto (mismo patrón que `resumeDurableApproval`).
 - Liberar la dirección de continuación y responder por el canal (CH-34).

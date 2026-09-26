@@ -114,8 +114,11 @@ debts:
   - id: D-014
     title: "Revisar CH-13: beginToolApprovalPause devuelve la solicitud y resumeAfterHumanResolution expone el ToolResult"
     origin: CH-36
-    status: open
-    target: v0.2.1
+    status: resolved
+    resolved_in: CH-36
+    # Resuelta en la revisión v0.2.1: CH-13 agrega beginToolApprovalPauseForDecision,
+    # resolveApprovalForResume y observationForApproval; CH-36 las invoca
+    # (planes/2026-09-26-revision-ch13-aprobacion-expuesta.md).
 
   # --- open → capítulo planeado de v0.3 ---------------------------------------------------------
 

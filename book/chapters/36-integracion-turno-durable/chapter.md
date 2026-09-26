@@ -69,8 +69,9 @@ retrieval_set:
       integración": ninguna función los usa juntos (ver sección 2, El Problema).
     iceberg_patterns: |
       El patrón que se repite es que cada pieza funciona sola, pero algunas funciones publicadas antes
-      — beginToolApprovalPause y resumeAfterHumanResolution de CH-13 — hacen dos cosas en una sola
-      llamada y no exponen lo que el journal necesita registrar (ver sección 3).
+      — beginToolApprovalPause y resumeAfterHumanResolution de CH-13 — hacían dos cosas en una sola
+      llamada y no exponían lo que el journal necesita registrar; la revisión v0.2.1 de CH-13 las
+      separa (ver sección 3).
     iceberg_structures: |
       Este capítulo no introduce componentes ni contratos: compone los de CH-03..CH-35 en cinco
       funciones de integración — enterDurableTurn, bindDurableCaller, runDurableGovernedStep,
@@ -88,9 +89,9 @@ retrieval_set:
       El journal es el mecanismo de equilibrio del turno completo: por muchas caídas, esperas y
       reanudaciones que ocurran, cada paso se compromete una sola vez y nunca se repite (INV-E16).
     leverage_point: |
-      La decisión con mayor efecto de este capítulo es componer las piezas de CH-13 en vez de
-      invocarlas cuando una de ellas oculta lo que el journal necesita: así la tool call se registra
-      siempre antes de ejecutarse, también después de una aprobación.
+      La decisión con mayor efecto de este capítulo es exigir que CH-13 exponga lo que el journal
+      necesita — la solicitud creada y un punto entre resolver la aprobación y ejecutar la tool —, para
+      que la tool call se registre siempre antes de ejecutarse, también después de una aprobación.
   recall_questions:
     - id: RQ-CH36-01
       text: |
@@ -106,8 +107,9 @@ retrieval_set:
         executionStillInFlight llama a decideUnknownOutcome, y qué pasa en cada caso de ReplayPolicy?
     - id: RQ-CH36-04
       text: |
-        ¿Por qué el turno durable no invoca beginToolApprovalPause ni resumeAfterHumanResolution de
-        CH-13, y qué piezas de CH-06, CH-10 y CH-13 compone en su lugar?
+        ¿Qué funciones de CH-13, agregadas en su revisión v0.2.1, invoca el turno durable para
+        estacionar y para reanudar una aprobación, y por qué beginToolApprovalPause y
+        resumeAfterHumanResolution no alcanzaban?
   explain_prompts:
     - id: EP-CH36-01
       text: |
@@ -236,8 +238,9 @@ Cada garantía existe, pero solo dentro de su capítulo.
 
 ## 3. Por Qué la Arquitectura Actual No Basta (Why the Current Architecture Is Insufficient)
 
-- **Llamar a las piezas en orden no alcanza.** Dos funciones de CH-13 hacen dos cosas en una sola
-  llamada y no exponen lo que el journal necesita:
+- **Llamar a las piezas en orden no alcanzaba.** Dos funciones de CH-13 hacían dos cosas en una
+  sola llamada y no exponían lo que el journal necesita (resuelto en la revisión v0.2.1 de CH-13,
+  deuda D-014):
   - `beginToolApprovalPause` crea la `HumanInteractionRequest` y pausa el run, pero **no devuelve la
     solicitud**. `parkRun` (CH-33) necesita su id;
   - `resumeAfterHumanResolution` resuelve la solicitud, **ejecuta la tool** y continúa el turno, sin
@@ -294,9 +297,10 @@ Deterministic vs agentic boundary
 - **Turno durable gobernado** (*durable governed turn*): un turno que cumple a la vez todas las
   garantías de la versión 0.2. No es un componente: es la forma en que la integración compone los
   componentes.
-- **Componer en vez de invocar:** cuando una función publicada hace dos cosas en una sola llamada y
-  oculta un dato que otra garantía necesita, la integración usa sus mismas piezas por separado. La
-  función original no se modifica y sigue siendo válida en su contexto (un proceso, sin journal).
+- **Exponer lo que la otra garantía necesita:** cuando una función publicada hace dos cosas en una
+  sola llamada y oculta un dato que otra garantía necesita, se separa en funciones que lo devuelven,
+  y la original se reescribe con ellas sin cambiar su firma ni su comportamiento. Es lo que hizo la
+  revisión v0.2.1 de CH-13. La primera versión de este capítulo componía las piezas por su cuenta.
 - **Paso estacionado:** un paso cuya respuesta ya llegó y cuya tool call espera aprobación. Queda
   `STARTED`, con `modelResponse` y sin `toolCall`: nada se ejecutó, y no hay proceso esperando.
 
@@ -315,6 +319,8 @@ CH-35, y un único tipo embebido propio de la integración.
 | `ResponderRule` | CH-33 §6 | quién puede aprobar la espera |
 | `WaitDelivery` | CH-33 §6 | la respuesta que llega por un canal |
 | `UnknownOutcomeDecision` | CH-30 §6 | la decisión de `IdempotencyGuard` ante un efecto pendiente |
+| `ApprovalPause` | CH-13 §6 (revisión v0.2.1) | solicitud creada + estado pausado, de `beginToolApprovalPauseForDecision` |
+| `ApprovalResume` | CH-13 §6 (revisión v0.2.1) | resolución + estado reanudado, de `resolveApprovalForResume` |
 | `AgentEventType` | CH-00 | reutiliza `MODEL_RESPONSE_RECEIVED`, `POLICY_EVALUATED`, `TOOL_CALL_COMPLETED`, `TOOL_CALL_FAILED`, `HUMAN_INTERACTION_REQUESTED`, `HUMAN_INTERACTION_RESOLVED` y `SESSION_CHECKPOINT_CREATED` |
 
 ### `DurableStepOutcome` — lo que deja un paso durable (embebido)
@@ -365,26 +371,31 @@ bindDurableCaller         → buildCallerSnapshot → bindCallerToExecution (CH-
 runDurableGovernedStep    → beginStep / recordModelResponse (CH-32) → invokeModelForTurn (CH-03)
                             → resolveModelProposedToolCall (CH-08) → evaluatePolicyForToolCall (CH-05)
                             → DENY: commitStep (CH-32)
-                            → REQUIRE_APPROVAL: createHumanInteractionRequest (CH-06) → parkRun /
-                              linkRequestToWait / parkedAgentState (CH-33)
-                              → createOrUpdateSessionCheckpoint (CH-10)
+                            → REQUIRE_APPROVAL: beginToolApprovalPauseForDecision (CH-13 rev.)
+                              → parkRun / linkRequestToWait (CH-33)
                             → ALLOW: recordToolCallBeforeExecution → executeToolCallIsolated (CH-35)
                               → recordToolResult → commitStep (CH-32)
-resumeDurableApproval     → acceptDelivery (CH-33) → resolveHumanInteractionRequest (CH-06)
+resumeDurableApproval     → acceptDelivery (CH-33) → resolveApprovalForResume (CH-13 rev.)
                             → recordToolCallBeforeExecution → executeToolCallIsolated → recordToolResult
-                              → commitStep → resumeTurnWithObservation (CH-13)
+                              → commitStep → observationForApproval (CH-13 rev.)
+                              → resumeTurnWithObservation (CH-13)
 resolvePendingStepOnRecovery → decideUnknownOutcome (CH-30) → executeToolCallIsolated (CH-35) o
                                buildUnknownOutcomeResult (CH-30) → recordToolResult → commitStep (CH-32)
 ```
 
-**Por qué no se invocan `beginToolApprovalPause` ni `resumeAfterHumanResolution` (CH-13).** Ambas
-siguen siendo correctas para lo que CH-13 modela: un turno en un solo proceso. Pero la primera no
-devuelve la solicitud que crea, y la segunda ejecuta la tool dentro de la misma llamada que continúa
-el turno. El turno durable necesita el id de la solicitud (para estacionar) y un punto entre "voy a
-ejecutar" y "ya ejecuté" (para el journal). Por eso compone sus mismas piezas: `createHumanInteractionRequest`
-y `createOrUpdateSessionCheckpoint` para estacionar; `resolveHumanInteractionRequest`,
-`executeToolCall` (vía `executeToolCallIsolated`) y `resumeTurnWithObservation` para reanudar.
-Ninguna de ellas cambia. `resumeToolApprovalWait` (CH-33) queda como el camino no durable.
+**Qué cambió con la revisión v0.2.1 de CH-13 (deuda D-014).** La primera versión de este capítulo
+encontró que `beginToolApprovalPause` no devolvía la solicitud que crea (hace falta su id para
+estacionar) y que `resumeAfterHumanResolution` ejecutaba la tool dentro de la misma llamada que
+continúa el turno (hace falta un punto entre "voy a ejecutar" y "ya ejecuté" para el journal). Por
+eso componía por su cuenta `createHumanInteractionRequest`, `createOrUpdateSessionCheckpoint` y
+`resolveHumanInteractionRequest`. La revisión de CH-13 separó esas funciones:
+- `beginToolApprovalPauseForDecision` devuelve la solicitud y el estado pausado;
+- `resolveApprovalForResume` resuelve sin ejecutar;
+- `observationForApproval` arma la observación con el `ToolResult`, si lo hubo.
+
+El turno durable ahora las **invoca**, y ejecuta la tool entre la segunda y la tercera, con el
+journal alrededor. `beginToolApprovalPause` y `resumeAfterHumanResolution` conservan su firma y su
+comportamiento, y `resumeToolApprovalWait` (CH-33) sigue siendo el camino no durable.
 
 **La creación del run** (activar el agente, inicializarlo, construir el `ExecutionContext`) es la de
 CH-26 y no se repite aquí. `bindDurableCaller` se aplica a ese `ExecutionContext` antes del primer
@@ -413,7 +424,7 @@ Canal: ActivationRequest(address = chat-equipo/1718)
    ▼ (el proceso termina; el paso 2 queda STARTED, sin toolCall)
 … dos días …
 Canal: WaitDelivery(waitId, aprobador, APPROVED)
-   │ resumeDurableApproval → acceptDelivery → resolveHumanInteractionRequest
+   │ resumeDurableApproval → acceptDelivery → resolveApprovalForResume (CH-13 rev.)
    │   → recordToolCallBeforeExecution → executeToolCallIsolated …
    ▼ (caída del proceso durante la ejecución)
 Proceso nuevo: recoverRun (CH-32)
@@ -543,24 +554,17 @@ FUNCTION runDurableGovernedStep(
     END
 
     IF decision.outcome == REQUIRE_APPROVAL
-        request: HumanInteractionRequest = createHumanInteractionRequest(
-            decision, APPROVAL, execution, state.agentId
+        pause: ApprovalPause = beginToolApprovalPauseForDecision(
+            state, execution, decision, session, activeSubscriptions
         )
-        emitAndDistribute(HUMAN_INTERACTION_REQUESTED, execution, state.agentId, request, activeSubscriptions)
 
         wait: ParkedWait = parkRun(
-            state, TOOL_APPROVAL, request.id, NULL, execution.caller.current,
+            pause.pausedState, TOOL_APPROVAL, pause.request.id, NULL, execution.caller.current,
             approvalRule, designatedApprover, approvalExpiresAt, execution
         )
-        linked: HumanInteractionRequest = linkRequestToWait(request, wait)
-        pausedState: AgentState = parkedAgentState(state, wait)
+        linked: HumanInteractionRequest = linkRequestToWait(pause.request, wait)
 
-        checkpoint: SessionState = createOrUpdateSessionCheckpoint(
-            session, pausedState, execution, state.agentId
-        )
-        emitAndDistribute(SESSION_CHECKPOINT_CREATED, execution, state.agentId, checkpoint, activeSubscriptions)
-
-        RETURN DurableStepOutcome(step = step, state = pausedState, wait = wait, request = linked)
+        RETURN DurableStepOutcome(step = step, state = pause.pausedState, wait = wait, request = linked)
     END
 
     step = recordToolCallBeforeExecution(step, call)
@@ -606,65 +610,39 @@ FUNCTION resumeDurableApproval(
 
     accepted: ParkedWait = acceptDelivery(wait, delivery, execution, pausedState.agentId)
 
-    resolution: HumanInteractionResolution = resolveHumanInteractionRequest(
-        request, delivery.outcome, delivery.value, delivery.responder.principalId,
-        execution, pausedState.agentId
-    )
-    emitAndDistribute(HUMAN_INTERACTION_RESOLVED, execution, pausedState.agentId, resolution, activeSubscriptions)
-
-    resumedState: AgentState = AgentState(
-        runId = pausedState.runId,
-        sessionId = pausedState.sessionId,
-        agentId = pausedState.agentId,
-        status = RUNNING,
-        currentTurn = pausedState.currentTurn
+    resume: ApprovalResume = resolveApprovalForResume(
+        pausedState, execution, request, delivery.outcome, delivery.responder.principalId,
+        activeSubscriptions
     )
 
-    observation: AgentMessage = AgentMessage(
-        id = newMessageId(),
-        role = TOOL,
-        content = HarnessError(
-            category = POLICY,
-            code = "HUMAN_APPROVAL_REJECTED",
-            message = "La aprobación humana requerida para este ToolCall fue rechazada",
-            recoverable = FALSE,
-            retryable = FALSE,
-            metadata = {}
-        ),
-        timestamp = now()
-    )
+    result: Optional<ToolResult> = NULL
 
-    IF resolution.outcome == APPROVED
+    IF resume.resolution.outcome == APPROVED
         opened: StepRecord = recordToolCallBeforeExecution(step, call)
 
-        result: ToolResult = executeToolCallIsolated(
-            call, sandbox, isolatedCapabilities, execution, resumedState.agentId,
+        result = executeToolCallIsolated(
+            call, sandbox, isolatedCapabilities, execution, resume.resumedState.agentId,
             TRUE, TRUE, toolExecutionSucceeded, toolExecutionOutput
         )
 
         IF result.succeeded
-            emitAndDistribute(TOOL_CALL_COMPLETED, execution, resumedState.agentId, result, activeSubscriptions)
+            emitAndDistribute(TOOL_CALL_COMPLETED, execution, resume.resumedState.agentId, result, activeSubscriptions)
         ELSE
-            emitAndDistribute(TOOL_CALL_FAILED, execution, resumedState.agentId, result, activeSubscriptions)
+            emitAndDistribute(TOOL_CALL_FAILED, execution, resume.resumedState.agentId, result, activeSubscriptions)
         END
 
         recorded: StepRecord = recordToolResult(opened, result)
-        commitStep(recorded, resultPersisted, execution, resumedState.agentId)
-
-        observation = AgentMessage(
-            id = newMessageId(),
-            role = TOOL,
-            content = result,
-            timestamp = now()
-        )
+        commitStep(recorded, resultPersisted, execution, resume.resumedState.agentId)
     ELSE
-        commitStep(step, resultPersisted, execution, resumedState.agentId)
+        commitStep(step, resultPersisted, execution, resume.resumedState.agentId)
     END
 
-    candidates: List<AgentMessage> = append(candidatesSoFar, observation)
+    candidates: List<AgentMessage> = append(
+        candidatesSoFar, observationForApproval(resume.resolution, result)
+    )
 
     RETURN resumeTurnWithObservation(
-        resumedState, execution, candidates, session, activeSubscriptions, usage, finalModelContent
+        resume.resumedState, execution, candidates, session, activeSubscriptions, usage, finalModelContent
     )
 END
 ```
@@ -722,8 +700,8 @@ devuelve `WAIT` (CH-30), así que las dos únicas salidas son `REEXECUTE` o `REP
 
 Nótese lo que estas funciones **no** hacen:
 - ninguna decide algo que no decida ya un componente (§8);
-- ninguna modifica una función publicada: `beginToolApprovalPause` y `resumeAfterHumanResolution`
-  siguen intactas;
+- ninguna modifica una función publicada: usan las que la revisión v0.2.1 de CH-13 agregó, y
+  `beginToolApprovalPause` y `resumeAfterHumanResolution` conservan su firma y su comportamiento;
 - ninguna ejecuta una tool sin haberla registrado antes en el journal.
 
 ## 12. Transiciones de Estado (State Transitions)
@@ -762,8 +740,8 @@ Ningún `AgentEventType` nuevo. El turno durable produce los eventos de CH-03..C
 natural, por ejemplo, en el camino con aprobación:
 
 ```text
-MODEL_RESPONSE_RECEIVED → POLICY_EVALUATED → HUMAN_INTERACTION_REQUESTED → RUN_PARKED
-→ SESSION_CHECKPOINT_CREATED        … (espera) …
+MODEL_RESPONSE_RECEIVED → POLICY_EVALUATED → HUMAN_INTERACTION_REQUESTED → SESSION_CHECKPOINT_CREATED
+→ RUN_PARKED                        … (espera) …
 RUN_RESUMED → HUMAN_INTERACTION_RESOLVED → TOOL_CALL_COMPLETED → STEP_COMMITTED
 ```
 
@@ -800,7 +778,8 @@ TEST CrashDuringApprovedExecutionIsResolvedOnRecovery
 TEST NeverPolicyPendingStepIsReportedUnknownAndCommitted
 TEST SafePolicyPendingStepIsReexecutedAndCommitted
 TEST CommittedStepsAreReplayedDuringRecovery
-TEST PublishedFunctionsOfChapter13RemainUnchanged
+TEST DurableTurnInvokesTheRevisedFunctionsOfChapter13
+TEST PublishedSignaturesOfChapter13RemainUnchanged
 ```
 
 ## 17. Arquitectura Después de Este Capítulo (Architecture After This Chapter)
@@ -829,9 +808,9 @@ Turno durable gobernado
   pendientes (CH-34).
 - **Vencimiento activo de esperas** con un schedule interno (CH-33/CH-34).
 - **La detección de la credencial faltante** que abriría un `AuthorizationChallenge` (CH-33).
-- **Revisar CH-13** para que `beginToolApprovalPause` devuelva su solicitud y
-  `resumeAfterHumanResolution` exponga el `ToolResult`: permitiría invocarlas en vez de componerlas.
-  No se hace aquí para no reabrir pseudocódigo publicado.
+- ~~Revisar CH-13 para que `beginToolApprovalPause` devuelva su solicitud y
+  `resumeAfterHumanResolution` exponga el `ToolResult`~~ — **resuelto en la revisión v0.2.1 de
+  CH-13** (deuda D-014): este capítulo ya invoca las funciones nuevas.
 - **El Routing** (qué agente atiende una activación nueva) sigue en Preview.
 
 ## 19. Siguiente Incremento (Next Increment)
@@ -852,8 +831,8 @@ CH-37 todavía no existe.
 **El Iceberg**
 
 1. **Hecho visible** (= §2): cada garantía de la versión 0.2 existe, pero solo dentro de su capítulo.
-2. **Patrones** (= §3): dos funciones de CH-13 hacen dos cosas en una llamada y ocultan lo que el
-   journal necesita.
+2. **Patrones** (= §3): dos funciones de CH-13 hacían dos cosas en una llamada y ocultaban lo que
+   el journal necesita, hasta la revisión v0.2.1.
 3. **Estructuras** (= §11): cinco funciones de integración y `DurableStepOutcome`, sin componentes
    ni contratos nuevos.
 4. **Modelos mentales** (= §4): P-23, P-32, P-33 y P-35 en el mismo turno.
@@ -866,9 +845,9 @@ CH-37 todavía no existe.
 
 **Punto de apalancamiento**
 
-La decisión con mayor efecto es componer las piezas de CH-13 en vez de invocarlas cuando ocultan lo
-que el journal necesita: así la tool call se registra antes de ejecutarse, también después de una
-aprobación.
+La decisión con mayor efecto es exigir que CH-13 exponga lo que el journal necesita (la solicitud y un
+punto entre resolver y ejecutar), para que la tool call se registre antes de ejecutarse, también
+después de una aprobación.
 
 ## 21. Practica lo que Aprendiste (Practice What You Learned)
 
@@ -881,8 +860,9 @@ aprobación.
 3. ¿Qué hace `resolvePendingStepOnRecovery` con un paso `RESOLVE_PENDING_TOOL`, con qué valor de
    `executionStillInFlight` llama a `decideUnknownOutcome`, y qué pasa en cada caso de
    `ReplayPolicy`? *(pregunta guía 3)*
-4. ¿Por qué el turno durable no invoca `beginToolApprovalPause` ni `resumeAfterHumanResolution` de
-   CH-13, y qué piezas de CH-06, CH-10 y CH-13 compone en su lugar? *(pregunta guía 4)*
+4. ¿Qué funciones de CH-13, agregadas en su revisión v0.2.1, invoca el turno durable para estacionar
+   y para reanudar una aprobación, y por qué `beginToolApprovalPause` y
+   `resumeAfterHumanResolution` no alcanzaban? *(pregunta guía 4)*
 
 ### Explicar
 

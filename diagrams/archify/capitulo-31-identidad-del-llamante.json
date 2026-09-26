@@ -1,0 +1,253 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 31 — La Identidad del Llamante",
+    "output": "capitulo-31-identidad-del-llamante.html",
+    "viewBox": [
+      1080,
+      570
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "primera",
+        "label": "Primera entrega y admisión",
+        "focus": [
+          "adaptador",
+          "admission",
+          "execution",
+          "tools"
+        ],
+        "note": "Las reglas de CH-14 admiten: el Principal se liga como CallerSnapshot al ExecutionContext v2, única fuente del tenant."
+      },
+      {
+        "id": "cerrado",
+        "label": "Arranque cerrado (INV-E15)",
+        "focus": [
+          "llamante",
+          "adaptador",
+          "admission"
+        ],
+        "note": "INV-E15: sin reglas no se admite nada fuera de desarrollo; sin Principal verificado tampoco. Ningún REJECT emite AgentEvent."
+      },
+      {
+        "id": "otra",
+        "label": "Otra persona en la misma sesión",
+        "focus": [
+          "llamante",
+          "adaptador",
+          "admission",
+          "execution"
+        ],
+        "note": "acceptDeliveryForSession aplica la SessionOwnershipRule: renueva current o emite SESSION_CONTINUATION_REJECTED."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "llamante",
+      "type": "external",
+      "label": "Llamante",
+      "sublabel": "usuario o servicio, token"
+    },
+    {
+      "id": "adaptador",
+      "type": "security",
+      "label": "Adaptador de identidad",
+      "sublabel": "fuera del registro, verifica"
+    },
+    {
+      "id": "admission",
+      "type": "security",
+      "label": "AdmissionController",
+      "sublabel": "CMP-012, CH-14 ampliado"
+    },
+    {
+      "id": "execution",
+      "type": "database",
+      "label": "ExecutionContext v2",
+      "sublabel": "C-004, caller"
+    },
+    {
+      "id": "tools",
+      "type": "backend",
+      "label": "Resto del turno",
+      "sublabel": "Tools · CredentialBroker"
+    }
+  ],
+  "segments": [
+    {
+      "from": 172,
+      "to": 282,
+      "label": "Admitir con identidad verificada"
+    },
+    {
+      "from": 298,
+      "to": 374,
+      "label": "Ligar el llamante al turno"
+    },
+    {
+      "from": 384,
+      "to": 500,
+      "label": "Otra persona en la misma sesión"
+    }
+  ],
+  "messages": [
+    {
+      "id": "token",
+      "from": "llamante",
+      "to": "adaptador",
+      "y": 185,
+      "label": "activación con token",
+      "variant": "default",
+      "note": "el adaptador verifica firma y emisor → Principal (C-040); issuer distingue al mismo principalId de dos directorios"
+    },
+    {
+      "id": "admit",
+      "from": "adaptador",
+      "to": "admission",
+      "y": 213,
+      "label": "admitWithVerifiedIdentity(request, principal, admissionConfigured, processMode)",
+      "variant": "emphasis",
+      "note": "reglas de CH-14 conceden acceso → ADMIT con principal en AdmissionDecision v2 (C-023)"
+    },
+    {
+      "id": "notconfigured",
+      "from": "admission",
+      "to": "llamante",
+      "y": 241,
+      "label": "sin reglas y PRODUCTION → REJECT HARNESS_ADMISSION_NOT_CONFIGURED",
+      "variant": "return",
+      "note": "INV-E15 · en DEVELOPMENT → ADMIT con principal RUNTIME sintético «local-development»"
+    },
+    {
+      "id": "unverified",
+      "from": "admission",
+      "to": "llamante",
+      "y": 269,
+      "label": "sin principal verificado → REJECT UNVERIFIED_CALLER",
+      "variant": "return"
+    },
+    {
+      "id": "bind",
+      "from": "admission",
+      "to": "execution",
+      "y": 308,
+      "label": "bindCallerToExecution(execution, buildCallerSnapshot(NULL, principal))",
+      "variant": "emphasis",
+      "note": "CallerSnapshot (C-041): initiator = current = principal"
+    },
+    {
+      "id": "tenant",
+      "from": "tools",
+      "to": "execution",
+      "y": 336,
+      "label": "requireTenantCaller(execution)",
+      "variant": "default",
+      "note": "USER con tenantId o TENANT_CALLER_REQUIRED; nunca del prompt ni de un argumento"
+    },
+    {
+      "id": "current",
+      "from": "execution",
+      "to": "tools",
+      "y": 364,
+      "label": "caller.current: tenant verificado",
+      "variant": "return"
+    },
+    {
+      "id": "second",
+      "from": "llamante",
+      "to": "adaptador",
+      "y": 403,
+      "label": "segunda entrega: otro token",
+      "variant": "default",
+      "note": "otro Principal, admitido por admitWithVerifiedIdentity como cualquier entrega"
+    },
+    {
+      "id": "accept",
+      "from": "adaptador",
+      "to": "admission",
+      "y": 431,
+      "label": "acceptDeliveryForSession(snapshot, candidato, SAME_TENANT, execution, agentId)",
+      "variant": "emphasis",
+      "note": "SAME_PRINCIPAL: mismo issuer y principalId · SAME_TENANT: mismo tenantId no nulo"
+    },
+    {
+      "id": "renewed",
+      "from": "admission",
+      "to": "execution",
+      "y": 459,
+      "label": "permitida → CallerSnapshot(initiator = original, current = candidato)",
+      "variant": "return"
+    },
+    {
+      "id": "rejected",
+      "from": "admission",
+      "to": "llamante",
+      "y": 487,
+      "label": "no permitida → emite SESSION_CONTINUATION_REJECTED",
+      "variant": "dashed",
+      "note": "HarnessError SESSION_CONTINUATION_NOT_ALLOWED; el snapshot no cambia"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "adaptador",
+      "from": 181,
+      "to": 217,
+      "type": "security"
+    },
+    {
+      "participant": "admission",
+      "from": 209,
+      "to": 312,
+      "type": "security"
+    },
+    {
+      "participant": "execution",
+      "from": 332,
+      "to": 368,
+      "type": "database"
+    },
+    {
+      "participant": "adaptador",
+      "from": 399,
+      "to": 435,
+      "type": "security"
+    },
+    {
+      "participant": "admission",
+      "from": 427,
+      "to": 491,
+      "type": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Principal (C-040)",
+      "items": [
+        "principalId, principalType (USER · SERVICE · RUNTIME), issuer, tenantId",
+        "Lo verifica un adaptador fuera del registro; issuer distingue directorios"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "CallerSnapshot (C-041)",
+      "items": [
+        "initiator fijo desde la creación del run; current se renueva en cada entrega permitida",
+        "Viaja en ExecutionContext v2 (C-004); caller = NULL equivale a v1 (ADR-001)"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "INV-E15: arranque cerrado",
+      "items": [
+        "Sin reglas de admisión, fuera de DEVELOPMENT no se admite ninguna activación",
+        "El tenant solo sale de requireTenantCaller, nunca del prompt · chapter.md §11–§13"
+      ]
+    }
+  ]
+}

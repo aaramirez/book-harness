@@ -41,5 +41,6 @@ Los **28 capítulos** del libro *¿Cómo construir un arnés?* (CH-00 a CH-27).
 | CH-28 | [[ch-28-steering-follow-up|Entradas que Llegan Durante el Turno: Steering y Follow-up]] |
 | CH-29 | [[ch-29-compactacion-sesiones-arbol|Compactar sin Perder el Hilo: Resúmenes Estructurados y Sesiones en Árbol]] |
 | CH-30 | [[ch-30-politica-de-replay|Cuando No se Sabe si Ocurrió: Política de Replay]] |
+| CH-31 | [[ch-31-identidad-del-llamante|La Identidad del Llamante y el Arranque que No Admite Nada]] |
 
 Ver también: [[Index|Mapa del libro]]

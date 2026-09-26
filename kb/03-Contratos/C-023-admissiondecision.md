@@ -2,17 +2,17 @@
 id: "C-023"
 tipo: contrato
 nombre: "AdmissionDecision"
-version: "v1"
+version: "v2"
 capitulo: "CH-14"
 tags: [contrato, c-023]
 used_by: ["CMP-012"]
-modified_by: []
+modified_by: ["CH-31"]
 articulos_constitucionales: ["P-17", "INV-E02", "INV-19", "INV-20"]
 ---
 
 # AdmissionDecision (C-023)
 
-> Contrato v1 — introducido en [[ch-14-admission-controller|CH-14]].
+> Contrato **v2** — introducido en [[ch-14-admission-controller|CH-14]], modificado en [[ch-31-identidad-del-llamante|CH-31]] (ADR-001).
 
 ## Definición canónica
 
@@ -21,6 +21,7 @@ STRUCT AdmissionDecision
     requestId: ActivationRequestId
     outcome: AdmissionOutcome
     reason: Optional<HarnessError>
+    principal: Optional<Principal>
     decidedAt: Timestamp
 END
 ```
@@ -31,7 +32,7 @@ END
 
 ## Modificado por
 
-Ninguno
+[[ch-31-identidad-del-llamante|CH-31]]: agrega `principal` (el Principal verificado de un ADMIT; NULL en todo REJECT y en las decisiones previas)
 
 ## Impacto constitucional
 

@@ -2,7 +2,7 @@
 
 - **ADR-ID:** ADR-001
 - **Title:** El principal verificado viaja en `ExecutionContext`
-- **Status:** Proposed (2026-09-24). Pasa a `Accepted` con CH-31, con aprobación humana.
+- **Status:** **Accepted** (2026-09-25, aprobado por el autor; aplicado en CH-31).
 
 ## Context
 
@@ -17,7 +17,9 @@ Por eso ni CredentialBroker, ni PolicyEngine, ni la memoria pueden decidir **por
 
 1. Introducir **C-040 `Principal`** (`principalId`, `principalType` USER / SERVICE / RUNTIME, `issuer`, `tenantId?`, `attributes`) y **C-041 `CallerSnapshot`** (`initiator`, `current`) en CH-31.
 2. **C-004 `ExecutionContext` v2:** agrega `caller: Optional<CallerSnapshot>`.
-3. **C-023 `AdmissionDecision` v2:** agrega `principal: Optional<Principal>`. `AdmissionController` produce el principal mediante `verifyExternalIdentity`, un punto de extensión declarado.
+3. **C-023 `AdmissionDecision` v2:** agrega `principal: Optional<Principal>`. `AdmissionController` produce el principal en `admitWithVerifiedIdentity`, a partir de una identidad **ya verificada** por un adaptador de identidad (OIDC, JWT, API key) que queda fuera del registro, como el Ingress Adapter de CH-14. Verificar la firma de un token no es una decisión del arnés; convertir el resultado en un `Principal` sí lo es (CH-31).
+6. **Arranque cerrado (INV-E15, CH-31):** sin reglas de admisión configuradas, `REJECT` con `HARNESS_ADMISSION_NOT_CONFIGURED`; solo con `ProcessMode = DEVELOPMENT` (dato del proceso, nunca del request) se admite con un `Principal` `RUNTIME` sintético.
+7. **Propiedad de sesión (CH-31):** continuar una sesión exige una `SessionOwnershipRule` explícita (`SAME_PRINCIPAL` / `SAME_TENANT`); no hay default permisivo.
 4. `initiator` se fija al crear el run; `current` se renueva en cada entrega.
 5. El tenant **solo** sale de `caller.current`, nunca del prompt, de argumentos de tools ni de respuestas externas.
 

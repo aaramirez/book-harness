@@ -1450,3 +1450,35 @@ terms:
     introduced_in: CH-30
     kind: contract
     ref: C-039
+
+  - term: Verified Principal
+    definition: >
+      La identidad de quien llama, ya verificada por un adaptador (OIDC, JWT, API key) y convertida por
+      AdmissionController en un Principal (C-040). Es la única fuente válida del tenant y del usuario
+      para credenciales, políticas y memoria — nunca el prompt ni un argumento de tool (P-31, CH-31).
+    introduced_in: CH-31
+    kind: concept
+
+  - term: Fail-Closed Bootstrap
+    definition: >
+      Cita de INV-E15: un arnés sin reglas de admisión configuradas no admite nada, en ningún entorno;
+      la admisión de desarrollo depende del modo de proceso (ProcessMode, un dato del proceso), nunca de
+      un campo del request (CH-31).
+    introduced_in: CH-31
+    kind: concept
+
+  - term: Principal
+    definition: >
+      La identidad verificada de un llamante: principalId, principalType (USER/SERVICE/RUNTIME), issuer,
+      tenantId opcional y attributes (C-040, CH-31).
+    introduced_in: CH-31
+    kind: contract
+    ref: C-040
+
+  - term: CallerSnapshot
+    definition: >
+      El par initiator (quien creó el run, fijo) y current (quien envió la entrega actual, renovado en
+      cada una) que viaja en ExecutionContext v2 (C-041, CH-31).
+    introduced_in: CH-31
+    kind: contract
+    ref: C-041

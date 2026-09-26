@@ -13,7 +13,7 @@ articulos_constitucionales: ["P-24", "INV-07", "INV-11", "INV-20", "INV-E09", "I
 
 ## Navegación
 
-⬅ [[ch-29-compactacion-sesiones-arbol|CH-29]] · **CH-30**
+⬅ [[ch-29-compactacion-sesiones-arbol|CH-29]] · **CH-30** · [[ch-31-identidad-del-llamante|CH-31]] ➡
 
 ## Resultado esperado
 

@@ -65,9 +65,12 @@ contracts:
     modified_by: []
     constitutional_impact: [P-08, P-10, INV-12]
 
+  # C-004 v2 (CH-31, ADR-001 Accepted 2026-09-25): agrega caller (Optional<CallerSnapshot>). Es el
+  # contrato más usado del libro (11 used_by); el campo es Optional para que CH-00..CH-30 sigan
+  # válidos sin tocarlos. initiator se fija al crear el run; current se renueva en cada entrega (P-31).
   - id: C-004
     name: ExecutionContext
-    version: v1
+    version: v2
     introduced_in: CH-00
     current_definition: |
       STRUCT ExecutionContext
@@ -75,9 +78,10 @@ contracts:
           sessionId: SessionId
           traceId: TraceId
           budget: ExecutionBudget
+          caller: Optional<CallerSnapshot>
       END
-    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005, CMP-006, CMP-007, CMP-008, CMP-010, CMP-011, CMP-016]
-    modified_by: []
+    used_by: [CMP-001, CMP-002, CMP-003, CMP-004, CMP-005, CMP-006, CMP-007, CMP-008, CMP-010, CMP-011, CMP-012, CMP-016]
+    modified_by: [CH-31]
     constitutional_impact: [P-01, P-14]
 
   # C-005 (ContextSnapshot): ya asignado en CH-04 (ver decisión de diseño en
@@ -473,19 +477,22 @@ contracts:
     modified_by: []
     constitutional_impact: [P-16, INV-E01]
 
+  # C-023 v2 (CH-31, ADR-001 Accepted): agrega principal (Optional<Principal>): la identidad que
+  # AdmissionController verificó al admitir. NULL en todo REJECT y en las decisiones de CH-14..CH-30.
   - id: C-023
     name: AdmissionDecision
-    version: v1
+    version: v2
     introduced_in: CH-14
     current_definition: |
       STRUCT AdmissionDecision
           requestId: ActivationRequestId
           outcome: AdmissionOutcome
           reason: Optional<HarnessError>
+          principal: Optional<Principal>
           decidedAt: Timestamp
       END
     used_by: [CMP-012]
-    modified_by: []
+    modified_by: [CH-31]
     constitutional_impact: [P-17, INV-E02, INV-19, INV-20]
 
   # C-024/C-025 (AgentCommunicationMessage/DelegationGrant): undécimo y duodécimo id
@@ -934,3 +941,40 @@ contracts:
     used_by: [CMP-008, CMP-015]
     modified_by: []
     constitutional_impact: [P-24, INV-E09, INV-E17]
+
+  # C-040 (Principal): la identidad YA verificada de quien llama (P-17: AdmissionController aplica
+  # "identity, authorization, tenant"). La verificación criptográfica (OIDC/JWT/API key) es un
+  # adaptador fuera del registro, como el Ingress Adapter; este contrato es lo que el arnés conoce
+  # después. tenantId es Optional porque no todo llamante pertenece a un tenant (p.ej. RUNTIME). El
+  # tenant de una tool SOLO sale de aquí — nunca del prompt ni de un argumento (P-31, INV-E07).
+  - id: C-040
+    name: Principal
+    version: v1
+    introduced_in: CH-31
+    current_definition: |
+      STRUCT Principal
+          principalId: Text
+          principalType: PrincipalType
+          issuer: Text
+          tenantId: Optional<Text>
+          attributes: Map<Text, Value>
+      END
+    used_by: [CMP-012]
+    modified_by: []
+    constitutional_impact: [P-17, P-31, INV-19, INV-E07]
+
+  # C-041 (CallerSnapshot): initiator (quien creó el run, nunca cambia) y current (quien envió la
+  # entrega actual, se renueva en cada una). Distinguir ambos es lo que permite que un seguimiento de
+  # otro usuario no herede los permisos del que inició la sesión.
+  - id: C-041
+    name: CallerSnapshot
+    version: v1
+    introduced_in: CH-31
+    current_definition: |
+      STRUCT CallerSnapshot
+          initiator: Principal
+          current: Principal
+      END
+    used_by: [CMP-012]
+    modified_by: []
+    constitutional_impact: [P-31, INV-19]

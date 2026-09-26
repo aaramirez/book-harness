@@ -76,3 +76,5 @@ chapters:
     file: chapters/29-compactacion-sesiones-arbol/chapter.md
   - id: CH-30
     file: chapters/30-politica-de-replay/chapter.md
+  - id: CH-31
+    file: chapters/31-identidad-del-llamante/chapter.md

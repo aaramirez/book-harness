@@ -1099,3 +1099,42 @@ contracts:
     used_by: [CMP-025]
     modified_by: []
     constitutional_impact: [P-34, INV-E19]
+
+  # C-047 (SandboxSession): el entorno aislado de una sesión, donde corre el código que el modelo
+  # pide (shell, archivos). Tiene su propio ciclo de vida, separado del runtime que guarda los
+  # secretos, y nunca contiene credenciales (INV-E20). placementRef lo ubica en el substrato que
+  # eligió ExecutionFabricAdapter (CH-21) sin duplicar esa decisión. CH-35.
+  - id: C-047
+    name: SandboxSession
+    version: v1
+    introduced_in: CH-35
+    current_definition: |
+      STRUCT SandboxSession
+          sandboxId: SandboxId
+          sessionId: SessionId
+          networkPolicy: NetworkPolicy
+          status: SandboxStatus
+          environmentRef: Text
+          placementRef: Optional<ExecutionPlacementId>
+          openedAt: Timestamp
+          closedAt: Optional<Timestamp>
+      END
+    used_by: [CMP-026]
+    modified_by: []
+    constitutional_impact: [P-35, INV-E20]
+
+  # C-048 (NetworkPolicy): qué puede alcanzar la red de un entorno aislado. DENY_ALL, ALLOW_ALL o
+  # ALLOW_LIST; cada EgressRule puede pedir que el borde inyecte una credencial por nombre, nunca por
+  # valor. La credencial la resuelve CredentialBroker en el egress (P-35). CH-35.
+  - id: C-048
+    name: NetworkPolicy
+    version: v1
+    introduced_in: CH-35
+    current_definition: |
+      STRUCT NetworkPolicy
+          mode: NetworkMode
+          rules: List<EgressRule>
+      END
+    used_by: [CMP-026]
+    modified_by: []
+    constitutional_impact: [P-35, INV-E08, INV-E20]

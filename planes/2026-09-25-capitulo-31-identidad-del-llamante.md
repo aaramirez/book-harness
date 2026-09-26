@@ -6,7 +6,7 @@
 **Depende de:**
 - `2026-09-24-extension-v0-2-v0-3-eve-pi-conexiones.md`: ficha CH-31.
 - `2026-09-14-capitulo-14-admission-controller.md`: `AdmissionController` (CMP-012), `ActivationRequest` (C-022, con `externalIdentityRef` sin verificar), `AdmissionDecision` (C-023), `evaluateAdmissionForActivationRequest` y su default REJECT.
-- `2026-09-13-capitulo-00-arquitectura-constitucion.md`: `ExecutionContext` (C-004), usado por 11 componentes.
+- `book/chapters/00-arquitectura-constitucion/chapter.md` (CH-00, sin plan propio; lo cubre `2026-08-23-book-harness-como-construir-un-arnes.md`): `ExecutionContext` (C-004), usado por 11 componentes.
 - `docs/adr/ADR-001-principal-en-execution-context.md`: **Accepted** (2026-09-25).
 - Amendment v1.2: **P-31** (la identidad viaja con cada turno) e **INV-E15** (un arnés sin configurar no admite nada; la admisión de desarrollo depende del modo de proceso, nunca del request).
 

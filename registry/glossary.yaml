@@ -1568,3 +1568,35 @@ terms:
     introduced_in: CH-34
     kind: contract
     ref: C-046
+
+  - term: Isolated Execution Environment
+    definition: >
+      El entorno, por sesión, donde corre el código que el modelo pide (shell, archivos), con un ciclo
+      de vida separado del runtime que guarda los secretos. Nunca contiene credenciales (INV-E20,
+      CH-35).
+    introduced_in: CH-35
+    kind: concept
+
+  - term: Brokered Egress
+    definition: >
+      Salida de red autenticada en la que la credencial se agrega en el borde, fuera del entorno
+      aislado: el código del entorno pide el dominio, el borde inyecta la credencial que resolvió
+      CredentialBroker. El código nunca ve el secreto (P-35, CH-35).
+    introduced_in: CH-35
+    kind: concept
+
+  - term: SandboxSession
+    definition: >
+      El entorno aislado abierto para una sesión: política de red, estado (OPEN / CLOSED), referencia
+      al entorno real y a su ubicación (C-047, CH-35).
+    introduced_in: CH-35
+    kind: contract
+    ref: C-047
+
+  - term: NetworkPolicy
+    definition: >
+      Qué puede alcanzar la red de un entorno aislado: DENY_ALL, ALLOW_ALL o ALLOW_LIST, con reglas por
+      dominio que pueden pedir una credencial por nombre, nunca por valor (C-048, CH-35).
+    introduced_in: CH-35
+    kind: contract
+    ref: C-048

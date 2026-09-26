@@ -56,5 +56,7 @@ Los **35 contratos** canónicos del libro, en orden de introducción.
 | C-044 | [[C-044-parkedwait|ParkedWait]] | [[ch-33-esperas-durables|CH-33]] |
 | C-045 | [[C-045-authorizationchallenge|AuthorizationChallenge]] | [[ch-33-esperas-durables|CH-33]] |
 | C-046 | [[C-046-continuationaddress|ContinuationAddress]] | [[ch-34-canales-continuacion|CH-34]] |
+| C-047 | [[C-047-sandboxsession|SandboxSession]] | [[ch-35-entorno-aislado|CH-35]] |
+| C-048 | [[C-048-networkpolicy|NetworkPolicy]] | [[ch-35-entorno-aislado|CH-35]] |
 
 Ver también: [[Index|Mapa del libro]]

@@ -1,0 +1,240 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 35 — Entorno Aislado",
+    "output": "capitulo-35-entorno-aislado.html",
+    "viewBox": [
+      1080,
+      570
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "abrir",
+        "label": "Un entorno por sesión, sin secretos",
+        "focus": [
+          "integracion",
+          "entorno"
+        ],
+        "note": "buildSandboxEnvironment rechaza la configuración que nombra una credencial; openSandboxSession abre el entorno de S1 y la tool corre dentro."
+      },
+      {
+        "id": "credencial",
+        "label": "La credencial se usa sin verse (P-35)",
+        "focus": [
+          "entorno",
+          "proxy",
+          "broker"
+        ],
+        "note": "El código sale sin clave; decideEgress nombra la credencial y el proxy del borde la agrega fuera del entorno (INV-E20)."
+      },
+      {
+        "id": "denegar",
+        "label": "Denegar por defecto",
+        "focus": [
+          "entorno",
+          "proxy"
+        ],
+        "note": "Con ALLOW_LIST, un dominio que ninguna regla nombra no sale: DENY + EGRESS_DENIED, y la tool recibe un fallo de red (INV-07)."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "integracion",
+      "type": "external",
+      "label": "Integración",
+      "sublabel": "turno, CH-36"
+    },
+    {
+      "id": "entorno",
+      "type": "backend",
+      "label": "Entorno aislado",
+      "sublabel": "CMP-026 IsolatedExecutionEnvironment"
+    },
+    {
+      "id": "proxy",
+      "type": "external",
+      "label": "Proxy del borde",
+      "sublabel": "infraestructura, fuera del entorno"
+    },
+    {
+      "id": "broker",
+      "type": "security",
+      "label": "CredentialBroker",
+      "sublabel": "CMP-014, la credencial"
+    }
+  ],
+  "segments": [
+    {
+      "from": 172,
+      "to": 282,
+      "label": "Abrir el entorno"
+    },
+    {
+      "from": 298,
+      "to": 432,
+      "label": "Egress con credencial"
+    },
+    {
+      "from": 446,
+      "to": 500,
+      "label": "Salida no autorizada"
+    }
+  ],
+  "messages": [
+    {
+      "id": "build",
+      "from": "integracion",
+      "to": "entorno",
+      "y": 185,
+      "label": "buildSandboxEnvironment(config, secretNames) → entorno sin secretos",
+      "variant": "default",
+      "note": "si una variable del entorno nombra una credencial → SECRET_IN_SANDBOX_ENVIRONMENT: un env dentro del entorno no revela nada"
+    },
+    {
+      "id": "open",
+      "from": "integracion",
+      "to": "entorno",
+      "y": 213,
+      "label": "openSandboxSession(S1, ALLOW_LIST, …, placementRef)",
+      "variant": "emphasis",
+      "note": "placementRef viene de resolveExecutionPlacement (CH-21); validateNetworkPolicy rechaza la política inválida (INVALID_NETWORK_POLICY)"
+    },
+    {
+      "id": "opened",
+      "from": "entorno",
+      "to": "integracion",
+      "y": 241,
+      "label": "SandboxSession OPEN + SANDBOX_OPENED",
+      "variant": "return",
+      "note": "si S1 ya tiene su entorno OPEN se reusa sin evento; dos sesiones nunca comparten entorno (INV-E07)"
+    },
+    {
+      "id": "exec",
+      "from": "integracion",
+      "to": "entorno",
+      "y": 269,
+      "label": "executeToolCallIsolated(call \"shell\", sandbox) → executeToolCall (CH-02)",
+      "variant": "default",
+      "note": "mustRunIsolated decide si la capability corre dentro; PolicyEngine ya autorizó: aislar no reemplaza autorizar"
+    },
+    {
+      "id": "get",
+      "from": "entorno",
+      "to": "proxy",
+      "y": 311,
+      "label": "código: GET api.facturas.example (sin clave)",
+      "variant": "default",
+      "note": "el código que pidió el modelo corre en el entorno; no hay clave que leer, así que la petición sale sin ella"
+    },
+    {
+      "id": "decide",
+      "from": "proxy",
+      "to": "entorno",
+      "y": 339,
+      "label": "decideEgress(sandbox, request)",
+      "variant": "default",
+      "note": "matchEgressRule busca la regla del dominio en la NetworkPolicy de la sesión"
+    },
+    {
+      "id": "allowcred",
+      "from": "entorno",
+      "to": "proxy",
+      "y": 367,
+      "label": "ALLOW_WITH_CREDENTIAL (\"facturas-api\")",
+      "variant": "return",
+      "note": "la EgressDecision lleva el nombre de la credencial y su capability, nunca su valor; las salidas permitidas no emiten eventos"
+    },
+    {
+      "id": "resolve",
+      "from": "proxy",
+      "to": "broker",
+      "y": 395,
+      "label": "resolveEgressCredential(decision, …)",
+      "variant": "emphasis",
+      "note": "reusa resolveCredentialReference (CH-16); otra capability → EGRESS_DOES_NOT_REQUIRE_THIS_CREDENTIAL"
+    },
+    {
+      "id": "ref",
+      "from": "broker",
+      "to": "proxy",
+      "y": 423,
+      "label": "CredentialReference → el proxy la agrega",
+      "variant": "return",
+      "note": "la credencial se agrega fuera del entorno y solo a su dominio; el código solo ve la respuesta (INV-E20)"
+    },
+    {
+      "id": "post",
+      "from": "entorno",
+      "to": "proxy",
+      "y": 459,
+      "label": "código: POST exfiltra.example",
+      "variant": "default",
+      "note": "ninguna regla de la NetworkPolicy nombra el dominio"
+    },
+    {
+      "id": "deny",
+      "from": "proxy",
+      "to": "entorno",
+      "y": 487,
+      "label": "decideEgress → DENY + EGRESS_DENIED",
+      "variant": "dashed",
+      "note": "ALLOW_LIST deniega por defecto; el proxy corta la conexión y la tool recibe un fallo de red, no un HarnessError del run"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "entorno",
+      "from": 181,
+      "to": 273,
+      "type": "backend"
+    },
+    {
+      "participant": "entorno",
+      "from": 335,
+      "to": 371,
+      "type": "backend"
+    },
+    {
+      "participant": "broker",
+      "from": 391,
+      "to": 427,
+      "type": "security"
+    },
+    {
+      "participant": "entorno",
+      "from": 483,
+      "to": 491,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "SandboxSession (C-047)",
+      "items": [
+        "Ciclo de vida propio por sesión: OPEN → CLOSED; placementRef enlaza CH-21",
+        "Ninguna credencial se materializa dentro del entorno (INV-E20)"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "NetworkPolicy (C-048)",
+      "items": [
+        "NetworkMode: DENY_ALL · ALLOW_ALL · ALLOW_LIST (deniega lo no nombrado)",
+        "EgressRule une un dominio con el NOMBRE de una credencial, nunca su valor"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Frontera ExecutionFabricAdapter / IsolatedExecutionEnvironment",
+      "items": [
+        "ExecutionFabricAdapter decide DÓNDE corre un run",
+        "IsolatedExecutionEnvironment decide QUÉ PUEDE HACER Y ALCANZAR · chapter.md §8, §11"
+      ]
+    }
+  ]
+}

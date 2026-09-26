@@ -170,5 +170,9 @@ Vocabulario técnico canónico del libro *¿Cómo construir un arnés?* — extr
 | **Continuation Address** | La dirección explícita de una conversación externa (canal + conversación) que mapea a una sesión durable. Un mensaje nuevo con la misma dirección continúa esa sesión; el arnés nunca adivina qué run continúa un estímulo (P-34). | [[ch-34-canales-continuacion|CH-34]] | concepto |
 | **Exclusive Ownership** | Una dirección de continuación tiene a lo sumo una sesión dueña a la vez; otra sesión solo puede reclamarla después de que la dueña la libere (INV-E19). | [[ch-34-canales-continuacion|CH-34]] | concepto |
 | **ContinuationAddress** `C-046` | El par channelRef + conversationRef que identifica una conversación externa. | [[ch-34-canales-continuacion|CH-34]] | contrato |
+| **Isolated Execution Environment** | El entorno, por sesión, donde corre el código que el modelo pide (shell, archivos), con un ciclo de vida separado del runtime que guarda los secretos. Nunca contiene credenciales (INV-E20). | [[ch-35-entorno-aislado|CH-35]] | concepto |
+| **Brokered Egress** | Salida de red autenticada en la que la credencial se agrega en el borde, fuera del entorno aislado; el código nunca ve el secreto (P-35). | [[ch-35-entorno-aislado|CH-35]] | concepto |
+| **SandboxSession** `C-047` | El entorno aislado abierto para una sesión: política de red, estado (OPEN / CLOSED), referencia al entorno real y a su ubicación. | [[ch-35-entorno-aislado|CH-35]] | contrato |
+| **NetworkPolicy** `C-048` | Qué puede alcanzar la red de un entorno aislado: DENY_ALL, ALLOW_ALL o ALLOW_LIST, con reglas por dominio que piden una credencial por nombre, nunca por valor. | [[ch-35-entorno-aislado|CH-35]] | contrato |
 
 Ver también: [[Index|Mapa del libro]]

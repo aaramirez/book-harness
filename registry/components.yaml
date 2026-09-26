@@ -821,3 +821,31 @@ components:
     produces: [C-010, C-011, C-046]
     introduced_in: CH-34
     constitutional_articles: [P-16, P-34, INV-E01, INV-E19, INV-18, INV-19, INV-20]
+
+  - id: CMP-026
+    name: IsolatedExecutionEnvironment
+    responsibility: >
+      Abrir, reusar y cerrar, por sesión, el entorno aislado donde corre el código que el modelo pide
+      — con un ciclo de vida separado del runtime que guarda los secretos —, garantizar que ninguna
+      credencial se materialice dentro de él y decidir, para cada salida de red del entorno, si la
+      NetworkPolicy la permite, la deniega o la deja salir con una credencial que el borde inyecta —
+      sin decidir dónde corre físicamente el cómputo, sin resolver la credencial, sin autorizar la
+      tool y sin ejecutar el side effect en sí.
+    owns:
+      - "sandboxing (cita literal, Article XII — Deterministic Decisions) — abrir, reusar y cerrar el entorno aislado de una sesión"
+      - "Credentials MUST remain outside both model context and the isolated environment where model-requested code executes (cita literal, P-35) — rechazar (fail-closed) cualquier configuración del entorno que nombre una credencial"
+      - "Credentials are never materialized inside the isolated execution environment (cita literal, INV-E20)"
+      - "aplicar la NetworkPolicy a cada salida de red del entorno: DENY, ALLOW o ALLOW_WITH_CREDENTIAL — denegar por defecto lo que una ALLOW_LIST no nombra"
+      - "decidir si una capability debe ejecutarse dentro del entorno aislado, según la lista de capabilities aisladas configurada"
+    does_not_own:
+      - "decidir sobre qué substrato físico corre el cómputo (ExecutionFabricAdapter, CMP-019, ya introducido en CH-21 — la frontera más importante de este capítulo: ExecutionFabricAdapter decide DÓNDE corre un run; IsolatedExecutionEnvironment decide QUÉ PUEDE HACER y QUÉ PUEDE ALCANZAR el código que el modelo pide, dondequiera que corra)"
+      - "resolver la credencial que el borde inyecta en una salida permitida (CredentialBroker, CMP-014, ya introducido en CH-16 — Authenticated egress MUST be brokered at the boundary, P-35)"
+      - "autorizar la tool call (PolicyEngine, CMP-005, ya introducido en CH-05)"
+      - "ejecutar la tool call (ToolRuntime, CMP-002, ya introducido en CH-02 — ToolRuntime sigue siendo el único camino de un ToolCall, INV-05; el entorno es dónde, no cómo)"
+      - "decidir límites de recursos o presupuesto (ExecutionController, CMP-007, ya introducido en CH-07)"
+      - "el mecanismo real de aislamiento (máquina virtual, contenedor, proceso restringido) ni el proxy de red que inyecta encabezados (Preview, infraestructura de borde)"
+    dependencies: []
+    consumes: [C-004, C-008]
+    produces: [C-010, C-011, C-047, C-048]
+    introduced_in: CH-35
+    constitutional_articles: [P-27, P-35, INV-05, INV-E08, INV-E20, INV-18, INV-19, INV-20]

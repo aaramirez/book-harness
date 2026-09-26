@@ -84,3 +84,5 @@ chapters:
     file: chapters/33-esperas-durables/chapter.md
   - id: CH-34
     file: chapters/34-canales-continuacion/chapter.md
+  - id: CH-35
+    file: chapters/35-entorno-aislado/chapter.md

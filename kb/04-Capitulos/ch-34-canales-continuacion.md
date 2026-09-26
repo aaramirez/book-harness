@@ -13,7 +13,7 @@ articulos_constitucionales: ["P-16", "P-17", "P-34", "INV-E01", "INV-E02", "INV-
 
 ## Navegación
 
-⬅ [[ch-33-esperas-durables|CH-33]] · **CH-34**
+⬅ [[ch-33-esperas-durables|CH-33]] · **CH-34** · [[ch-35-entorno-aislado|CH-35]] ➡
 
 ## Resultado esperado
 

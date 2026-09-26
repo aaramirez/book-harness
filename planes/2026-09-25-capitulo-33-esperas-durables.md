@@ -5,8 +5,8 @@
 
 **Depende de:**
 - `2026-09-24-extension-v0-2-v0-3-eve-pi-conexiones.md`: ficha CH-33 (§6).
-- `2026-09-13-capitulo-06-human-interaction-service.md`: `HumanInteractionService` (CMP-006), `HumanInteractionRequest` (C-015), `HumanInteractionResolution` (C-016), `createHumanInteractionRequest` / `resolveHumanInteractionRequest`.
-- `2026-09-16-capitulo-13-integracion-caminos-de-gobierno.md`: `beginToolApprovalPause` (persiste y retorna) y `resumeAfterHumanResolution`, que existe pero nadie invoca.
+- `2026-09-14-capitulo-06-human-interaction-service.md`: `HumanInteractionService` (CMP-006), `HumanInteractionRequest` (C-015), `HumanInteractionResolution` (C-016), `createHumanInteractionRequest` / `resolveHumanInteractionRequest`.
+- `2026-09-14-capitulo-13-integracion-caminos-de-gobierno.md`: `beginToolApprovalPause` (persiste y retorna) y `resumeAfterHumanResolution`, que existe pero nadie invoca.
 - `2026-09-25-capitulo-31-identidad-del-llamante.md`: `Principal` (C-040) y `caller.current`, para saber quién pidió la espera y quién responde.
 - Amendment v1.2: **P-33** (esperar es durable y no consume cómputo) e **INV-E18** (una entrega reanuda solo la espera a la que se dirige, y solo si quien responde está autorizado).
 

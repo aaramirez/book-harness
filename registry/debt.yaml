@@ -79,36 +79,36 @@ debts:
   - id: D-009
     title: "Vencimiento activo de esperas (EXPIRED) con un schedule interno"
     origin: CH-33
-    status: open
-    target: CH-37
+    status: resolved
+    resolved_in: CH-37
     retargeted_from: [CH-34, CH-36]
 
   - id: D-010
     title: "Reanudación durable de preguntas, autorizaciones y límites de presupuesto"
     origin: CH-33
-    status: open
-    target: CH-37
+    status: resolved
+    resolved_in: CH-37
     retargeted_from: [CH-36]
 
   - id: D-011
     title: "CredentialBroker detecta la credencial faltante del caller y recibe el token del callback"
     origin: CH-33
-    status: open
-    target: CH-37
+    status: resolved
+    resolved_in: CH-37
     retargeted_from: [CH-35, CH-36]
 
   - id: D-012
     title: "Liberar la dirección de continuación (fin de sesión, vencimiento, handoff)"
     origin: CH-34
-    status: open
-    target: CH-37
+    status: resolved
+    resolved_in: CH-37
     retargeted_from: [CH-36]
 
   - id: D-013
     title: "Adaptador de salida: responder y avisar de una espera por el canal de la dirección"
     origin: CH-34
-    status: open
-    target: CH-37
+    status: resolved
+    resolved_in: CH-37
     retargeted_from: [CH-36]
 
   - id: D-014

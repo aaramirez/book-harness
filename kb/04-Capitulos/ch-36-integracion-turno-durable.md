@@ -13,7 +13,7 @@ articulos_constitucionales: ["P-13", "P-16", "P-17", "P-23", "P-31", "P-32", "P-
 
 ## Navegación
 
-⬅ [[ch-35-entorno-aislado|CH-35]] · **CH-36**
+⬅ [[ch-35-entorno-aislado|CH-35]] · **CH-36** · [[ch-37-esperas-credenciales-canales|CH-37]] ➡
 
 ## Resultado esperado
 

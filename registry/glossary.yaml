@@ -1609,3 +1609,19 @@ terms:
       CH-36).
     introduced_in: CH-36
     kind: concept
+
+  - term: Active Wait Expiry
+    definition: >
+      El vencimiento de una espera estacionada que no recibió respuesta: un schedule interno encuentra
+      las esperas cuyo expiresAt ya pasó, las marca EXPIRED y la integración continúa el run como si la
+      espera se hubiera rechazado (CH-37).
+    introduced_in: CH-37
+    kind: concept
+
+  - term: Outbound Reply
+    definition: >
+      Un mensaje que el arnés envía por el canal de la dirección de continuación que la sesión posee —
+      una respuesta o un aviso de espera con su waitId —, nunca a una dirección inferida del contenido
+      (P-34, CH-37).
+    introduced_in: CH-37
+    kind: concept

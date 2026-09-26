@@ -175,5 +175,7 @@ Vocabulario técnico canónico del libro *¿Cómo construir un arnés?* — extr
 | **SandboxSession** `C-047` | El entorno aislado abierto para una sesión: política de red, estado (OPEN / CLOSED), referencia al entorno real y a su ubicación. | [[ch-35-entorno-aislado|CH-35]] | contrato |
 | **NetworkPolicy** `C-048` | Qué puede alcanzar la red de un entorno aislado: DENY_ALL, ALLOW_ALL o ALLOW_LIST, con reglas por dominio que piden una credencial por nombre, nunca por valor. | [[ch-35-entorno-aislado|CH-35]] | contrato |
 | **Durable Governed Turn** | Un turno que entra por un canal con dirección, se admite con identidad verificada, se registra paso a paso, se estaciona sin cómputo cuando espera, ejecuta el código del modelo en un entorno sin secretos y se recupera de una caída sin repetir lo comprometido. | [[ch-36-integracion-turno-durable|CH-36]] | concepto |
+| **Active Wait Expiry** | El vencimiento de una espera estacionada sin respuesta: un schedule interno marca EXPIRED las esperas cuyo expiresAt pasó, y el run continúa como con un rechazo. | [[ch-37-esperas-credenciales-canales|CH-37]] | concepto |
+| **Outbound Reply** | Un mensaje que el arnés envía por el canal de la dirección que la sesión posee (una respuesta, o un aviso de espera con su waitId), nunca a una dirección inferida (P-34). | [[ch-37-esperas-credenciales-canales|CH-37]] | concepto |
 
 Ver también: [[Index|Mapa del libro]]

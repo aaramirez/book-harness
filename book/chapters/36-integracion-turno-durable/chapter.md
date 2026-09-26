@@ -8,7 +8,7 @@ introduces_contracts: []
 modifies_contracts: []
 constitutional_articles: [P-13, P-16, P-17, P-23, P-31, P-32, P-33, P-34, P-35, INV-05, INV-07, INV-13, INV-15, INV-E02, INV-E15, INV-E16, INV-E17, INV-E18, INV-E19, INV-E20]
 previous_chapter: CH-35
-next_chapter: null
+next_chapter: CH-37
 retrieval_set:
   expected_outcome:
     id: EO-CH36

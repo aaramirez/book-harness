@@ -88,3 +88,5 @@ chapters:
     file: chapters/35-entorno-aislado/chapter.md
   - id: CH-36
     file: chapters/36-integracion-turno-durable/chapter.md
+  - id: CH-37
+    file: chapters/37-esperas-credenciales-canales/chapter.md

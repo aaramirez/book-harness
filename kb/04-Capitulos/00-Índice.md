@@ -44,5 +44,6 @@ Los **28 capítulos** del libro *¿Cómo construir un arnés?* (CH-00 a CH-27).
 | CH-31 | [[ch-31-identidad-del-llamante|La Identidad del Llamante y el Arranque que No Admite Nada]] |
 | CH-32 | [[ch-32-pasos-durables|Pasos Durables y la Recuperación a Mitad de Turno]] |
 | CH-33 | [[ch-33-esperas-durables|Esperas Durables y la Reanudación desde Cualquier Canal]] |
+| CH-34 | [[ch-34-canales-continuacion|Canales y Direcciones de Continuación: HTTP, WebSocket, Webhooks y Schedules]] |
 
 Ver también: [[Index|Mapa del libro]]

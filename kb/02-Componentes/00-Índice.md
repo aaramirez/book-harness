@@ -34,5 +34,6 @@ Los **22 componentes** del runtime del arnés, en orden de introducción.
 | CMP-022 | [[CMP-022-skilllibrary|SkillLibrary]] | [[ch-24-skill-library|CH-24]] |
 | CMP-023 | [[CMP-023-executionjournal|ExecutionJournal]] | [[ch-32-pasos-durables|CH-32]] |
 | CMP-024 | [[CMP-024-resumptioncoordinator|ResumptionCoordinator]] | [[ch-33-esperas-durables|CH-33]] |
+| CMP-025 | [[CMP-025-continuationregistry|ContinuationRegistry]] | [[ch-34-canales-continuacion|CH-34]] |
 
 Ver también: [[Index|Mapa del libro]]

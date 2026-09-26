@@ -466,20 +466,26 @@ contracts:
   # Deliberadamente distinto de AgentActivationRequest (C-021, CH-11), que parte SIEMPRE de un
   # agentId ya conocido y ya registrado — CH-11 §6/§15 ya había anticipado y diferido esta
   # distinción bajo el término de glosario "Ingress Activation".
+  # C-022 v2 (CH-34): agrega sourceKind (Optional<SourceKind>: API, CHANNEL, WEBSOCKET, WEBHOOK,
+  # SCHEDULE, STREAM_EVENT) y continuationAddress (Optional<ContinuationAddress>, C-046). Ambos
+  # Optional para que CH-14..CH-33 sigan válidos: un ActivationRequest sin dirección siempre activa
+  # una sesión nueva, como en v1. ContinuationRegistry (CMP-025) decide si continúa o activa (P-34).
   - id: C-022
     name: ActivationRequest
-    version: v1
+    version: v2
     introduced_in: CH-14
     current_definition: |
       STRUCT ActivationRequest
           id: ActivationRequestId
           sourceRef: Text
+          sourceKind: Optional<SourceKind>
           externalIdentityRef: Text
+          continuationAddress: Optional<ContinuationAddress>
           payload: Value
           receivedAt: Timestamp
       END
-    used_by: [CMP-012]
-    modified_by: []
+    used_by: [CMP-012, CMP-025]
+    modified_by: [CH-34]
     constitutional_impact: [P-16, INV-E01]
 
   # C-023 v2 (CH-31, ADR-001 Accepted): agrega principal (Optional<Principal>): la identidad que
@@ -1077,3 +1083,19 @@ contracts:
     used_by: [CMP-024]
     modified_by: []
     constitutional_impact: [P-31, P-33, INV-E08, INV-E18]
+
+  # C-046 (ContinuationAddress): la dirección de una conversación externa — un hilo de chat, un
+  # issue, una sesión de socket, un schedule — que mapea a una sesión durable. A lo sumo una sesión
+  # es su dueña a la vez (INV-E19). La dirección se declara, nunca se infiere (P-34). CH-34.
+  - id: C-046
+    name: ContinuationAddress
+    version: v1
+    introduced_in: CH-34
+    current_definition: |
+      STRUCT ContinuationAddress
+          channelRef: Text
+          conversationRef: Text
+      END
+    used_by: [CMP-025]
+    modified_by: []
+    constitutional_impact: [P-34, INV-E19]

@@ -55,5 +55,6 @@ Los **35 contratos** canónicos del libro, en orden de introducción.
 | C-043 | [[C-043-recoverydecision|RecoveryDecision]] | [[ch-32-pasos-durables|CH-32]] |
 | C-044 | [[C-044-parkedwait|ParkedWait]] | [[ch-33-esperas-durables|CH-33]] |
 | C-045 | [[C-045-authorizationchallenge|AuthorizationChallenge]] | [[ch-33-esperas-durables|CH-33]] |
+| C-046 | [[C-046-continuationaddress|ContinuationAddress]] | [[ch-34-canales-continuacion|CH-34]] |
 
 Ver también: [[Index|Mapa del libro]]

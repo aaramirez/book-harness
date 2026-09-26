@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 34 — Canales y Continuación",
+    "output": "capitulo-34-canales-continuacion.html",
+    "viewBox": [
+      1080,
+      570
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "reclamar",
+        "label": "El primer mensaje reclama la dirección",
+        "focus": [
+          "canal",
+          "ingress",
+          "admission",
+          "registry"
+        ],
+        "note": "El hilo 1718 llega como ActivationRequest v2; tras ADMIT, la dirección no tiene dueña: ACTIVATE_NEW y la sesión nueva S1 la reclama."
+      },
+      {
+        "id": "continuar",
+        "label": "El mismo hilo continúa la misma sesión (P-34)",
+        "focus": [
+          "canal",
+          "ingress",
+          "registry"
+        ],
+        "note": "Con la misma dirección, routeAdmittedRequest devuelve CONTINUE_SESSION(S1): la continuación sale de la dirección declarada, nunca del texto."
+      },
+      {
+        "id": "duena",
+        "label": "Una sola dueña (INV-E19)",
+        "focus": [
+          "ingress",
+          "registry"
+        ],
+        "note": "Una segunda sesión que reclama chat-equipo/1718 recibe CONTINUATION_ADDRESS_ALREADY_OWNED; S1 sigue siendo la dueña."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "canal",
+      "type": "external",
+      "label": "Canal",
+      "sublabel": "chat, API, WebSocket, webhook, schedule"
+    },
+    {
+      "id": "ingress",
+      "type": "external",
+      "label": "Ingress Adapter",
+      "sublabel": "fuera del registro, INV-E01"
+    },
+    {
+      "id": "admission",
+      "type": "backend",
+      "label": "AdmissionController",
+      "sublabel": "CMP-012, si entra"
+    },
+    {
+      "id": "registry",
+      "type": "database",
+      "label": "ContinuationRegistry",
+      "sublabel": "CMP-025, a qué sesión va"
+    }
+  ],
+  "segments": [
+    {
+      "from": 172,
+      "to": 338,
+      "label": "Primer mensaje del hilo"
+    },
+    {
+      "from": 351,
+      "to": 432,
+      "label": "Mismo hilo, otra vez"
+    },
+    {
+      "from": 446,
+      "to": 500,
+      "label": "Dos dueñas, nunca"
+    }
+  ],
+  "messages": [
+    {
+      "id": "evento",
+      "from": "canal",
+      "to": "ingress",
+      "y": 185,
+      "label": "evento del hilo 1718",
+      "variant": "default",
+      "note": "el adaptador verifica firma u origen antes de todo: un evento inválido nunca llega a ser un ActivationRequest"
+    },
+    {
+      "id": "request",
+      "from": "ingress",
+      "to": "admission",
+      "y": 213,
+      "label": "ActivationRequest(sourceKind = CHANNEL, address = chat-equipo/1718)",
+      "variant": "emphasis",
+      "note": "C-022 v2: + sourceKind, + continuationAddress; con address = NULL activa una sesión nueva, como en CH-14..CH-33"
+    },
+    {
+      "id": "admit",
+      "from": "admission",
+      "to": "ingress",
+      "y": 241,
+      "label": "admitWithVerifiedIdentity → ADMIT",
+      "variant": "return",
+      "note": "CH-31: ADMIT con principal verificado; un canal sin regla de admisión no escucha (INV-E15)"
+    },
+    {
+      "id": "route",
+      "from": "ingress",
+      "to": "registry",
+      "y": 269,
+      "label": "routeAdmittedRequest(request, decision, claims)",
+      "variant": "default",
+      "note": "sin ADMIT propio → REQUEST_NOT_ADMITTED; sin continuationAddress → ACTIVATE_UNADDRESSED; no emite eventos"
+    },
+    {
+      "id": "new",
+      "from": "registry",
+      "to": "ingress",
+      "y": 297,
+      "label": "ACTIVATE_NEW: la dirección no tiene dueña",
+      "variant": "return",
+      "note": "después, el Routing elige el agente y SessionManager crea la sesión S1; el registro no hace ninguna de las dos cosas"
+    },
+    {
+      "id": "claim",
+      "from": "ingress",
+      "to": "registry",
+      "y": 325,
+      "label": "claimContinuationAddress(address, S1) → ACTIVE + CONTINUATION_ADDRESS_CLAIMED",
+      "variant": "emphasis",
+      "note": "S1 pasa a ser la dueña; reclamar de nuevo con S1 es idempotente y devuelve el mismo reclamo"
+    },
+    {
+      "id": "again",
+      "from": "canal",
+      "to": "ingress",
+      "y": 364,
+      "label": "otro mensaje del hilo 1718",
+      "variant": "default",
+      "note": "un WebSocket abierto durante horas funciona igual: cada mensaje es un turno, la conexión nunca es el run"
+    },
+    {
+      "id": "route2",
+      "from": "ingress",
+      "to": "registry",
+      "y": 392,
+      "label": "ActivationRequest(address = chat-equipo/1718) → ADMIT → routeAdmittedRequest",
+      "variant": "default",
+      "note": "misma admisión que el primer mensaje; findActiveClaim encuentra el reclamo ACTIVE de S1"
+    },
+    {
+      "id": "continue",
+      "from": "registry",
+      "to": "ingress",
+      "y": 420,
+      "label": "CONTINUE_SESSION(S1)",
+      "variant": "return",
+      "note": "continuationAllowedForCaller (CH-31) → PendingInput (CH-28) | ResumptionCoordinator (CH-33) | run nuevo en S1; enrutar no es autorizar"
+    },
+    {
+      "id": "claim2",
+      "from": "ingress",
+      "to": "registry",
+      "y": 459,
+      "label": "claimContinuationAddress(address, S2)",
+      "variant": "emphasis",
+      "note": "dos mensajes simultáneos del hilo decidieron ACTIVATE_NEW; solo un reclamo puede ganar"
+    },
+    {
+      "id": "reject",
+      "from": "registry",
+      "to": "ingress",
+      "y": 487,
+      "label": "CONTINUATION_ADDRESS_ALREADY_OWNED + CONTINUATION_CLAIM_REJECTED",
+      "variant": "dashed",
+      "note": "INV-E19: una dirección tiene a lo sumo una dueña; el perdedor se re-enruta y ahora sale CONTINUE_SESSION(S1)"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "admission",
+      "from": 209,
+      "to": 245,
+      "type": "backend"
+    },
+    {
+      "participant": "registry",
+      "from": 265,
+      "to": 329,
+      "type": "database"
+    },
+    {
+      "participant": "registry",
+      "from": 388,
+      "to": 424,
+      "type": "database"
+    },
+    {
+      "participant": "registry",
+      "from": 455,
+      "to": 491,
+      "type": "database"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "ContinuationAddress (C-046)",
+      "items": [
+        "channelRef + conversationRef: la dirección de una conversación externa",
+        "Ambos hacen falta: el issue 42 y el hilo 42 no son la misma conversación"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Canales como Ingress Adapters",
+      "items": [
+        "SourceKind: API · CHANNEL · WEBSOCKET (un turno por mensaje) · STREAM_EVENT",
+        "WEBHOOK: firma en tiempo constante · SCHEDULE: identidad SERVICE"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Frontera AdmissionController / ContinuationRegistry",
+      "items": [
+        "AdmissionController decide SI un estímulo entra",
+        "ContinuationRegistry decide A QUÉ SESIÓN va · chapter.md §8, §9, §11"
+      ]
+    }
+  ]
+}

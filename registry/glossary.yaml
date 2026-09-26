@@ -1546,3 +1546,25 @@ terms:
     introduced_in: CH-33
     kind: contract
     ref: C-045
+
+  - term: Continuation Address
+    definition: >
+      La dirección explícita de una conversación externa (canal + conversación) que mapea a una sesión
+      durable. Un mensaje nuevo con la misma dirección continúa esa sesión en vez de crear otra; el
+      arnés nunca adivina qué run continúa un estímulo (P-34, CH-34).
+    introduced_in: CH-34
+    kind: concept
+
+  - term: Exclusive Ownership
+    definition: >
+      La regla de que una dirección de continuación tiene a lo sumo una sesión dueña a la vez; otra
+      sesión solo puede reclamarla después de que la dueña la libere (INV-E19, CH-34).
+    introduced_in: CH-34
+    kind: concept
+
+  - term: ContinuationAddress
+    definition: >
+      El par channelRef + conversationRef que identifica una conversación externa (C-046, CH-34).
+    introduced_in: CH-34
+    kind: contract
+    ref: C-046

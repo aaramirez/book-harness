@@ -795,3 +795,29 @@ components:
     produces: [C-010, C-011, C-044, C-045]
     introduced_in: CH-33
     constitutional_articles: [P-23, P-33, INV-14, INV-15, INV-E18, INV-18, INV-19, INV-20]
+
+  - id: CMP-025
+    name: ContinuationRegistry
+    responsibility: >
+      Mantener qué sesión es dueña de cada dirección de continuación — un hilo, un issue, una sesión
+      de socket, un schedule — y decidir, para un ActivationRequest ya admitido, si continúa la
+      sesión dueña de su dirección o activa una sesión nueva, sin inferir nunca qué run continúa un
+      estímulo — sin admitir ni rechazar la activación, sin elegir qué agente atiende una activación
+      nueva, sin decidir si el llamante puede operar la sesión, sin reanudar una espera y sin
+      normalizar ni transportar el estímulo de ningún canal.
+    owns:
+      - "Every external conversation (a thread, an issue, a socket session, a schedule) MUST map to a durable session through an explicit continuation address with exclusive ownership. The runtime MUST NOT guess which run a stimulus continues (cita literal, P-34)"
+      - "A continuation address has at most one owning session at a time (cita literal, INV-E19) — reclamar, liberar y rechazar (fail-closed) el reclamo de una dirección que ya tiene otra sesión dueña"
+      - "decidir, para un ActivationRequest ya admitido, CONTINUE_SESSION (su dirección tiene dueña), ACTIVATE_NEW (dirección sin dueña) o ACTIVATE_UNADDRESSED (sin dirección)"
+    does_not_own:
+      - "admitir o rechazar la activación (AdmissionController, CMP-012, ya introducido en CH-14 — la frontera más importante de este capítulo: AdmissionController decide SI un estímulo entra; ContinuationRegistry decide A QUÉ SESIÓN va un estímulo que ya entró)"
+      - "decidir si el llamante verificado puede continuar la sesión dueña de la dirección (AdmissionController, CMP-012, continuationAllowedForCaller, CH-31)"
+      - "reanudar una espera estacionada de esa sesión (ResumptionCoordinator, CMP-024, ya introducido en CH-33)"
+      - "elegir qué agente atiende una activación nueva (Routing, Amendment v1.1 — sin componente propio en este registry)"
+      - "crear la sesión nueva ni guardar su historia (SessionManager, CMP-010, ya introducido en CH-10)"
+      - "normalizar el estímulo crudo, verificar la firma de un webhook, mantener un socket abierto o disparar un schedule (Ingress Adapter — infraestructura de borde, no un componente del registry; INV-E01)"
+    dependencies: []
+    consumes: [C-004, C-022, C-023]
+    produces: [C-010, C-011, C-046]
+    introduced_in: CH-34
+    constitutional_articles: [P-16, P-34, INV-E01, INV-E19, INV-18, INV-19, INV-20]

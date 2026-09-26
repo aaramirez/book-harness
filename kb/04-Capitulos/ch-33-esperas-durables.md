@@ -13,7 +13,7 @@ articulos_constitucionales: ["P-11", "P-23", "P-31", "P-33", "INV-14", "INV-15",
 
 ## Navegación
 
-⬅ [[ch-32-pasos-durables|CH-32]] · **CH-33**
+⬅ [[ch-32-pasos-durables|CH-32]] · **CH-33** · [[ch-34-canales-continuacion|CH-34]] ➡
 
 ## Resultado esperado
 

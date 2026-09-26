@@ -167,5 +167,8 @@ Vocabulario técnico canónico del libro *¿Cómo construir un arnés?* — extr
 | **Addressed Delivery** | Una respuesta que nombra explícitamente la espera que reanuda (su waitId) y trae la identidad verificada de quien responde. Nunca se infiere a qué espera va dirigida (INV-E18). | [[ch-33-esperas-durables|CH-33]] | concepto |
 | **ParkedWait** `C-044` | La espera estacionada: tipo (TOOL_APPROVAL, QUESTION, AUTHORIZATION, BUDGET_LIMIT), quién la pidió, quién puede responderla y su estado. | [[ch-33-esperas-durables|CH-33]] | contrato |
 | **AuthorizationChallenge** `C-045` | La solicitud de una autorización interactiva por usuario hacia un servicio externo; nunca contiene un token, que el callback entrega directo a CredentialBroker. | [[ch-33-esperas-durables|CH-33]] | contrato |
+| **Continuation Address** | La dirección explícita de una conversación externa (canal + conversación) que mapea a una sesión durable. Un mensaje nuevo con la misma dirección continúa esa sesión; el arnés nunca adivina qué run continúa un estímulo (P-34). | [[ch-34-canales-continuacion|CH-34]] | concepto |
+| **Exclusive Ownership** | Una dirección de continuación tiene a lo sumo una sesión dueña a la vez; otra sesión solo puede reclamarla después de que la dueña la libere (INV-E19). | [[ch-34-canales-continuacion|CH-34]] | concepto |
+| **ContinuationAddress** `C-046` | El par channelRef + conversationRef que identifica una conversación externa. | [[ch-34-canales-continuacion|CH-34]] | contrato |
 
 Ver también: [[Index|Mapa del libro]]

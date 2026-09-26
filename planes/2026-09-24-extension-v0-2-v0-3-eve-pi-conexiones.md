@@ -1,7 +1,7 @@
 # Plan — Extensión del libro v0.2 y v0.3: lecciones de eve, aportes de pi y conexión del arnés con el mundo
 
 **Fecha:** 2026-09-24
-**Estado:** 🚧 En ejecución. Fase 0 completa (T0.1–T0.6); CH-28 ✅, CH-29 ✅, CH-30 ✅, CH-31 ✅, CH-32 ✅, CH-33 ✅, CH-34 ✅, CH-35 ✅, CH-36 ✅; **release v0.2 cerrada** (tag `v0.2`, aprobada 2026-09-26). Siguiente: **v0.2.1 — resolver la deuda sin dueño** antes de v0.3 (ver `2026-09-26-cierre-release-v0-2.md` §3); los capítulos de v0.3 se renumerarán. Se ejecuta sobre `d16e2c7` (CH-00..CH-27, 22 componentes, 35 contratos).
+**Estado:** 🚧 En ejecución. Fase 0 completa (T0.1–T0.6); CH-28 ✅, CH-29 ✅, CH-30 ✅, CH-31 ✅, CH-32 ✅, CH-33 ✅, CH-34 ✅, CH-35 ✅, CH-36 ✅; **release v0.2 cerrada** (tag `v0.2`, aprobada 2026-09-26). Siguiente: **v0.2.1 — resolver la deuda sin dueño** antes de v0.3 (ver `2026-09-26-cierre-release-v0-2.md` §3); v0.3 **renumerada** (+2: CH-39..CH-49) para abrir CH-37 y CH-38 de v0.2.1. Se ejecuta sobre `d16e2c7` (CH-00..CH-27, 22 componentes, 35 contratos).
 
 **Depende de:**
 - `2026-08-23-book-harness-como-construir-un-arnes.md`: plan base (pipeline, registries, scripts, DoD).
@@ -35,7 +35,12 @@
 
 ## 1. Objetivo
 
-Extender *"¿Cómo construir un arnés?"* con **20 capítulos nuevos (CH-28..CH-47)** en dos releases.
+Extender *"¿Cómo construir un arnés?"* con **22 capítulos nuevos (CH-28..CH-49)** en dos releases, más una release intermedia de deuda:
+- v0.2: CH-28..CH-36;
+- v0.2.1: CH-37..CH-38, para cerrar la deuda de v0.2;
+- v0.3: CH-39..CH-49.
+
+**Renumeración (2026-09-26):** los capítulos de v0.3, antes CH-37..CH-47, pasaron a CH-39..CH-49 en todo el repositorio. Los ids de componentes (CMP-027..029) y contratos (C-049..C-066) planeados **no cambian**, porque CH-37 y CH-38 no introducen ninguno.
 
 - **v0.2 — Núcleo robusto y operación durable.** Cierra huecos que el libro declara y no resuelve:
   - P-23 (ejecución durable) no tiene mecanismo;
@@ -108,39 +113,50 @@ IDs correlativos por orden de introducción (regla de `registry/*.yaml`: nunca s
 | CH-35 | El entorno aislado y las credenciales que solo existen en el egress | eve | **CMP-026 IsolatedExecutionEnvironment**, CredentialBroker | C-047 SandboxSession, C-048 NetworkPolicy | — | P-35, INV-E08, INV-E20, Article XII |
 | CH-36 | Integración: el turno durable gobernado (`runDurableGovernedTurn`) | — | función de integración | — | — | todos los anteriores |
 
+### Release v0.2.1 — Cerrar la deuda de v0.2 (decisión del autor, 2026-09-26)
+
+Dos capítulos de integración, sin componentes ni contratos nuevos. Resuelven las 13 deudas `open → v0.2.1` de `registry/debt.yaml`: las decisiones que CH-28..CH-35 asignaron a "CH-36" y CH-36 no resolvió. D-014, la revisión de CH-13, ya se resolvió.
+
+| Cap. | Título | Componentes que se amplían | Deudas |
+| --- | --- | --- | --- |
+| CH-37 | Esperas, credenciales y canales completos | ResumptionCoordinator, CredentialBroker, ContinuationRegistry | D-009 vencimiento activo, D-010 reanudación durable de preguntas / autorizaciones / presupuesto, D-011 credencial faltante y callback, D-012 liberar la dirección, D-013 responder por el canal |
+| CH-38 | Identidad, auditoría y retención en todo el turno | AgentLoop, ContextEngine, AdmissionController, PolicyEngine, CredentialBroker, AuditLedger, DataGovernanceEngine | D-001 PendingInput durable, D-002 y D-003 compactación cableada y recuperable, D-004 auditoría de SAFE, D-005 admisión con Principal, D-006 PolicyEngine / CredentialBroker con caller, D-007 auditoría de continuaciones, D-008 retención del journal |
+
+Cierre de v0.2.1: `book.yaml` 0.2.1. `validate-debt` falla si queda alguna deuda con destino CH-37, CH-38 o v0.2.1 abierta. Después va el tag `v0.2.1`, con aprobación humana.
+
 ### Release v0.3 — Conectar, escalar y evolucionar
 
 | Cap. | Título | Origen | Componente | Contratos nuevos | Contratos modificados | Artículos |
 | --- | --- | --- | --- | --- | --- | --- |
-| CH-37 | El modelo como dato: catálogo, costo y cache | pi | ModelGateway | C-049 ModelDescriptor, C-050 UsageRecord | C-006 ModelRequest **v2**, C-007 ModelResponse **v2** | P-02, P-29, INV-E10 |
-| CH-38 | Extensiones que no pueden saltarse la constitución | pi | **CMP-027 ExtensionHost** | C-051 ExtensionRegistration, C-052 HookPoint, C-053 ResourceTrustDecision | — | P-07, P-12, EVO-10, INV-E24 |
-| CH-39 | Conexiones: MCP y OpenAPI como fuentes de capabilities | eve | **CMP-028 ConnectionManager** | C-054 ConnectionDescriptor | C-018 CapabilityDescriptor **v3** (+ `sourceConnectionId`) | P-03, P-19, P-38, INV-04, INV-05, INV-E08, INV-E25 |
-| CH-40 | Fuentes de datos gobernadas: recuperar sin tirarlo todo al contexto | eve (hueco) + libro | **CMP-029 RetrievalEngine** | C-055 DataSourceDescriptor, C-056 RetrievedCandidate | — | P-01, P-14, P-22, EVO-09, INV-E11, INV-E26 |
-| CH-41 | Presupuestos que se heredan | eve | ExecutionController | C-057 ExecutionUsage (se promueve) | C-012 ExecutionBudget **v2** | INV-09, INV-E06, INV-E21 |
-| CH-42 | Invocación durable entre agentes y A2A (único capítulo multi-agente) | eve (+A2A) | AgentCommunicationGateway | C-058 AgentInvocation, C-059 AgentCard | C-024 AgentCommunicationMessage **v2** | P-18..P-21, INV-E03..E06 |
-| CH-43 | Evolucionar el runtime sin romper sesiones abiertas | eve + pi | SessionManager, ExecutionFabricAdapter | C-060 RuntimeVersionSnapshot | C-020 SessionState **v3** | P-27, P-36, INV-E10, INV-E22 |
-| CH-44 | Observabilidad acotada por audiencia | eve + pi | DataGovernanceEngine, EventBus | C-061 SessionAudience, C-062 TraceCapturePolicy, C-063 TelemetrySpan | — | P-04, P-25, P-37, INV-E23 |
-| CH-45 | Medir el aporte de un cambio: evaluación con lift | pi | EvaluationHarness | C-064 LiftReport | C-032 EvaluationReport **v2** | P-28, INV-E13 |
-| CH-46 | El agente como directorio: autoría por convención | eve + pi | — (adaptador de autoría) | C-065 AgentManifest, C-066 AuthoringDiagnostic | — | P-06, P-39, EVO-10, INV-E27 |
-| CH-47 | Integración: el arnés conectado (`runConnectedGovernedTurn`) | — | función de integración | — | — | todos |
+| CH-39 | El modelo como dato: catálogo, costo y cache | pi | ModelGateway | C-049 ModelDescriptor, C-050 UsageRecord | C-006 ModelRequest **v2**, C-007 ModelResponse **v2** | P-02, P-29, INV-E10 |
+| CH-40 | Extensiones que no pueden saltarse la constitución | pi | **CMP-027 ExtensionHost** | C-051 ExtensionRegistration, C-052 HookPoint, C-053 ResourceTrustDecision | — | P-07, P-12, EVO-10, INV-E24 |
+| CH-41 | Conexiones: MCP y OpenAPI como fuentes de capabilities | eve | **CMP-028 ConnectionManager** | C-054 ConnectionDescriptor | C-018 CapabilityDescriptor **v3** (+ `sourceConnectionId`) | P-03, P-19, P-38, INV-04, INV-05, INV-E08, INV-E25 |
+| CH-42 | Fuentes de datos gobernadas: recuperar sin tirarlo todo al contexto | eve (hueco) + libro | **CMP-029 RetrievalEngine** | C-055 DataSourceDescriptor, C-056 RetrievedCandidate | — | P-01, P-14, P-22, EVO-09, INV-E11, INV-E26 |
+| CH-43 | Presupuestos que se heredan | eve | ExecutionController | C-057 ExecutionUsage (se promueve) | C-012 ExecutionBudget **v2** | INV-09, INV-E06, INV-E21 |
+| CH-44 | Invocación durable entre agentes y A2A (único capítulo multi-agente) | eve (+A2A) | AgentCommunicationGateway | C-058 AgentInvocation, C-059 AgentCard | C-024 AgentCommunicationMessage **v2** | P-18..P-21, INV-E03..E06 |
+| CH-45 | Evolucionar el runtime sin romper sesiones abiertas | eve + pi | SessionManager, ExecutionFabricAdapter | C-060 RuntimeVersionSnapshot | C-020 SessionState **v3** | P-27, P-36, INV-E10, INV-E22 |
+| CH-46 | Observabilidad acotada por audiencia | eve + pi | DataGovernanceEngine, EventBus | C-061 SessionAudience, C-062 TraceCapturePolicy, C-063 TelemetrySpan | — | P-04, P-25, P-37, INV-E23 |
+| CH-47 | Medir el aporte de un cambio: evaluación con lift | pi | EvaluationHarness | C-064 LiftReport | C-032 EvaluationReport **v2** | P-28, INV-E13 |
+| CH-48 | El agente como directorio: autoría por convención | eve + pi | — (adaptador de autoría) | C-065 AgentManifest, C-066 AuthoringDiagnostic | — | P-06, P-39, EVO-10, INV-E27 |
+| CH-49 | Integración: el arnés conectado (`runConnectedGovernedTurn`) | — | función de integración | — | — | todos |
 
 **Totales:**
 
 | | Cantidad | Rango |
 | --- | --- | --- |
-| Capítulos | 20 | CH-28..CH-47 |
+| Capítulos | 22 | CH-28..CH-49 (incluye CH-37..CH-38 de v0.2.1) |
 | Componentes | 7 | CMP-023..CMP-029 |
 | Contratos nuevos | 31 | C-036..C-066 |
 | Modificaciones de contrato | 15 | sobre 13 contratos: C-018 ×2, C-020 ×2 |
 
 **Dependencias que fijan el orden:**
 - CH-30 → CH-32: `ReplayPolicy`.
-- CH-31 → CH-33, CH-35, CH-42, CH-44: `Principal`.
+- CH-31 → CH-33, CH-35, CH-44, CH-46: `Principal`.
 - CH-32 + CH-33 → CH-34: la entrega por dirección puede reanudar una espera.
-- CH-29 → CH-43: `SessionState` v2 → v3.
-- CH-35 → CH-45: aislamiento de las corridas de eval.
-- CH-39 + CH-40 + CH-34 → CH-46: el directorio declara conexiones, datos y canales.
-- CH-41 → CH-42: presupuesto antes de multi-agente (P-09, EVO-02).
+- CH-29 → CH-45: `SessionState` v2 → v3.
+- CH-35 → CH-47: aislamiento de las corridas de eval.
+- CH-41 + CH-42 + CH-34 → CH-48: el directorio declara conexiones, datos y canales.
+- CH-43 → CH-44: presupuesto antes de multi-agente (P-09, EVO-02).
 
 ---
 
@@ -191,9 +207,9 @@ Formato mínimo del libro (`constitution/ARCHITECTURE_CONSTITUTION.md:867-884`):
 | --- | --- | --- | --- | --- |
 | ADR-001 | El principal verificado viaja en `ExecutionContext` | C-004 v2, C-023 v2 | `caller: Optional<CallerSnapshot>`: CH-00..CH-30 siguen válidos | CH-31 |
 | ADR-002 | La capability declara su política de replay | C-018 v2, C-009 v2 | Default `NEVER` (fail-closed) | CH-30 |
-| ADR-003 | La sesión es un árbol navegable con versión de runtime | C-020 v2 → v3 | `activeCheckpointId` y `runtimeVersion` opcionales | CH-29 (v2), CH-43 (v3) |
-| ADR-004 | El presupuesto es jerárquico | C-012 v2 | `parentRunId` opcional | CH-41 |
-| ADR-005 | Una capability puede venir de una conexión externa | C-018 v3 | `sourceConnectionId` opcional; las capabilities locales no cambian | CH-39 |
+| ADR-003 | La sesión es un árbol navegable con versión de runtime | C-020 v2 → v3 | `activeCheckpointId` y `runtimeVersion` opcionales | CH-29 (v2), CH-45 (v3) |
+| ADR-004 | El presupuesto es jerárquico | C-012 v2 | `parentRunId` opcional | CH-43 |
+| ADR-005 | Una capability puede venir de una conexión externa | C-018 v3 | `sourceConnectionId` opcional; las capabilities locales no cambian | CH-41 |
 
 ---
 
@@ -263,18 +279,35 @@ Cada ficha es el **Paso 2 ("Alcance decidido")** del plan propio del capítulo. 
 - **`runDurableGovernedTurn`:** admisión con Principal → continuación o activación → pasos con journal → espera aparcada y reanudación → recuperación tras un crash.
 - **Es la primera integración que sí cablea los caminos de CH-13,** y lo dice explícitamente.
 
-### CH-37 — El modelo como dato
+### CH-37 — Esperas, credenciales y canales completos (v0.2.1)
+- **ResumptionCoordinator (CMP-024):**
+  - `expireParkedWait`, que un schedule interno dispara (`sourceKind = SCHEDULE`, CH-34) al llegar `expiresAt`;
+  - la reanudación durable de `QUESTION`, `AUTHORIZATION` y `BUDGET_LIMIT`, con el mismo patrón que `resumeDurableApproval` (CH-36).
+- **CredentialBroker (CMP-014):** detectar la credencial faltante del `caller.current` (lo que abre un `AuthorizationChallenge`) y recibir el token del callback sin que pase por la espera (INV-E08).
+- **ContinuationRegistry (CMP-025):** cuándo se libera una dirección (fin de sesión, vencimiento, handoff) y el adaptador de salida para responder o avisar por el canal de la dirección.
+- **Restricción:** sin componentes ni contratos nuevos, solo tipos embebidos, para no correr los ids de v0.3.
+
+### CH-38 — Identidad, auditoría y retención en todo el turno (v0.2.1)
+- **Durabilidad:** `PendingInput` (CH-28) entre pasos, y la compactación (CH-29) cableada en el turno durable y recuperable si se corta.
+- **Identidad:**
+  - reglas de admisión que usan el `Principal` sin cambiar la firma de CH-14;
+  - PolicyEngine y CredentialBroker deciden con `execution.caller.current`.
+- **Auditoría (AuditLedger, CH-19):** capabilities declaradas `SAFE` y quién continuó cada sesión.
+- **Retención (DataGovernanceEngine, CH-20):** retención y archivo del journal de runs terminados.
+- **Restricción:** sin componentes ni contratos nuevos.
+
+### CH-39 — El modelo como dato
 - **Contratos:** C-049 `ModelDescriptor` (modelId, provider, contextWindow, maxOutputTokens, pricing, capabilities) y C-050 `UsageRecord` (input, output, cacheRead, cacheWrite, cost).
 - **C-006 v2** (`cacheRetention`) y **C-007 v2** (`usage`).
 - **Vínculo:** `BusinessOutcomeCorrelation` (CH-22) puede medir el costo por resultado.
 
-### CH-38 — ExtensionHost (CMP-027)
+### CH-40 — ExtensionHost (CMP-027)
 - **Contratos:** C-051 `ExtensionRegistration`, C-052 `HookPoint` (ENUM: BEFORE_RUN, TRANSFORM_CONTEXT, BEFORE_REQUEST, AFTER_RESPONSE, BEFORE_TOOL, AFTER_TOOL, BEFORE_COMPACTION, BEFORE_NAVIGATION) y C-053 `ResourceTrustDecision`.
 - **INV-E24:** ningún hook devuelve "autorizado".
 - **Hace cumplir EVO-10.**
 - **Separación P-12:** los hooks intervienen, los observers observan.
 
-### CH-39 — Conexiones MCP y OpenAPI (CMP-028 ConnectionManager)
+### CH-41 — Conexiones MCP y OpenAPI (CMP-028 ConnectionManager)
 - **Ficha:**
   - `responsibility`: gestionar el ciclo de vida de proveedores externos de capabilities (servidores **MCP** por **stdio** o **HTTP/SSE**, y especificaciones **OpenAPI**), y traducir sus tools u operaciones en `CapabilityDescriptor` con espacio de nombres `<conexión>__<tool>`, filtro allow/block y argumentos provistos (ocultos al modelo).
   - `does_not_own`: tokens (CredentialBroker), autorización (PolicyEngine), ejecución (ToolRuntime) y resolución (CapabilityRegistry).
@@ -283,7 +316,7 @@ Cada ficha es el **Paso 2 ("Alcance decidido")** del plan propio del capítulo. 
 - **P-38 e INV-E25.**
 - **Sección:** el arnés como **servidor** MCP es un canal (CH-34), no una conexión.
 
-### CH-40 — Fuentes de datos gobernadas (CMP-029 RetrievalEngine)
+### CH-42 — Fuentes de datos gobernadas (CMP-029 RetrievalEngine)
 - **Cierra el hueco declarado en CH-04:** `candidates` llegan "ya dados, sin retrieval".
 - **C-055 `DataSourceDescriptor`:** id, kind (SQL, FILES, HTTP, STREAM), transport?, classification, access READ_ONLY, scopeRule.
 - **C-056 `RetrievedCandidate`:** sourceId, content, provenance y label (`DataGovernanceLabel`, C-030).
@@ -291,37 +324,37 @@ Cada ficha es el **Paso 2 ("Alcance decidido")** del plan propio del capítulo. 
 - **INV-E26:** sin clasificación, la fuente es RESTRICTED.
 - **Ficha:** `does_not_own` incluye clasificar (DataGovernanceEngine), ensamblar el snapshot (ContextEngine) y resolver credenciales (CredentialBroker).
 
-### CH-41 — Presupuestos que se heredan
+### CH-43 — Presupuestos que se heredan
 - **C-057 `ExecutionUsage`:** se promueve desde la estructura embebida de `book/chapters/07-execution-controller/chapter.md:588`.
 - **C-012 v2** (`parentRunId`, `consumed`).
 - **`allocateChildBudget`.**
 - **INV-E21.**
 - **ADR-004.**
 
-### CH-42 — Invocación durable entre agentes y A2A
+### CH-44 — Invocación durable entre agentes y A2A
 - **C-058 `AgentInvocation`:** invocationId, owner: Principal, childRunId, status (WORKING, INPUT_REQUIRED, AUTHORIZATION_REQUIRED, COMPLETED, FAILED, CANCELLED), result?, expiresAt?.
 - **C-059 `AgentCard`:** anuncio de capacidades: agentRef, skills, endpointRef, authScheme.
 - **C-024 v2** (`invocationId`).
 - **A2A es un adaptador de protocolo** del Gateway (P-19, INV-E04/E05). Nunca es una dependencia del núcleo.
 
-### CH-43 — Evolución del runtime
+### CH-45 — Evolución del runtime
 - **C-060 `RuntimeVersionSnapshot`:** versión de agente, política, modelo y **formato de sesión** (aporte de pi).
 - **C-020 v3.**
 - **`sessionMayMigrate`.**
 - **INV-E22.**
 - **ADR-003** (parte v3).
 
-### CH-44 — Observabilidad por audiencia
+### CH-46 — Observabilidad por audiencia
 - **Contratos:** C-061 `SessionAudience` (PUBLIC / PRIVATE / UNKNOWN), C-062 `TraceCapturePolicy` y C-063 `TelemetrySpan` ("diagnostic data, not business state").
 - **Tabla de tres columnas:** evento (observa), auditoría (prueba) y span (diagnostica).
 - **INV-E23.**
 
-### CH-45 — Evaluación con lift
+### CH-47 — Evaluación con lift
 - **C-064 `LiftReport`:** baselineRef, treatmentRef, metric, scores, lift, isolationRef.
 - **C-032 v2** (`evidence`).
 - **Cada corrida** se hace en su propio entorno aislado (CH-35).
 
-### CH-46 — El agente como directorio
+### CH-48 — El agente como directorio
 - **Contratos:** C-065 `AgentManifest` (fuentes con origen y ruta) y C-066 `AuthoringDiagnostic` (level, code, path).
 - **Mapa ranura → contrato:**
   - `agent.ts` → `AgentConfig` (C-002) + `ExecutionBudget` (C-012);
@@ -336,7 +369,7 @@ Cada ficha es el **Paso 2 ("Alcance decidido")** del plan propio del capítulo. 
 - **INV-E27** y **P-39.**
 - **Es un adaptador de autoría, sin componente** (EVO-01). El propio arnés de producción del libro es el ejemplo: `registry/`, `book/`, `planes/` son autoría filesystem-first.
 
-### CH-47 — Integración v0.3
+### CH-49 — Integración v0.3
 - **`runConnectedGovernedTurn`:** manifiesto sin errores → admisión → recuperación de datos gobernados → capabilities de conexión autorizadas → invocación A2A con presupuesto heredado → trazas acotadas por audiencia.
 
 ---
@@ -354,7 +387,7 @@ Cada ficha es el **Paso 2 ("Alcance decidido")** del plan propio del capítulo. 
 
 ---
 
-## 8. Procedimiento por incremento (CH-28 … CH-47)
+## 8. Procedimiento por incremento (CH-28 … CH-49)
 
 ```text
 0. git checkout main && git pull && git checkout -b cap-NN-<slug>
@@ -395,7 +428,7 @@ Cada ficha es el **Paso 2 ("Alcance decidido")** del plan propio del capítulo. 
 
 ---
 
-## 9. Cierre de cada release (tras CH-36 y tras CH-47)
+## 9. Cierre de cada release (tras CH-36, tras CH-38 para v0.2.1, y tras CH-49)
 
 1. `book/chapters/25-epilogo-secuenciacion/chapter.md`:
    - agregar los tramos nuevos al orden y a la verificación de P-09;
@@ -411,12 +444,12 @@ Cada ficha es el **Paso 2 ("Alcance decidido")** del plan propio del capítulo. 
 ## 10. Riesgos y decisiones pendientes
 
 - **Validadores sin historia de versiones:** hay una sola `current_definition` por contrato, y en 35 contratos `modified_by` siempre ha estado vacío. T0.2 es obligatorio y puede requerir un plan de tooling previo.
-- **Escala:** 20 capítulos casi duplican el libro. v0.2 es autosuficiente, y v0.3 puede publicarse más tarde como "Parte III".
+- **Escala:** 22 capítulos casi duplican el libro. v0.2 es autosuficiente, y v0.3 puede publicarse más tarde como "Parte III".
 - **Copiar plataformas:** en cada Brief, verificar que el capítulo enseña un contrato o principio y no el producto de eve o pi (P-27, EVO-01).
 - **Protocolos reales (MCP, A2A):** el libro modela contratos y adaptadores, no la especificación del protocolo. Cada capítulo cita la especificación como adaptador y no la reproduce.
 - **Pendiente de decidir (T0.6):**
   - (1) la versión del libro;
-  - (2) si CH-46 (el agente como directorio) va en v0.3 o como apéndice;
+  - (2) si CH-48 (el agente como directorio) va en v0.3 o como apéndice;
   - (3) los nombres de los tramos en CH-25.
 
 ---
@@ -432,7 +465,7 @@ Cada ficha es el **Paso 2 ("Alcance decidido")** del plan propio del capítulo. 
 | T0.2 | 2026-09-24 | rama `spike/contract-v2` (descartada, no mergeada) | ✅ exit 0, 0 warnings | Con C-004 en `v2` (con `caller: Optional<CallerSnapshot>`, tipo aún inexistente), `modified_by: [CH-27]` y `modifies_contracts: [C-004]` en CH-27: (a) ✅ `validate-chapter` acepta `modifies_contracts`; (b) ✅ `validate-contracts` acepta `v2` + `modified_by`; (c) ✅ **CH-00..CH-27 siguen en verde**. `build-mind-map` dibuja la arista `CH-27 → C-004 [MODIFIES]`. **Hallazgo:** ningún validador revisa los tipos dentro de `current_definition` (se aceptó `CallerSnapshot` sin definir). No bloquea: el capítulo que modifica el contrato define el tipo en su propio pseudocódigo, que sí se valida. Mejora opcional de tooling: que `validate-contracts` verifique los tipos de `current_definition` contra los contratos introducidos hasta el último capítulo de `modified_by` |
 | T0.3 | 2026-09-24 | `7497ad7` | — | `docs/adr/ADR-001..005` en estado `Proposed`, con las 9 secciones del formato de la constitución (`:867-884`) |
 | T0.4 | 2026-09-25 | `Ratificar Amendment v1.2` | ✅ exit 0, 0 warnings | Aprobado tal cual por el autor. P-31..P-39 e INV-E15..E27 en la constitución (`:1002`) y en `kb/01-Constitucion/Amendment-v12.md`. Desbloquea CH-30+ |
-| T0.6 | 2026-09-25 | — | — | ✅ Decisiones del autor: (1) **versión** 0.2 y luego 0.3: CH-28..CH-36 con `starting_version: "0.1"`, `ending_version: "0.2"`; CH-37..CH-47 con `"0.2"` → `"0.3"`; `book.yaml` sube al cerrar cada release. (2) **CH-46 es un capítulo** en v0.3. (3) Los nombres de los tramos en CH-25 se fijan al cerrar v0.2 |
+| T0.6 | 2026-09-25 | — | — | ✅ Decisiones del autor: (1) **versión** 0.2 y luego 0.3: CH-28..CH-36 con `starting_version: "0.1"`, `ending_version: "0.2"`; CH-39..CH-49 con `"0.2"` → `"0.3"`; `book.yaml` sube al cerrar cada release. (2) **CH-48 es un capítulo** en v0.3. (3) Los nombres de los tramos en CH-25 se fijan al cerrar v0.2 |
 | CH-28 | 2026-09-25 | rama `cap-28-steering-follow-up` → `main` | ✅ exit 0, 0 fetch warnings | C-036 `PendingInput`; 0 componentes (amplía AgentLoop dentro de su owns); `runTurn` sin cambios. Plan: `planes/2026-09-25-capitulo-28-steering-follow-up.md` |
 | T0.7 | 2026-09-25 | rama `tooling-t07-monofont` → `main` | ✅ exit 0 | **Hallazgo preexistente:** el PDF emite `[WARNING] Missing character` por los glifos de dibujo de cajas (`─ │ ├ └ ▼`) de los diagramas de texto: 1733 en `main` antes de CH-28 y 1768 después (+35 del §10 de CH-28, mismo patrón que todos los capítulos). La fuente monoespaciada por defecto no los trae. Propuesta de tooling: `-V monofont="Consolas"` (o DejaVu Sans Mono) en `scripts/build-pdf`. **Aprobado por el autor y aplicado:** `monofont` Consolas (Windows) / Menlo (macOS), con override por `BOOK_PDF_MONOFONT`. Advertencias `Missing character`: **1768 → 6**. Las 6 restantes son los subíndices `ₖ`/`ₙ` (U+2096/U+2099) de un diagrama de texto de CH-10 (`chapter.md:1035-1042`), que Consolas no trae; no se tocó contenido de capítulos existentes |
 | CH-29 | 2026-09-25 | rama `cap-29-compactacion-sesiones-arbol` → `main` | ✅ exit 0, 30/30 capítulos | C-037 `CompactionSummary`, C-038 `BranchSummary`; **C-020 v1 → v2** (primera modificación real de un contrato; ADR-003 v2 Accepted). CH-00..CH-28 siguen en verde |
@@ -446,3 +479,4 @@ Cada ficha es el **Paso 2 ("Alcance decidido")** del plan propio del capítulo. 
 | Cierre v0.2 | 2026-09-26 | rama `release-v0.2` → `main`, tag `v0.2` | ✅ exit 0, 37/37 capítulos | Aprobado por el autor. CH-25 con notas de actualización (tramos, conteos, §19); diagramas generales con CMP-023..026; KB 26/48/37/165; `book.yaml` 0.2. Decisiones sobre la deuda: v0.2.1 con `registry/debt.yaml` verificable, revisión de CH-13 y capítulos de integración nuevos antes de v0.3 |
 | Tooling deuda | 2026-09-26 | rama `tooling-registro-deuda` → `main` | ✅ exit 0 | `registry/debt.yaml` (40 deudas: 14 → v0.2.1, 12 → v0.3, 9 resolved, 5 out_of_scope) y `scripts/validate-debt` en la etapa de validación de `build-all`: una deuda open cuyo capítulo destino ya existe, o cuya release ya se alcanzó, detiene el build. Plan: `2026-09-26-tooling-registro-de-deuda.md` |
 | Revisión CH-13 | 2026-09-26 | rama `rev-ch13-aprobacion-expuesta` → `main` | ✅ exit 0, 37/37 | D-014 resuelta: CH-13 agrega `beginToolApprovalPauseForDecision`, `resolveApprovalForResume` y `observationForApproval` (firmas publicadas intactas); CH-36 las invoca. Paquete LaTeX nuevo: `soul` (tachado). Hallazgo de entorno: `gs` sin `gs_init.ps`, no bloqueante |
+| Renumerar v0.3 | 2026-09-26 | rama `plan-renumerar-v0-3` → `main` | ✅ exit 0, 37/37 | v0.3 pasa de CH-37..CH-47 a **CH-39..CH-49** (117 referencias en 23 archivos: plan maestro, planes de capítulo, CH-25..CH-36, ADR-002..005, KB Amendment v1.2, registros). Nueva release **v0.2.1** con CH-37 y CH-38 (fichas en §3 y §6). Las 13 deudas de v0.2.1 apuntan ahora a CH-37 (5) y CH-38 (8). Ids de CMP y C planeados sin cambios |

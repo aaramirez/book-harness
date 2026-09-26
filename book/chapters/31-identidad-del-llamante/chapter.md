@@ -798,8 +798,8 @@ Components — 22, sin cambios
 
 - **El protocolo de verificación** (OIDC, JWT, API key). Es un adaptador fuera del registro; el libro modela qué hace el arnés con el resultado.
 - **Reglas de admisión que usen el principal.** `evaluateAdmissionForActivationRequest` (CH-14) sigue recibiendo solo el `ActivationRequest`. Que las reglas miren el tipo o el tenant del principal queda para la integración (CH-36), sin cambiar la firma de CH-14 en este capítulo.
-- **Que `CredentialBroker`, `PolicyEngine` y la memoria usen `caller.current`.** El dato ya viaja; cablearlo es de la integración (CH-36) y de los capítulos de conexiones (CH-39) y datos (CH-40).
-- **Reenviar la identidad a otro agente** (`forwardPrincipal`, con remitentes de confianza). Es de la invocación entre agentes (CH-42).
+- **Que `CredentialBroker`, `PolicyEngine` y la memoria usen `caller.current`.** El dato ya viaja; cablearlo es de la integración (CH-36) y de los capítulos de conexiones (CH-41) y datos (CH-42).
+- **Reenviar la identidad a otro agente** (`forwardPrincipal`, con remitentes de confianza). Es de la invocación entre agentes (CH-44).
 - **Auditar quién continuó cada sesión** (CH-19 ya tiene el mecanismo; falta conectarlo).
 
 ## 19. Siguiente Incremento (Next Increment)

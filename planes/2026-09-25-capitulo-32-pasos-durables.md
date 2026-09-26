@@ -73,6 +73,6 @@ Quinto capítulo del Tramo 4 y **primer componente nuevo** de v0.2. P-23 exige e
 
 - Cableado de `beginStep … commitStep` y `recoverRun` en el turno completo: CH-36 (`runDurableGovernedTurn`).
 - Un paso que espera una aprobación no debe retener el proceso: CH-33 (esperas durables).
-- Varias tool calls por respuesta: `ModelResponse` v1 propone una; se modela si un capítulo futuro lo amplía (candidato: CH-37, catálogo de modelos).
+- Varias tool calls por respuesta: `ModelResponse` v1 propone una; se modela si un capítulo futuro lo amplía (candidato: CH-39, catálogo de modelos).
 - Retención y archivo del journal de runs terminados: gobierno del dato (CH-20), sin mecanismo.
-- `sessionMayMigrate` (CH-43) debe leer los pasos sin comprometer (INV-E22).
+- `sessionMayMigrate` (CH-45) debe leer los pasos sin comprometer (INV-E22).

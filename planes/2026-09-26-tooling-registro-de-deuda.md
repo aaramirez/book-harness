@@ -51,7 +51,7 @@ Cualquiera de las tres queda en el diff y en la revisión humana.
 
 Los 35 puntos de las secciones "Deuda" de CH-28..CH-36, deduplicados y separados en unidades atómicas. Resultan 40 entradas:
 - **14 `open` → `v0.2.1`:** los 9 grupos "sin dueño" del cierre de v0.2, separados en unidades atómicas. Cada una lleva en `retargeted_from` el capítulo escrito que no la resolvió.
-- **12 `open` → capítulo de v0.3** (CH-37..CH-43, numeración actual del plan maestro; se actualizan cuando se renumere v0.3).
+- **12 `open` → capítulo de v0.3** (CH-39..CH-45, numeración actual del plan maestro; se actualizan cuando se renumere v0.3).
 - **9 `resolved`** por un capítulo posterior de v0.2.
 - **5 `out_of_scope`**, con justificación.
 
@@ -68,7 +68,7 @@ Los 35 puntos de las secciones "Deuda" de CH-28..CH-36, deduplicados y separados
   - `scripts/lib/registries.js` (`loadDebts`) y `scripts/build-all` (`validate-debt` después de `validate-components`);
   - `scripts/README.md`, `agents/book-architect.md` (el Brief debe incluir la deuda con destino en el capítulo, y el agente corre `validate-debt`) y `kb/00-Inicio/Como-Usar-la-KB.md`;
   - §8 del plan maestro: el paso REGISTRO actualiza `registry/debt.yaml` y corre `validate-debt`.
-- **`validate-debt`:** OK (26 open, 9 resolved, 5 out_of_scope). Destinos abiertos: `v0.2.1` 14, CH-40 4, CH-39 2, CH-42 2, CH-43 2, CH-37 1, CH-41 1.
+- **`validate-debt`:** OK (26 open, 9 resolved, 5 out_of_scope). Destinos abiertos: `v0.2.1` 14, CH-42 4, CH-41 2, CH-44 2, CH-45 2, CH-39 1, CH-43 1.
 - **Pruebas negativas** (sobre copias; los archivos se restauraron y se compararon byte a byte):
   1. D-001 con destino CH-36 → `VENCIDA: su destino CH-36 ya existe`, exit 1;
   2. `book.version` en 0.2.1 → 14 deudas `VENCIDA`, exit 1;

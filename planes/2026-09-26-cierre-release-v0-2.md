@@ -33,7 +33,7 @@ Inventario: 35 puntos en las secciones "Deuda" de los planes de CH-28..CH-36.
 
 | Pregunta | Decisión |
 |---|---|
-| ¿Cuándo? | **Tag v0.2 ahora; la deuda sin dueño se resuelve en v0.2.1, antes de CH-37** |
+| ¿Cuándo? | **Tag v0.2 ahora; la deuda sin dueño se resuelve en v0.2.1, antes de CH-39** |
 | ¿Dónde? | **Capítulos nuevos de integración antes de v0.3**; los capítulos de v0.3 se renumeran |
 | ¿Registro? | **Sí, verificable**: `registry/debt.yaml` más un validador en `build-all` (con plan de tooling propio, regla 5) |
 | ¿CH-13? | **Revisar CH-13**: `beginToolApprovalPause` devuelve la solicitud y `resumeAfterHumanResolution` expone el `ToolResult`; se ajustan CH-13, CH-33 y CH-36 |

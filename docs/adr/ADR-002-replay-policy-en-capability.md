@@ -37,4 +37,4 @@ P-24, INV-07, INV-11, INV-E09, INV-E17 (Amendment v1.2).
 
 - Default `NEVER`: ningún pseudocódigo previo cambia de comportamiento.
 - `registry/contracts.yaml`: C-018 y C-009 pasan a `version: v2` con `modified_by: [CH-30]`.
-- C-018 vuelve a cambiar en CH-39 (ADR-005).
+- C-018 vuelve a cambiar en CH-41 (ADR-005).

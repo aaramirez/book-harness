@@ -845,7 +845,7 @@ EGRESS_DENIED   — una salida de red del entorno fue denegada (payload: EgressD
 ```
 
 Las salidas permitidas no emiten eventos: serían demasiadas y no son decisiones de riesgo. Quedan en
-la telemetría del proxy (CH-44).
+la telemetría del proxy (CH-46).
 
 ## 15. Implicaciones de Seguridad / Política (Security / Policy Implications)
 
@@ -905,12 +905,12 @@ ResumptionCoordinator (CH-33), ContinuationRegistry (CH-34), IsolatedExecutionEn
 - **El mecanismo real de aislamiento** (máquina virtual ligera, contenedor, proceso restringido) y el
   proxy que inyecta la credencial: infraestructura de borde.
 - **Un tipo de capability en el descriptor.** Hoy las capabilities aisladas son una lista
-  configurada; un campo en `CapabilityDescriptor` sería otra versión de C-018, que CH-39 ya lleva a
+  configurada; un campo en `CapabilityDescriptor` sería otra versión de C-018, que CH-41 ya lleva a
   v3.
 - **Transformaciones más ricas en el egress** (reescribir rutas, limitar métodos): la regla solo
   une dominio y credencial.
-- **Límites de CPU, memoria y disco del entorno:** son presupuesto (ExecutionController, CH-41).
-- **Aislamiento de las corridas de evaluación:** CH-45 reusa este entorno.
+- **Límites de CPU, memoria y disco del entorno:** son presupuesto (ExecutionController, CH-43).
+- **Aislamiento de las corridas de evaluación:** CH-47 reusa este entorno.
 
 ## 19. Siguiente Incremento (Next Increment)
 

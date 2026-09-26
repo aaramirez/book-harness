@@ -371,7 +371,7 @@ Tramo 4 — Operación durable, Amendment v1.2 (CH-28..CH-36, nueve capítulos) 
 
 Con el Tramo 4, el registro tiene 26 componentes y 48 contratos. Ninguno de los cuatro componentes
 nuevos es multi-agente: `P-09` se sigue cumpliendo, y la única pieza multi-agente del libro sigue
-siendo `AgentCommunicationGateway` (CH-15). La próxima (invocación durable entre agentes, CH-42)
+siendo `AgentCommunicationGateway` (CH-15). La próxima (invocación durable entre agentes, CH-44)
 está planeada en la versión 0.3, después de los presupuestos que se heredan.
 
 ## 2. El Problema (Problem)

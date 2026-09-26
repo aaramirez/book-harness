@@ -73,5 +73,5 @@ Sexto capítulo del Tramo 4. Cierra la otra mitad de CH-13: `beginToolApprovalPa
 - Vencimiento activo (`EXPIRED` sin respuesta): necesita un disparador de tiempo, que llega con los schedules (CH-34).
 - Reanudar preguntas, autorizaciones y límites de presupuesto: mismo patrón que `resumeToolApprovalWait`, se integra en CH-36.
 - A qué canal avisar que hay una espera: dirección de continuación (CH-34).
-- Esperas de un run hijo hacia el padre: CH-42.
+- Esperas de un run hijo hacia el padre: CH-44.
 - `CredentialBroker` todavía no tiene la función que detecta la credencial faltante del `caller.current` ni la que recibe el token del callback: CH-35 (credenciales solo en el egress) o CH-36.

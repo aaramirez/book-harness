@@ -77,7 +77,7 @@ Y que un arnés sin reglas de admisión configuradas no admita nada, en ningún 
 ## 8. Deuda
 
 - Reglas de admisión que usen el principal (tipo, tenant): la firma de `evaluateAdmissionForActivationRequest` (CH-14) no cambia; se cablea en la integración (CH-36).
-- `CredentialBroker`, `PolicyEngine` y memoria leyendo `caller.current`: CH-36, CH-39 (conexiones) y CH-40 (datos).
-- Reenvío de identidad entre agentes (`forwardPrincipal`): CH-42.
+- `CredentialBroker`, `PolicyEngine` y memoria leyendo `caller.current`: CH-36, CH-41 (conexiones) y CH-42 (datos).
+- Reenvío de identidad entre agentes (`forwardPrincipal`): CH-44.
 - Auditoría de quién continuó cada sesión (CH-19): el mecanismo existe, falta conectarlo.
 - CH-32 hereda: la identidad ya viaja, pero la recuperación a mitad de turno no tiene una unidad más fina que el turno.

@@ -17,98 +17,98 @@
 # una deuda hay que marcarla resolved, moverla (dejando el destino anterior en retargeted_from) o
 # declararla out_of_scope con su justificación.
 #
-# Carga inicial (2026-09-26): los puntos de "Deuda" de CH-28..CH-36. Los destinos de v0.3 usan la
-# numeración del plan maestro vigente y se actualizan cuando se renumere v0.3.
+# Carga inicial (2026-09-26): los puntos de "Deuda" de CH-28..CH-36. Los destinos de v0.3 ya usan la
+# numeración renumerada (CH-39..CH-49). Las 13 deudas de v0.2.1 apuntan a CH-37 / CH-38.
 
 debts:
-  # --- open → v0.2.1: prometidas a un capítulo de v0.2 que se escribió sin resolverlas --------
+  # --- open → CH-37 / CH-38 (v0.2.1): prometidas a un capítulo de v0.2 que se escribió sin resolverlas
 
   - id: D-001
     title: "PendingInput durable entre pasos y aplicado por el turno durable"
     origin: CH-28
     status: open
-    target: v0.2.1
+    target: CH-38
     retargeted_from: [CH-32, CH-36]
 
   - id: D-002
     title: "Compactación del historial cableada en el turno durable"
     origin: CH-29
     status: open
-    target: v0.2.1
+    target: CH-38
     retargeted_from: [CH-36]
 
   - id: D-003
     title: "Recuperación de una compactación interrumpida a la mitad"
     origin: CH-29
     status: open
-    target: v0.2.1
+    target: CH-38
     retargeted_from: [CH-32]
 
   - id: D-004
     title: "Auditoría de las capabilities que declaran replayPolicy = SAFE"
     origin: CH-30
     status: open
-    target: v0.2.1
+    target: CH-38
 
   - id: D-005
     title: "Reglas de admisión que usan el Principal (tipo, tenant) sin cambiar la firma de CH-14"
     origin: CH-31
     status: open
-    target: v0.2.1
+    target: CH-38
     retargeted_from: [CH-36]
 
   - id: D-006
     title: "PolicyEngine y CredentialBroker deciden con execution.caller.current"
     origin: CH-31
     status: open
-    target: v0.2.1
+    target: CH-38
     retargeted_from: [CH-36]
 
   - id: D-007
     title: "Auditoría de quién continuó cada sesión"
     origin: CH-31
     status: open
-    target: v0.2.1
+    target: CH-38
 
   - id: D-008
     title: "Retención y archivo del journal de runs terminados"
     origin: CH-32
     status: open
-    target: v0.2.1
+    target: CH-38
 
   - id: D-009
     title: "Vencimiento activo de esperas (EXPIRED) con un schedule interno"
     origin: CH-33
     status: open
-    target: v0.2.1
+    target: CH-37
     retargeted_from: [CH-34, CH-36]
 
   - id: D-010
     title: "Reanudación durable de preguntas, autorizaciones y límites de presupuesto"
     origin: CH-33
     status: open
-    target: v0.2.1
+    target: CH-37
     retargeted_from: [CH-36]
 
   - id: D-011
     title: "CredentialBroker detecta la credencial faltante del caller y recibe el token del callback"
     origin: CH-33
     status: open
-    target: v0.2.1
+    target: CH-37
     retargeted_from: [CH-35, CH-36]
 
   - id: D-012
     title: "Liberar la dirección de continuación (fin de sesión, vencimiento, handoff)"
     origin: CH-34
     status: open
-    target: v0.2.1
+    target: CH-37
     retargeted_from: [CH-36]
 
   - id: D-013
     title: "Adaptador de salida: responder y avisar de una espera por el canal de la dirección"
     origin: CH-34
     status: open
-    target: v0.2.1
+    target: CH-37
     retargeted_from: [CH-36]
 
   - id: D-014
@@ -126,73 +126,73 @@ debts:
     title: "Provenance propia del bloque de resumen en assembleContextSnapshot"
     origin: CH-29
     status: open
-    target: CH-40
+    target: CH-42
 
   - id: D-016
     title: "Etiqueta de gobierno del dato para el resumen de compactación"
     origin: CH-29
     status: open
-    target: CH-40
+    target: CH-42
 
   - id: D-017
     title: "runtimeVersion en SessionState (ADR-003 parte v3)"
     origin: CH-29
     status: open
-    target: CH-43
+    target: CH-45
 
   - id: D-018
     title: "Las conexiones (MCP/OpenAPI) usan execution.caller.current"
     origin: CH-31
     status: open
-    target: CH-39
+    target: CH-41
 
   - id: D-019
     title: "Datos y memoria usan execution.caller.current"
     origin: CH-31
     status: open
-    target: CH-40
+    target: CH-42
 
   - id: D-020
     title: "Reenvío de identidad entre agentes (forwardPrincipal)"
     origin: CH-31
     status: open
-    target: CH-42
+    target: CH-44
 
   - id: D-021
     title: "Varias tool calls por respuesta del modelo"
     origin: CH-32
     status: open
-    target: CH-37
+    target: CH-39
 
   - id: D-022
     title: "sessionMayMigrate lee los pasos sin comprometer (INV-E22)"
     origin: CH-32
     status: open
-    target: CH-43
+    target: CH-45
 
   - id: D-023
     title: "Esperas de un run hijo reenviadas al padre"
     origin: CH-33
     status: open
-    target: CH-42
+    target: CH-44
 
   - id: D-024
     title: "Lectura de eventos de stream como fuente de datos"
     origin: CH-34
     status: open
-    target: CH-40
+    target: CH-42
 
   - id: D-025
     title: "Tipo de capability en CapabilityDescriptor (reemplaza la lista isolatedCapabilities)"
     origin: CH-35
     status: open
-    target: CH-39
+    target: CH-41
 
   - id: D-026
     title: "Límites de CPU, memoria y disco del entorno aislado"
     origin: CH-35
     status: open
-    target: CH-41
+    target: CH-43
 
   # --- resolved ---------------------------------------------------------------------------------
 

@@ -84,7 +84,7 @@ retrieval_set:
     reinforcing_loop: |
       Si cada garantía se cumple solo en su capítulo, cada integración nueva las reimplementa a su
       manera y deja huecos distintos; cuantas más integraciones, más huecos. Un turno durable de
-      referencia corta la espiral: las integraciones futuras (CH-47) parten de él.
+      referencia corta la espiral: las integraciones futuras (CH-49) parten de él.
     balancing_loop: |
       El journal es el mecanismo de equilibrio del turno completo: por muchas caídas, esperas y
       reanudaciones que ocurran, cada paso se compromete una sola vez y nunca se repite (INV-E16).
@@ -823,8 +823,14 @@ con el mundo: herramientas externas, fuentes de datos y otros agentes.
 Antes del siguiente capítulo se cierra la versión 0.2 (epílogo, diagramas generales, conteos y
 tag). Luego empieza la versión 0.3 con el **modelo como dato** (catálogo, costo y cache).
 
-Será CH-37 ("El Modelo como Dato: Catálogo, Costo y Cache"). `next_chapter` queda en `null` porque
-CH-37 todavía no existe.
+Será CH-39 ("El Modelo como Dato: Catálogo, Costo y Cache"). `next_chapter` queda en `null` porque
+CH-39 todavía no existe.
+
+> **Nota de v0.2.1 (2026-09-26).** Al cerrar la versión 0.2 quedaron trece puntos que este capítulo
+> debía cablear y no cableó (`registry/debt.yaml`, D-001..D-013). Antes de la versión 0.3 se
+> escriben dos capítulos más: CH-37 ("Esperas, Credenciales y Canales Completos") y CH-38
+> ("Identidad, Auditoría y Retención en Todo el Turno"). Por eso los capítulos de la versión 0.3
+> se renumeraron a CH-39..CH-49, y el siguiente capítulo real es CH-37.
 
 ## 20. Lente de Sistemas (Systems Lens)
 

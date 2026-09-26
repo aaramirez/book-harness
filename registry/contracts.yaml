@@ -355,7 +355,7 @@ contracts:
   # real, un ToolCall (C-008, CH-02) válido.
   # C-018 v2 (CH-30, ADR-002 Accepted 2026-09-25): agrega replayPolicy (Optional<ReplayPolicy>).
   # NULL equivale a NEVER (fail-closed) vía effectiveReplayPolicy: ningún descriptor ya registrado
-  # cambia de comportamiento. Vuelve a cambiar en CH-39 (sourceConnectionId, ADR-005).
+  # cambia de comportamiento. Vuelve a cambiar en CH-41 (sourceConnectionId, ADR-005).
   - id: C-018
     name: CapabilityDescriptor
     version: v2

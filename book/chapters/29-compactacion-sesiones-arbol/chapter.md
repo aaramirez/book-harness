@@ -957,7 +957,7 @@ SESSION_BRANCH_NAVIGATED    — SessionManager navegó dentro de la sesión (pay
   un efecto ya ocurrido en el mundo real no se revierte por volver a un checkpoint.
 - **Clasificación de datos en el resumen:** si la región antigua contenía datos sensibles, su
   resumen también puede contenerlos. Aplicar la etiqueta de gobierno del dato (CH-20) al resumen
-  queda para la integración (CH-36) y para las fuentes gobernadas (CH-40).
+  queda para la integración (CH-36) y para las fuentes gobernadas (CH-42).
 
 ## 16. Tests (Tests)
 
@@ -997,10 +997,10 @@ Components (registry/components.yaml) — 22, sin cambios
 ## 18. Lo Que Deliberadamente No Resolvemos Todavía (What We Deliberately Do Not Solve Yet)
 
 - **Cablearlo en la integración.** Ninguna función de integración invoca todavía `planHistoryCompaction` ni `navigateToCheckpoint`. El primer cableado será CH-36.
-- **Provenance del bloque del resumen.** `assembleContextSnapshot` (CH-04) sigue etiquetando todo candidato como `"conversation_history"`. El `CompactionSummary` ya lleva su propia `provenance`, pero el `ContextBlock` resultante no la distingue todavía. Generalizar la procedencia por fuente es parte de las fuentes de datos gobernadas (CH-40).
-- **Etiqueta de gobierno del dato para el resumen** (CH-20 / CH-40).
+- **Provenance del bloque del resumen.** `assembleContextSnapshot` (CH-04) sigue etiquetando todo candidato como `"conversation_history"`. El `CompactionSummary` ya lleva su propia `provenance`, pero el `ContextBlock` resultante no la distingue todavía. Generalizar la procedencia por fuente es parte de las fuentes de datos gobernadas (CH-42).
+- **Etiqueta de gobierno del dato para el resumen** (CH-20 / CH-42).
 - **Recuperar un turno interrumpido a mitad de la compactación** (CH-32, pasos durables).
-- **La versión del runtime en la sesión** (`runtimeVersion`, ADR-003 parte v3, CH-43).
+- **La versión del runtime en la sesión** (`runtimeVersion`, ADR-003 parte v3, CH-45).
 
 ## 19. Siguiente Incremento (Next Increment)
 

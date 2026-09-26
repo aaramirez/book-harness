@@ -28,7 +28,7 @@ Octavo capítulo del Tramo 4 y último componente de v0.2. Darle dueño al entor
 ## 3. Decisiones de diseño centrales
 
 - **Aislar no es ubicar.** `placementRef` enlaza con el `ExecutionPlacement` de CH-21 sin duplicar la decisión de dónde corre el cómputo.
-- **Qué capabilities se aíslan es configuración** (`isolatedCapabilities`). `CapabilityDescriptor` no tiene un campo de tipo, y agregarlo sería otra versión de C-018; CH-39 lleva C-018 a v3 y puede absorberlo.
+- **Qué capabilities se aíslan es configuración** (`isolatedCapabilities`). `CapabilityDescriptor` no tiene un campo de tipo, y agregarlo sería otra versión de C-018; CH-41 lleva C-018 a v3 y puede absorberlo.
 - **La credencial se pide por nombre, nunca por valor.** `EgressRule.credentialName` → `resolveEgressCredential` → `CredentialReference` opaca → el proxy del borde (infraestructura) la usa. El entorno nunca la ve (INV-E20).
 - **Fail-closed en tres lugares:** una `ALLOW_LIST` vacía es inválida, una `DENY_ALL` con reglas es inválida, y una configuración del entorno que nombra una credencial se rechaza.
 - **Denegar no es un error del run:** `decideEgress` devuelve `DENY` y emite `EGRESS_DENIED`; la tool recibe el fallo como cualquier error de red.
@@ -69,7 +69,7 @@ Octavo capítulo del Tramo 4 y último componente de v0.2. Darle dueño al entor
 ## 8. Deuda
 
 - Mecanismo real de aislamiento y proxy de egress: infraestructura de borde.
-- Tipo de capability en `CapabilityDescriptor` (hoy, lista configurada `isolatedCapabilities`): candidato para C-018 v3 en CH-39.
+- Tipo de capability en `CapabilityDescriptor` (hoy, lista configurada `isolatedCapabilities`): candidato para C-018 v3 en CH-41.
 - Transformaciones de egress más ricas (rutas, métodos): sin modelar.
-- Límites de CPU/memoria/disco del entorno: presupuesto jerárquico (CH-41).
+- Límites de CPU/memoria/disco del entorno: presupuesto jerárquico (CH-43).
 - Detección de la credencial faltante del `caller.current` y recepción del token del callback (deuda de CH-33): siguen pendientes para CH-36.

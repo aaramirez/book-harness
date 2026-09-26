@@ -23,10 +23,10 @@ Introduce **P-31..P-39** e **INV-E15..INV-E27**. Se ratificó el 2026-09-25 (pla
 | P-33 | Esperar es durable y no consume cómputo | CH-33 |
 | P-34 | Las conversaciones externas se direccionan, no se infieren | CH-34 |
 | P-35 | Los secretos nunca entran al cómputo que controla el modelo | CH-35 |
-| P-36 | El runtime evoluciona con sesiones abiertas solo en fronteras inactivas | CH-43 |
-| P-37 | La captura de observabilidad está acotada por la audiencia | CH-44 |
-| P-38 | Las capabilities externas entran solo por conexiones declaradas | CH-39 |
-| P-39 | Un agente se escribe como archivos inspeccionables en ubicaciones convencionales | CH-46 |
+| P-36 | El runtime evoluciona con sesiones abiertas solo en fronteras inactivas | CH-45 |
+| P-37 | La captura de observabilidad está acotada por la audiencia | CH-46 |
+| P-38 | Las capabilities externas entran solo por conexiones declaradas | CH-41 |
+| P-39 | Un agente se escribe como archivos inspeccionables en ubicaciones convencionales | CH-48 |
 
 ## Nuevas invariantes (INV-E15..INV-E27)
 
@@ -38,12 +38,12 @@ Introduce **P-31..P-39** e **INV-E15..INV-E27**. Se ratificó el 2026-09-25 (pla
 | INV-E18 | Una entrega solo reanuda la espera que direcciona, y solo si el respondedor está autorizado | CH-33 |
 | INV-E19 | Una dirección de continuación tiene a lo sumo una sesión dueña | CH-34 |
 | INV-E20 | Las credenciales nunca se materializan dentro del entorno aislado | CH-35 |
-| INV-E21 | El presupuesto de un hijo nunca excede el saldo del padre | CH-41 |
-| INV-E22 | El trabajo vivo nunca migra entre versiones del runtime | CH-43 |
-| INV-E23 | Ningún destino de trazas captura más que el techo de la sesión | CH-44 |
-| INV-E24 | Ningún punto de enganche devuelve una autorización | CH-38 |
-| INV-E25 | Ninguna tool externa llega al modelo sin CapabilityRegistry y PolicyEngine | CH-39 |
-| INV-E26 | Toda fuente de datos declara su clasificación; sin ella es RESTRICTED | CH-40 |
-| INV-E27 | Un diagnóstico de autoría de nivel ERROR impide activar el agente | CH-46 |
+| INV-E21 | El presupuesto de un hijo nunca excede el saldo del padre | CH-43 |
+| INV-E22 | El trabajo vivo nunca migra entre versiones del runtime | CH-45 |
+| INV-E23 | Ningún destino de trazas captura más que el techo de la sesión | CH-46 |
+| INV-E24 | Ningún punto de enganche devuelve una autorización | CH-40 |
+| INV-E25 | Ninguna tool externa llega al modelo sin CapabilityRegistry y PolicyEngine | CH-41 |
+| INV-E26 | Toda fuente de datos declara su clasificación; sin ella es RESTRICTED | CH-42 |
+| INV-E27 | Un diagnóstico de autoría de nivel ERROR impide activar el agente | CH-48 |
 
 Ver también: [[Architecture-Constitution|Constitución]] · [[Amendment-v11|Enmienda v1.1]] · [[Index|Mapa del libro]]

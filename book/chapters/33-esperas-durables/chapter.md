@@ -1000,7 +1000,7 @@ Primer uso real de PAUSED (C-013) y de resumeAfterHumanResolution (CH-13).
   `resolveHumanInteractionRequest` (CH-06), `CredentialBroker` (CH-16) y `ExecutionController`
   (CH-07); se integran en CH-36.
 - **A qué canal avisar** que hay una espera. Es la dirección de continuación (CH-34).
-- **Esperas de un run hijo** reenviadas al padre: invocación entre agentes (CH-42).
+- **Esperas de un run hijo** reenviadas al padre: invocación entre agentes (CH-44).
 - **El protocolo OAuth** en sí: es un adaptador de callback, fuera del núcleo.
 
 ## 19. Siguiente Incremento (Next Increment)

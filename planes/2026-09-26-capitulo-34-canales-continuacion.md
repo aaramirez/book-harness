@@ -71,4 +71,4 @@ Séptimo capítulo del Tramo 4. P-16 normaliza todo estímulo en un `ActivationR
 - Adaptador de salida para responder por el canal de la dirección: CH-36.
 - Routing (qué agente atiende una activación nueva): sigue en Preview.
 - Schedule interno que dispare el vencimiento de esperas (deuda de CH-33): CH-36.
-- Lectura de eventos de stream como fuente de datos: CH-40.
+- Lectura de eventos de stream como fuente de datos: CH-42.

@@ -498,7 +498,7 @@ Ninguno de estos canales es un componente. Todos terminan en lo mismo: un `Activ
 | **WebSocket de entrada** | `WEBSOCKET` | `websocket` + la clave de sesión del cliente | autenticar al abrir la conexión; **cada mensaje es un turno**, nunca una conexión es un run |
 | **Webhook** | `WEBHOOK` | sistema + objeto (p.ej. `issues` + "42") | verificar la **firma** del cuerpo con comparación en **tiempo constante**, y rechazar entregas repetidas o fuera de ventana |
 | **Schedule** (cron) | `SCHEDULE` | `schedule` + nombre, si debe continuar una sesión; ninguna si cada ejecución es nueva | disparar con la identidad `SERVICE` configurada para ese schedule |
-| **Evento de stream** | `STREAM_EVENT` | la que declare la fuente (CH-40) | igual que un webhook: verificar el origen |
+| **Evento de stream** | `STREAM_EVENT` | la que declare la fuente (CH-42) | igual que un webhook: verificar el origen |
 
 Tres reglas valen para todos los canales:
 - **un canal sin regla de admisión no escucha.** No hace falta una función nueva: con INV-E15
@@ -832,7 +832,7 @@ Ingreso, en orden
 - **El Routing:** qué agente atiende una activación nueva sigue siendo Preview.
 - **El vencimiento de esperas** (deuda de CH-33) puede dispararse con un schedule interno; se cablea
   en CH-36.
-- **Eventos de stream como fuente de datos:** su lado de lectura es de CH-40.
+- **Eventos de stream como fuente de datos:** su lado de lectura es de CH-42.
 
 ## 19. Siguiente Incremento (Next Increment)
 

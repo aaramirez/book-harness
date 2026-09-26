@@ -90,8 +90,8 @@ Segundo capítulo del Tramo 4.
 ## 8. Deuda intencional
 
 - Cableado en la integración (CH-36).
-- Provenance del bloque del resumen en `assembleContextSnapshot`, que sigue etiquetando `"conversation_history"` (CH-40).
-- Etiqueta de gobierno del dato para el resumen (CH-20 / CH-40).
+- Provenance del bloque del resumen en `assembleContextSnapshot`, que sigue etiquetando `"conversation_history"` (CH-42).
+- Etiqueta de gobierno del dato para el resumen (CH-20 / CH-42).
 - Recuperación a mitad de la compactación (CH-32).
-- `runtimeVersion` en la sesión (ADR-003 v3, CH-43).
+- `runtimeVersion` en la sesión (ADR-003 v3, CH-45).
 - CH-30 hereda: un efecto cuyo resultado se desconoce no puede "volver a pedirse" sin política de replay.

@@ -2,7 +2,7 @@
 
 - **ADR-ID:** ADR-005
 - **Title:** Una capability puede venir de una conexión externa
-- **Status:** Proposed (2026-09-24). Pasa a `Accepted` con CH-39, con aprobación humana.
+- **Status:** Proposed (2026-09-24). Pasa a `Accepted` con CH-41, con aprobación humana.
 
 ## Context
 
@@ -19,7 +19,7 @@ El descriptor tiene que registrar de qué conexión viene cada capability, para 
 
 ## Decision
 
-1. `ConnectionManager` (CMP-028, CH-39) traduce las tools u operaciones de cada `ConnectionDescriptor` (C-054) en `CapabilityDescriptor`, con el espacio de nombres `<conexión>__<tool>`.
+1. `ConnectionManager` (CMP-028, CH-41) traduce las tools u operaciones de cada `ConnectionDescriptor` (C-054) en `CapabilityDescriptor`, con el espacio de nombres `<conexión>__<tool>`.
 2. **C-018 `CapabilityDescriptor` v3:** agrega `sourceConnectionId: Optional<ConnectionId>`.
 3. Ninguna tool externa llega al modelo sin pasar por CapabilityRegistry y PolicyEngine (INV-E25).
 
@@ -40,4 +40,4 @@ P-03, P-19, P-38 (Amendment v1.2), INV-04, INV-05, INV-06, INV-E08, INV-E10, INV
 ## Migration Strategy
 
 - Campo `Optional`.
-- `registry/contracts.yaml`: C-018 pasa a `version: v3` con `modified_by: [CH-30, CH-39]`.
+- `registry/contracts.yaml`: C-018 pasa a `version: v3` con `modified_by: [CH-30, CH-41]`.

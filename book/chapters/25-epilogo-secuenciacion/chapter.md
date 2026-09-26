@@ -349,6 +349,31 @@ documentado con honestidad: "63/64, no 64/64". La única regla sin ninguna cita 
 capítulo, es `P-09` — "Single-agent reliability precedes multi-agent complexity" — la misma que
 encabeza este capítulo.
 
+**Actualización (cierre de v0.2, 2026-09-26).** Después de este epílogo el libro siguió creciendo.
+El texto anterior se conserva tal como se escribió; los tramos que vinieron después son:
+
+```text
+Tramo 3 (cierre) — Integración enterprise, sin componentes nuevos (CH-26..CH-27, dos capítulos)
+    CH-26  runGovernedEnterpriseTurn — camino feliz de una activación admitida y gobernada
+    CH-27  caminos de control enterprise
+
+Tramo 4 — Operación durable, Amendment v1.2 (CH-28..CH-36, nueve capítulos) — versión 0.2
+    CH-28  steering y follow-up                (AgentLoop, C-036)
+    CH-29  compactación y sesiones en árbol    (ContextEngine, SessionManager; C-020 v2)
+    CH-30  política de replay                  (IdempotencyGuard; C-018 v2, C-009 v2)
+    CH-31  identidad del llamante              (AdmissionController; C-004 v2, C-023 v2)
+    CH-32  ExecutionJournal                    (CMP-023) — Reliability Plane
+    CH-33  ResumptionCoordinator               (CMP-024) — Execution Plane
+    CH-34  ContinuationRegistry                (CMP-025) — Ingress & Activation Plane
+    CH-35  IsolatedExecutionEnvironment        (CMP-026) — Execution Fabric
+    CH-36  runDurableGovernedStep y otras cuatro funciones de integración
+```
+
+Con el Tramo 4, el registro tiene 26 componentes y 48 contratos. Ninguno de los cuatro componentes
+nuevos es multi-agente: `P-09` se sigue cumpliendo, y la única pieza multi-agente del libro sigue
+siendo `AgentCommunicationGateway` (CH-15). La próxima (invocación durable entre agentes, CH-42)
+está planeada en la versión 0.3, después de los presupuestos que se heredan.
+
 ## 2. El Problema (Problem)
 
 `P-09` no es un descuido editorial: es la única regla de las sesenta y cuatro que, por su propia
@@ -576,6 +601,13 @@ CH-00 → CH-01 → CH-02 → ... → CH-11 → CH-12 → CH-13 → CH-14 → CH
 [----------------- single-agent, 14 capítulos -----------------] [-- CH-15: única pieza multi-agente --]
 ```
 
+**Actualización (cierre de v0.2):** la secuencia continúa, sin ninguna pieza multi-agente nueva:
+
+```text
+… → CH-25 → CH-26 → CH-27 → CH-28 → … → CH-31 → CH-32 → CH-33 → CH-34 → CH-35 → CH-36
+            [integración enterprise] [------------ Tramo 4: operación durable, single-agent ------------]
+```
+
 **Vista 2 — Sequence**
 
 ```text
@@ -597,6 +629,10 @@ CH-15         → AgentCommunicationGateway (CMP-013) — PRIMERA pieza multi-ag
 CH-16..CH-24  → 9 componentes más, todos single-agent, sobre el mismo runtime ya validado
    ▼
 CH-25 (este capítulo) → verifica, con scripts deterministas, que el orden anterior es real
+   ▼
+CH-26, CH-27  → integración enterprise, sin componentes nuevos        (actualización, cierre de v0.2)
+   ▼
+CH-28..CH-36  → Tramo 4: cuatro componentes nuevos, todos single-agent, y una integración durable
 ```
 
 **Vista 3 — Verificación (reemplaza el pseudocódigo: no hay ninguna función de componente que
@@ -767,6 +803,12 @@ la Constitution están citadas por código real" deja de ser una promesa con una
 (CH-24 §9: "63/64, no 64/64") y se convierte en un hecho verificado con el mismo comando que ya se
 usó para detectar la brecha.
 
+**Actualización (cierre de v0.2).** Después de CH-36: 26 componentes (`CMP-001`..`CMP-026`), 48
+contratos (`C-001`..`C-048`), 37 capítulos (`CH-00`..`CH-36`). El Amendment v1.2 agregó
+`P-31`..`P-39` e `INV-E15`..`INV-E27`; la versión 0.2 cita con código real `P-31`..`P-35` e
+`INV-E15`..`INV-E20`. El resto (`P-36`..`P-39`, `INV-E21`..`INV-E27`) corresponde a la
+versión 0.3.
+
 ## 18. Lo Que Deliberadamente No Resolvemos Todavía (What We Deliberately Do Not Solve Yet)
 
 Este capítulo cierra la cita de `P-09` — no cierra ninguna de las deudas de integración reales que
@@ -796,6 +838,12 @@ real a "¿qué le falta al libro?" — la misma disciplina que cada uno de los v
 anteriores ya aplicó a su propia deuda.
 
 ## 19. Siguiente Incremento (Next Increment)
+
+> **Nota del cierre de v0.2 (2026-09-26).** Este capítulo dejó de ser el último. Cuando se escribió,
+> `next_chapter` quedó en `null`; al agregarse CH-26 pasó a `CH-26`, y el párrafo siguiente, que
+> lo declara "el último capítulo planeado", quedó desactualizado. Se conserva como registro de lo
+> que el libro planeaba en la versión 0.1. La lista de la sección 18 se cerró en buena parte con la
+> integración enterprise (CH-26, CH-27) y con la operación durable (CH-28..CH-36).
 
 Este capítulo es, por decisión explícita de este encargo, el vigesimosexto y último capítulo
 planeado de este libro. `next_chapter` queda en `null` en su propio frontmatter, y

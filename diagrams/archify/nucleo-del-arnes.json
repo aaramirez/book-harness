@@ -9,7 +9,7 @@
       "url": "https://github.com/aaramirez/book-harness",
       "provider": "github",
       "link_mode": "web",
-      "revision": "44a70a2f8c42910934bb812f1d0d869eba386e5d"
+      "revision": "3bcceb5d310cbcbff2fc4ba7bb6ebb4201eae30a"
     },
     "views": [
       { "id": "ciclo-cognitivo", "label": "El ciclo cognitivo", "focus": ["agentcore", "agentloop", "contextengine", "modelgateway"], "note": "AgentLoop pide contexto, invoca al modelo y decide la transición del turno." },
@@ -45,7 +45,7 @@
     { "id": "loop-to-session", "from": "agentloop", "to": "sessionmanager", "label": "createOrUpdateSessionCheckpoint", "variant": "default", "fromSide": "bottom", "toSide": "top" }
   ],
   "cards": [
-    { "dot": "cyan", "title": "Article III — Component Sovereignty", "items": ["Los once componentes de Article III, sin excepción", "Ningún componente absorbe una decisión de otro dominio (Article IV)"] },
+    { "dot": "cyan", "title": "Article III — Component Sovereignty", "items": ["Los once componentes de Article III, sin excepción", "Los otros quince de la versión 0.2 (26 componentes, 48 contratos) son de Amendment v1.1/v1.2 — ver 'capa-enterprise'", "Ningún componente absorbe una decisión de otro dominio (Article IV)"] },
     { "dot": "rose", "title": "INV-06 / INV-11", "items": ["Una acción con side effects nunca se ejecuta sin una PolicyDecision ALLOW previa", "AgentLoop nunca ejecuta tools directamente — ToolRuntime coordina la ejecución real"] },
     { "dot": "emerald", "title": "La traza real (CH-12)", "items": ["runAgentTurnEndToEnd invoca estas once fichas en el orden exacto de este diagrama", "Ningún componente cambió de dueño para que la integración funcionara"] }
   ]

@@ -1,0 +1,131 @@
+#!/usr/bin/env node
+'use strict';
+/**
+ * validate-debt — consistencia de registry/debt.yaml
+ * (planes/2026-09-26-tooling-registro-de-deuda.md).
+ *
+ * Verifica, para cada deuda:
+ *   - campos obligatorios; id con formato D-NNN y único; status ∈ open | resolved | out_of_scope
+ *   - origin referencia un capítulo real de book/book.yaml
+ *   - open: target es un capítulo (CH-NN) o una release (vX.Y.Z)
+ *       · CH-NN: el capítulo destino NO existe todavía en book/book.yaml (si existe, la deuda
+ *         quedó vencida: se escribió el capítulo y no la resolvió) y su número es mayor que el
+ *         del origen
+ *       · vX.Y.Z: book.version todavía no alcanzó esa release (si la alcanzó, quedó vencida)
+ *   - resolved: resolved_in existe en book/book.yaml y no es anterior al origen
+ *   - out_of_scope: rationale no vacío
+ */
+const reg = require('./lib/registries.js');
+
+const STATUSES = new Set(['open', 'resolved', 'out_of_scope']);
+const CHAPTER_RE = /^CH-(\d{2})$/;
+const RELEASE_RE = /^v(\d+)\.(\d+)(?:\.(\d+))?$/;
+
+function releaseTuple(text) {
+  const m = String(text).match(/^v?(\d+)\.(\d+)(?:\.(\d+))?$/);
+  if (!m) return null;
+  return [Number(m[1]), Number(m[2]), Number(m[3] || 0)];
+}
+
+function compareReleases(a, b) {
+  for (let i = 0; i < 3; i += 1) {
+    if (a[i] !== b[i]) return a[i] - b[i];
+  }
+  return 0;
+}
+
+function main() {
+  const errors = [];
+  const { book, order } = reg.loadBook();
+  const debts = reg.loadDebts();
+  const bookVersion = releaseTuple(book && book.version);
+  if (!bookVersion) errors.push(`book/book.yaml: book.version "${book && book.version}" no tiene formato X.Y o X.Y.Z`);
+
+  const seen = new Set();
+  const counts = { open: 0, resolved: 0, out_of_scope: 0 };
+  const byTarget = new Map();
+
+  for (const d of debts) {
+    const label = d && d.id ? d.id : JSON.stringify(d);
+    for (const field of ['id', 'title', 'origin', 'status']) {
+      if (!d || d[field] === undefined || d[field] === null || d[field] === '') {
+        errors.push(`Deuda ${label}: falta el campo obligatorio "${field}"`);
+      }
+    }
+    if (!d || !d.id) continue;
+    if (!/^D-\d{3}$/.test(d.id)) errors.push(`Deuda ${label}: id "${d.id}" no sigue el formato D-NNN`);
+    if (seen.has(d.id)) errors.push(`Deuda ${label}: id duplicado`);
+    seen.add(d.id);
+
+    const originIdx = reg.chapterIndex(order, d.origin);
+    if (d.origin && originIdx === -1) {
+      errors.push(`Deuda ${label}: origin "${d.origin}" no existe en book/book.yaml`);
+    }
+
+    if (!STATUSES.has(d.status)) {
+      errors.push(`Deuda ${label}: status "${d.status}" no es open | resolved | out_of_scope`);
+      continue;
+    }
+    counts[d.status] += 1;
+
+    if (d.status === 'open') {
+      const target = d.target;
+      if (!target) {
+        errors.push(`Deuda ${label}: status open exige "target" (CH-NN o vX.Y.Z)`);
+        continue;
+      }
+      byTarget.set(target, (byTarget.get(target) || 0) + 1);
+      const ch = String(target).match(CHAPTER_RE);
+      const rel = String(target).match(RELEASE_RE);
+      if (ch) {
+        if (reg.chapterIndex(order, target) !== -1) {
+          errors.push(`Deuda ${label} VENCIDA: su destino ${target} ya existe en book/book.yaml y la deuda sigue open ("${d.title}"). Márcala resolved (resolved_in), muévela (retargeted_from) o declárala out_of_scope (rationale).`);
+        }
+        const originNum = Number(String(d.origin).replace('CH-', ''));
+        if (Number(ch[1]) <= originNum) {
+          errors.push(`Deuda ${label}: el destino ${target} no es posterior al origen ${d.origin}`);
+        }
+      } else if (rel) {
+        const targetTuple = releaseTuple(target);
+        if (bookVersion && compareReleases(bookVersion, targetTuple) >= 0) {
+          errors.push(`Deuda ${label} VENCIDA: su destino ${target} ya se alcanzó (book.version = ${book.version}) y la deuda sigue open ("${d.title}").`);
+        }
+      } else {
+        errors.push(`Deuda ${label}: target "${target}" no es CH-NN ni vX.Y.Z`);
+      }
+    }
+
+    if (d.status === 'resolved') {
+      const idx = reg.chapterIndex(order, d.resolved_in);
+      if (!d.resolved_in || idx === -1) {
+        errors.push(`Deuda ${label}: status resolved exige "resolved_in" con un capítulo existente en book/book.yaml`);
+      } else if (originIdx !== -1 && idx < originIdx) {
+        errors.push(`Deuda ${label}: resolved_in ${d.resolved_in} es anterior al origen ${d.origin}`);
+      }
+    }
+
+    if (d.status === 'out_of_scope') {
+      if (!d.rationale || String(d.rationale).trim() === '') {
+        errors.push(`Deuda ${label}: status out_of_scope exige "rationale"`);
+      }
+    }
+
+    if (d.retargeted_from !== undefined && !Array.isArray(d.retargeted_from)) {
+      errors.push(`Deuda ${label}: retargeted_from debe ser una lista`);
+    }
+  }
+
+  if (errors.length) {
+    console.error('validate-debt: FALLÓ\n');
+    for (const e of errors) console.error('  - ' + e);
+    console.error(`\n${errors.length} error(es).`);
+    process.exit(1);
+  }
+
+  const targets = [...byTarget.entries()].map(([t, n]) => `${t}: ${n}`).join(', ');
+  console.log(`validate-debt: OK (${debts.length} deuda(s): ${counts.open} open, ${counts.resolved} resolved, ${counts.out_of_scope} out_of_scope)`);
+  if (targets) console.log(`  destinos abiertos: ${targets}`);
+  process.exit(0);
+}
+
+main();

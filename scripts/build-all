@@ -4,7 +4,7 @@
 /**
  * build-all — pipeline end-to-end (Fase 7 del plan):
  *
- *   validar (contracts, components, cada capítulo de book/book.yaml)
+ *   validar (contracts, components, deuda, cada capítulo de book/book.yaml)
  *     → build-book-ir
  *     → build-mind-map   (planes/2026-08-24-mapa-mental-progresivo.md — bloquea el build si falla,
  *                          mismo patrón que el resto de la etapa de construcción)
@@ -48,6 +48,7 @@ function main() {
   try {
     run('validate-contracts');
     run('validate-components');
+    run('validate-debt');
     for (const ch of chapters) {
       run('validate-chapter', [path.join('book', ch.file)]);
       run('validate-retrieval-set', [path.join('book', ch.file)]);

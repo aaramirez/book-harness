@@ -32,6 +32,11 @@ function loadComponents() {
   return data.components || [];
 }
 
+function loadDebts() {
+  const data = readYaml('registry/debt.yaml');
+  return data.debts || [];
+}
+
 function loadGlossary() {
   const data = readYaml('registry/glossary.yaml');
   return data.terms || [];
@@ -93,6 +98,7 @@ module.exports = {
   loadContracts,
   loadComponents,
   loadGlossary,
+  loadDebts,
   loadFrontmatter,
   loadConstitutionArticleIds,
 };

@@ -36,6 +36,8 @@ reestructuración mayor de capítulos). Esas decisiones requieren aprobación hu
 2. `book/book.yaml` — orden canónico de capítulos.
 3. `registry/contracts.yaml`, `registry/components.yaml`, `registry/glossary.yaml` — qué existe
    ya y en qué capítulo se introdujo.
+3b. `registry/debt.yaml` — qué deuda tiene como destino el capítulo que se va a escribir. El
+   Brief debe incluirla: o el capítulo la resuelve, o la mueve con su justificación.
 4. El `chapter.md` del capítulo anterior en `book/book.yaml` (para "Current Architecture").
 
 Nunca debe inventar contratos, componentes o artículos constitucionales que no estén en estas
@@ -75,6 +77,7 @@ Brief** con exactamente estas secciones, en este orden:
 1. `scripts/validate-chapter <ruta-del-capitulo>`
 2. `scripts/validate-contracts`
 3. `scripts/validate-components`
+4. `scripts/validate-debt` — falla si una deuda abierta apunta a este capítulo ya escrito
 
 Si cualquiera falla, el capítulo vuelve a Chapter Author con los hallazgos — este agente no
 edita prosa directamente (esa es responsabilidad de un Editor Agent, fuera de alcance de

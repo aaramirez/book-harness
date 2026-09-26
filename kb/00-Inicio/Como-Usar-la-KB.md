@@ -34,6 +34,7 @@ Esta es una **Knowledge Base de Obsidian** sobre el libro *¿Cómo construir un 
 | Registro de componentes | `registry/components.yaml` |
 | Registro de contratos | `registry/contracts.yaml` |
 | Registro de glosario | `registry/glossary.yaml` |
+| Registro de deuda | `registry/debt.yaml` |
 | Manifiesto del libro | `book/book.yaml` |
 | Capítulos | `book/chapters/*/chapter.md` |
 | Planes de ejecución | `planes/*.md` |

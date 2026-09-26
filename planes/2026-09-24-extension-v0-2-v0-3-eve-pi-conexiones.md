@@ -368,7 +368,9 @@ Cada ficha es el **Paso 2 ("Alcance decidido")** del plan propio del capítulo. 
            registry/components.yaml  (ficha de 10 campos; does_not_own citando componentes ya registrados)
            registry/contracts.yaml   (nuevos con introduced_in: CH-NN; modificados: version++, current_definition, modified_by += CH-NN)
            registry/glossary.yaml
-           node scripts/validate-components && node scripts/validate-contracts   → OK
+           registry/debt.yaml        (deuda con target CH-NN: resolved / retargeted_from / out_of_scope;
+                                      la deuda nueva de §18 entra con su destino)
+           node scripts/validate-components && node scripts/validate-contracts && node scripts/validate-debt   → OK
 4. CAPÍTULO: secciones 0–21 con las skills write-technical-chapter, define-component, define-contract,
            write-pseudocode (sin entidades mágicas), analyze-constitutional-impact (§4 y §17),
            design-retrieval-practice (retrieval_set)
@@ -442,3 +444,4 @@ Cada ficha es el **Paso 2 ("Alcance decidido")** del plan propio del capítulo. 
 | CH-35 | 2026-09-26 | rama `cap-35-entorno-aislado` → `main` | ✅ exit 0, 36/36 capítulos | **CMP-026 IsolatedExecutionEnvironment** (dueño de "sandboxing", Article XII), C-047 `SandboxSession`, C-048 `NetworkPolicy`; CredentialBroker gana `resolveEgressCredential`. Entorno sin secretos (INV-E20); la credencial se nombra en la regla y se inyecta en el borde (P-35); capabilities aisladas por lista configurada |
 | CH-36 | 2026-09-26 | rama `cap-36-integracion-turno-durable` → `main` | ✅ exit 0, 37/37 capítulos | Integración v0.2 en cinco funciones (`enterDurableTurn`, `bindDurableCaller`, `runDurableGovernedStep`, `resumeDurableApproval`, `resolvePendingStepOnRecovery`), sin componentes ni contratos. **Hallazgo:** `beginToolApprovalPause` / `resumeAfterHumanResolution` (CH-13) no exponen la solicitud ni el `ToolResult`, así que el turno durable compone sus piezas en vez de invocarlas |
 | Cierre v0.2 | 2026-09-26 | rama `release-v0.2` → `main`, tag `v0.2` | ✅ exit 0, 37/37 capítulos | Aprobado por el autor. CH-25 con notas de actualización (tramos, conteos, §19); diagramas generales con CMP-023..026; KB 26/48/37/165; `book.yaml` 0.2. Decisiones sobre la deuda: v0.2.1 con `registry/debt.yaml` verificable, revisión de CH-13 y capítulos de integración nuevos antes de v0.3 |
+| Tooling deuda | 2026-09-26 | rama `tooling-registro-deuda` → `main` | ✅ exit 0 | `registry/debt.yaml` (40 deudas: 14 → v0.2.1, 12 → v0.3, 9 resolved, 5 out_of_scope) y `scripts/validate-debt` en la etapa de validación de `build-all`: una deuda open cuyo capítulo destino ya existe, o cuya release ya se alcanzó, detiene el build. Plan: `2026-09-26-tooling-registro-de-deuda.md` |

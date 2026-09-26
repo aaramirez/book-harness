@@ -1,0 +1,292 @@
+# Debt Registry — book-harness
+#
+# Deuda declarada por los capítulos (sección 18) y por sus planes (sección "Deuda"), con destino
+# verificable. Plan: planes/2026-09-26-tooling-registro-de-deuda.md.
+#
+#   id:               D-NNN (correlativo, nunca se reutiliza)
+#   title:            una frase
+#   origin:           ChapterId que la declaró (debe existir en book/book.yaml)
+#   status:           open | resolved | out_of_scope
+#   target:           (open) ChapterId planeado (CH-NN) o release (vX.Y.Z)
+#   retargeted_from:  (opcional) destinos anteriores que no la resolvieron
+#   resolved_in:      (resolved) ChapterId existente que la resolvió
+#   rationale:        (out_of_scope, obligatorio) por qué no se resuelve
+#
+# scripts/validate-debt falla si una deuda open apunta a un capítulo que ya existe en
+# book/book.yaml, o a una release que book.version ya alcanzó: la deuda quedó vencida. Para cerrar
+# una deuda hay que marcarla resolved, moverla (dejando el destino anterior en retargeted_from) o
+# declararla out_of_scope con su justificación.
+#
+# Carga inicial (2026-09-26): los puntos de "Deuda" de CH-28..CH-36. Los destinos de v0.3 usan la
+# numeración del plan maestro vigente y se actualizan cuando se renumere v0.3.
+
+debts:
+  # --- open → v0.2.1: prometidas a un capítulo de v0.2 que se escribió sin resolverlas --------
+
+  - id: D-001
+    title: "PendingInput durable entre pasos y aplicado por el turno durable"
+    origin: CH-28
+    status: open
+    target: v0.2.1
+    retargeted_from: [CH-32, CH-36]
+
+  - id: D-002
+    title: "Compactación del historial cableada en el turno durable"
+    origin: CH-29
+    status: open
+    target: v0.2.1
+    retargeted_from: [CH-36]
+
+  - id: D-003
+    title: "Recuperación de una compactación interrumpida a la mitad"
+    origin: CH-29
+    status: open
+    target: v0.2.1
+    retargeted_from: [CH-32]
+
+  - id: D-004
+    title: "Auditoría de las capabilities que declaran replayPolicy = SAFE"
+    origin: CH-30
+    status: open
+    target: v0.2.1
+
+  - id: D-005
+    title: "Reglas de admisión que usan el Principal (tipo, tenant) sin cambiar la firma de CH-14"
+    origin: CH-31
+    status: open
+    target: v0.2.1
+    retargeted_from: [CH-36]
+
+  - id: D-006
+    title: "PolicyEngine y CredentialBroker deciden con execution.caller.current"
+    origin: CH-31
+    status: open
+    target: v0.2.1
+    retargeted_from: [CH-36]
+
+  - id: D-007
+    title: "Auditoría de quién continuó cada sesión"
+    origin: CH-31
+    status: open
+    target: v0.2.1
+
+  - id: D-008
+    title: "Retención y archivo del journal de runs terminados"
+    origin: CH-32
+    status: open
+    target: v0.2.1
+
+  - id: D-009
+    title: "Vencimiento activo de esperas (EXPIRED) con un schedule interno"
+    origin: CH-33
+    status: open
+    target: v0.2.1
+    retargeted_from: [CH-34, CH-36]
+
+  - id: D-010
+    title: "Reanudación durable de preguntas, autorizaciones y límites de presupuesto"
+    origin: CH-33
+    status: open
+    target: v0.2.1
+    retargeted_from: [CH-36]
+
+  - id: D-011
+    title: "CredentialBroker detecta la credencial faltante del caller y recibe el token del callback"
+    origin: CH-33
+    status: open
+    target: v0.2.1
+    retargeted_from: [CH-35, CH-36]
+
+  - id: D-012
+    title: "Liberar la dirección de continuación (fin de sesión, vencimiento, handoff)"
+    origin: CH-34
+    status: open
+    target: v0.2.1
+    retargeted_from: [CH-36]
+
+  - id: D-013
+    title: "Adaptador de salida: responder y avisar de una espera por el canal de la dirección"
+    origin: CH-34
+    status: open
+    target: v0.2.1
+    retargeted_from: [CH-36]
+
+  - id: D-014
+    title: "Revisar CH-13: beginToolApprovalPause devuelve la solicitud y resumeAfterHumanResolution expone el ToolResult"
+    origin: CH-36
+    status: open
+    target: v0.2.1
+
+  # --- open → capítulo planeado de v0.3 ---------------------------------------------------------
+
+  - id: D-015
+    title: "Provenance propia del bloque de resumen en assembleContextSnapshot"
+    origin: CH-29
+    status: open
+    target: CH-40
+
+  - id: D-016
+    title: "Etiqueta de gobierno del dato para el resumen de compactación"
+    origin: CH-29
+    status: open
+    target: CH-40
+
+  - id: D-017
+    title: "runtimeVersion en SessionState (ADR-003 parte v3)"
+    origin: CH-29
+    status: open
+    target: CH-43
+
+  - id: D-018
+    title: "Las conexiones (MCP/OpenAPI) usan execution.caller.current"
+    origin: CH-31
+    status: open
+    target: CH-39
+
+  - id: D-019
+    title: "Datos y memoria usan execution.caller.current"
+    origin: CH-31
+    status: open
+    target: CH-40
+
+  - id: D-020
+    title: "Reenvío de identidad entre agentes (forwardPrincipal)"
+    origin: CH-31
+    status: open
+    target: CH-42
+
+  - id: D-021
+    title: "Varias tool calls por respuesta del modelo"
+    origin: CH-32
+    status: open
+    target: CH-37
+
+  - id: D-022
+    title: "sessionMayMigrate lee los pasos sin comprometer (INV-E22)"
+    origin: CH-32
+    status: open
+    target: CH-43
+
+  - id: D-023
+    title: "Esperas de un run hijo reenviadas al padre"
+    origin: CH-33
+    status: open
+    target: CH-42
+
+  - id: D-024
+    title: "Lectura de eventos de stream como fuente de datos"
+    origin: CH-34
+    status: open
+    target: CH-40
+
+  - id: D-025
+    title: "Tipo de capability en CapabilityDescriptor (reemplaza la lista isolatedCapabilities)"
+    origin: CH-35
+    status: open
+    target: CH-39
+
+  - id: D-026
+    title: "Límites de CPU, memoria y disco del entorno aislado"
+    origin: CH-35
+    status: open
+    target: CH-41
+
+  # --- resolved ---------------------------------------------------------------------------------
+
+  - id: D-027
+    title: "Canales e identidad del remitente de una entrada pendiente"
+    origin: CH-28
+    status: resolved
+    resolved_in: CH-34
+
+  - id: D-028
+    title: "El historial crece con steering y follow-up"
+    origin: CH-28
+    status: resolved
+    resolved_in: CH-29
+
+  - id: D-029
+    title: "Un efecto de resultado desconocido no puede volver a pedirse sin política de replay"
+    origin: CH-29
+    status: resolved
+    resolved_in: CH-30
+
+  - id: D-030
+    title: "Detectar el corte real (executionStillInFlight era una señal asumida)"
+    origin: CH-30
+    status: resolved
+    resolved_in: CH-36
+
+  - id: D-031
+    title: "Cableado de la política de replay en la recuperación y en el turno completo"
+    origin: CH-30
+    status: resolved
+    resolved_in: CH-36
+
+  - id: D-032
+    title: "Sin identidad del llamante no hay credenciales por usuario ni aprobadores verificables"
+    origin: CH-30
+    status: resolved
+    resolved_in: CH-31
+
+  - id: D-033
+    title: "Recuperación con una unidad más fina que el turno"
+    origin: CH-31
+    status: resolved
+    resolved_in: CH-32
+
+  - id: D-034
+    title: "Cableado de beginStep … commitStep y recoverRun en el turno completo"
+    origin: CH-32
+    status: resolved
+    resolved_in: CH-36
+
+  - id: D-035
+    title: "Un paso que espera una aprobación no retiene el proceso"
+    origin: CH-32
+    status: resolved
+    resolved_in: CH-33
+
+  # --- out_of_scope -----------------------------------------------------------------------------
+
+  - id: D-036
+    title: "Interrumpir una generación del modelo en curso"
+    origin: CH-28
+    status: out_of_scope
+    rationale: >
+      Decisión de CH-28: el steering se aplica entre pasos ("después de las tools, antes del
+      modelo") y nunca cancela trabajo en curso. CH-32 cubre la llamada cortada por una caída
+      (CLOSE_WITH_PARTIAL), que es otro caso.
+
+  - id: D-037
+    title: "Consultar el estado del efecto externo para salir del resultado desconocido"
+    origin: CH-30
+    status: out_of_scope
+    rationale: >
+      Es una capability más que el modelo puede proponer después de recibir OUTCOME_UNKNOWN; no es
+      un mecanismo del arnés.
+
+  - id: D-038
+    title: "Routing: qué agente atiende una activación nueva"
+    origin: CH-34
+    status: out_of_scope
+    rationale: >
+      Preview desde CH-14 (Amendment v1.1, "before routing"). El libro lo modela como señal de
+      entrada (resolvedAgentId, CH-26) y no hay capítulo planeado. Candidato explícito para una
+      versión posterior.
+
+  - id: D-039
+    title: "Mecanismo real de aislamiento y proxy de egress"
+    origin: CH-35
+    status: out_of_scope
+    rationale: >
+      Infraestructura de borde (máquina virtual, contenedor, proxy que inyecta encabezados), igual
+      que el Secret Store de CH-16 y el aprovisionamiento de CH-21.
+
+  - id: D-040
+    title: "Transformaciones de egress más ricas (rutas, métodos)"
+    origin: CH-35
+    status: out_of_scope
+    rationale: >
+      La EgressRule une dominio y credencial, que es lo que P-35 exige. Reescrituras de ruta o
+      filtros por método son configuración del proxy, no una decisión nueva del arnés.

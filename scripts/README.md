@@ -16,6 +16,7 @@
   ./scripts/validate-chapter book/chapters/00-arquitectura-constitucion
   ./scripts/validate-contracts
   ./scripts/validate-components
+  ./scripts/validate-debt       # planes/2026-09-26-tooling-registro-de-deuda.md
   ./scripts/validate-retrieval-set book/chapters/00-arquitectura-constitucion
   ./scripts/build-book-ir
   ./scripts/build-mind-map   # planes/2026-08-24-mapa-mental-progresivo.md
@@ -37,7 +38,7 @@
 - `chapter-parser.js` — separa un `chapter.md` en frontmatter YAML + secciones Markdown (`##`) +
   bloques de pseudocódigo (` ```pseudocode `) para los validadores y para `build-book-ir`.
 - `registries.js` — carga y valida el esquema mínimo de `registry/contracts.yaml`,
-  `registry/components.yaml`, `registry/glossary.yaml` y `book/book.yaml`.
+  `registry/components.yaml`, `registry/glossary.yaml`, `registry/debt.yaml` y `book/book.yaml`.
 - `mindmap.js` — lógica pura (sin tocar disco salvo lectura) que calcula los snapshots
   acumulativos de `BookMindMap` (`planes/2026-08-24-mapa-mental-progresivo.md`) a partir de los
   registries + el frontmatter de cada capítulo.

@@ -174,5 +174,6 @@ Vocabulario técnico canónico del libro *¿Cómo construir un arnés?* — extr
 | **Brokered Egress** | Salida de red autenticada en la que la credencial se agrega en el borde, fuera del entorno aislado; el código nunca ve el secreto (P-35). | [[ch-35-entorno-aislado|CH-35]] | concepto |
 | **SandboxSession** `C-047` | El entorno aislado abierto para una sesión: política de red, estado (OPEN / CLOSED), referencia al entorno real y a su ubicación. | [[ch-35-entorno-aislado|CH-35]] | contrato |
 | **NetworkPolicy** `C-048` | Qué puede alcanzar la red de un entorno aislado: DENY_ALL, ALLOW_ALL o ALLOW_LIST, con reglas por dominio que piden una credencial por nombre, nunca por valor. | [[ch-35-entorno-aislado|CH-35]] | contrato |
+| **Durable Governed Turn** | Un turno que entra por un canal con dirección, se admite con identidad verificada, se registra paso a paso, se estaciona sin cómputo cuando espera, ejecuta el código del modelo en un entorno sin secretos y se recupera de una caída sin repetir lo comprometido. | [[ch-36-integracion-turno-durable|CH-36]] | concepto |
 
 Ver también: [[Index|Mapa del libro]]

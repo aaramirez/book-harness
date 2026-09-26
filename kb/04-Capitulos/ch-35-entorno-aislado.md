@@ -13,7 +13,7 @@ articulos_constitucionales: ["P-27", "P-35", "INV-05", "INV-E07", "INV-E08", "IN
 
 ## Navegación
 
-⬅ [[ch-34-canales-continuacion|CH-34]] · **CH-35**
+⬅ [[ch-34-canales-continuacion|CH-34]] · **CH-35** · [[ch-36-integracion-turno-durable|CH-36]] ➡
 
 ## Resultado esperado
 

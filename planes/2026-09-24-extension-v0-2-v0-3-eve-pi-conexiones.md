@@ -1,7 +1,7 @@
 # Plan — Extensión del libro v0.2 y v0.3: lecciones de eve, aportes de pi y conexión del arnés con el mundo
 
 **Fecha:** 2026-09-24
-**Estado:** 🚧 En ejecución. Fase 0 completa (T0.1–T0.6); CH-28 ✅, CH-29 ✅, CH-30 ✅, CH-31 ✅, CH-32 ✅, CH-33 ✅, CH-34 ✅, CH-35 ✅; siguiente: CH-36 (integración v0.2: runDurableGovernedTurn). Se ejecuta sobre `d16e2c7` (CH-00..CH-27, 22 componentes, 35 contratos).
+**Estado:** 🚧 En ejecución. Fase 0 completa (T0.1–T0.6); CH-28 ✅, CH-29 ✅, CH-30 ✅, CH-31 ✅, CH-32 ✅, CH-33 ✅, CH-34 ✅, CH-35 ✅, CH-36 ✅; siguiente: cierre de release v0.2 (§9, requiere aprobación humana), luego CH-37. Se ejecuta sobre `d16e2c7` (CH-00..CH-27, 22 componentes, 35 contratos).
 
 **Depende de:**
 - `2026-08-23-book-harness-como-construir-un-arnes.md`: plan base (pipeline, registries, scripts, DoD).
@@ -440,3 +440,4 @@ Cada ficha es el **Paso 2 ("Alcance decidido")** del plan propio del capítulo. 
 | CH-33 | 2026-09-25 | rama `cap-33-esperas-durables` → `main` | ✅ exit 0, 34/34 capítulos | **CMP-024 ResumptionCoordinator**, C-044 `ParkedWait`, C-045 `AuthorizationChallenge`; **C-015 → v2** (`waitId`). Una espera para cuatro tipos; entrega dirigida por `waitId` y validada con `Principal` (INV-E18); primer uso real de `PAUSED`; `resumeAfterHumanResolution` (CH-13) por fin cableada |
 | CH-34 | 2026-09-26 | rama `cap-34-canales-continuacion` → `main` | ✅ exit 0, 35/35 capítulos | **CMP-025 ContinuationRegistry**, C-046 `ContinuationAddress`; **C-022 → v2** (`sourceKind` con `API` agregado a la ficha, `continuationAddress`). CONTINUE_SESSION / ACTIVATE_NEW / ACTIVATE_UNADDRESSED sobre un ADMIT propio; dueña única (INV-E19); canales como Ingress Adapters (webhook con firma en tiempo constante, WebSocket un turno por mensaje, schedule con identidad SERVICE) |
 | CH-35 | 2026-09-26 | rama `cap-35-entorno-aislado` → `main` | ✅ exit 0, 36/36 capítulos | **CMP-026 IsolatedExecutionEnvironment** (dueño de "sandboxing", Article XII), C-047 `SandboxSession`, C-048 `NetworkPolicy`; CredentialBroker gana `resolveEgressCredential`. Entorno sin secretos (INV-E20); la credencial se nombra en la regla y se inyecta en el borde (P-35); capabilities aisladas por lista configurada |
+| CH-36 | 2026-09-26 | rama `cap-36-integracion-turno-durable` → `main` | ✅ exit 0, 37/37 capítulos | Integración v0.2 en cinco funciones (`enterDurableTurn`, `bindDurableCaller`, `runDurableGovernedStep`, `resumeDurableApproval`, `resolvePendingStepOnRecovery`), sin componentes ni contratos. **Hallazgo:** `beginToolApprovalPause` / `resumeAfterHumanResolution` (CH-13) no exponen la solicitud ni el `ToolResult`, así que el turno durable compone sus piezas en vez de invocarlas |

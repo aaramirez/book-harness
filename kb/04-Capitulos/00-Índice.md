@@ -46,5 +46,6 @@ Los **28 capítulos** del libro *¿Cómo construir un arnés?* (CH-00 a CH-27).
 | CH-33 | [[ch-33-esperas-durables|Esperas Durables y la Reanudación desde Cualquier Canal]] |
 | CH-34 | [[ch-34-canales-continuacion|Canales y Direcciones de Continuación: HTTP, WebSocket, Webhooks y Schedules]] |
 | CH-35 | [[ch-35-entorno-aislado|El Entorno Aislado y las Credenciales que Solo Existen en el Egress]] |
+| CH-36 | [[ch-36-integracion-turno-durable|Integración: el Turno Durable Gobernado]] |
 
 Ver también: [[Index|Mapa del libro]]

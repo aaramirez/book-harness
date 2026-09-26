@@ -1,0 +1,259 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 36 — Turno Durable",
+    "output": "capitulo-36-integracion-turno-durable.html",
+    "viewBox": [
+      1080,
+      570
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "entrar",
+        "label": "Admitir, enrutar y ligar al llamante",
+        "focus": [
+          "canal",
+          "admision",
+          "journal"
+        ],
+        "note": "enterDurableTurn admite y enruta por la dirección; bindDurableCaller liga el Principal al turno y cada paso va al journal (P-31, P-32)."
+      },
+      {
+        "id": "esperar",
+        "label": "Esperar sin cómputo y reanudar con journal",
+        "focus": [
+          "canal",
+          "resumption",
+          "journal"
+        ],
+        "note": "REQUIRE_APPROVAL estaciona el run y el proceso termina; la entrega lo reanuda y la tool call se registra antes de ejecutarse (P-33)."
+      },
+      {
+        "id": "recuperar",
+        "label": "Recuperar sin repetir lo comprometido",
+        "focus": [
+          "journal",
+          "guard"
+        ],
+        "note": "recoverRun reproduce el paso 1 y entrega el paso 2 a IdempotencyGuard: \"pagar\" es NEVER, sin segundo pago (INV-E16, INV-E17)."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "canal",
+      "type": "external",
+      "label": "Canal",
+      "sublabel": "estímulo y turno CH-36"
+    },
+    {
+      "id": "admision",
+      "type": "backend",
+      "label": "Admisión + Continuación",
+      "sublabel": "CMP-012 · CMP-025"
+    },
+    {
+      "id": "journal",
+      "type": "database",
+      "label": "ExecutionJournal",
+      "sublabel": "CMP-023, pasos del turno"
+    },
+    {
+      "id": "resumption",
+      "type": "backend",
+      "label": "ResumptionCoordinator",
+      "sublabel": "CMP-024, la espera"
+    },
+    {
+      "id": "guard",
+      "type": "security",
+      "label": "IdempotencyGuard",
+      "sublabel": "CMP-015, ReplayPolicy"
+    }
+  ],
+  "segments": [
+    {
+      "from": 172,
+      "to": 282,
+      "label": "Entrar y dar un paso"
+    },
+    {
+      "from": 298,
+      "to": 432,
+      "label": "Estacionar y reanudar"
+    },
+    {
+      "from": 446,
+      "to": 500,
+      "label": "Recuperar"
+    }
+  ],
+  "messages": [
+    {
+      "id": "enter",
+      "from": "canal",
+      "to": "admision",
+      "y": 185,
+      "label": "ActivationRequest(chat-equipo/1718) → enterDurableTurn",
+      "variant": "emphasis",
+      "note": "admitWithVerifiedIdentity (CH-31) → routeAdmittedRequest (CH-34) → continuationAllowedForCaller; sin ADMIT no hay ruta ni run (INV-E02, INV-E15)"
+    },
+    {
+      "id": "route",
+      "from": "admision",
+      "to": "canal",
+      "y": 213,
+      "label": "ADMIT → CONTINUE_SESSION(S1) → bindDurableCaller",
+      "variant": "return",
+      "note": "la ruta sale de la dirección, nunca del texto (P-34); bindDurableCaller pone el CallerSnapshot en ExecutionContext.caller (P-31)"
+    },
+    {
+      "id": "step1",
+      "from": "canal",
+      "to": "journal",
+      "y": 241,
+      "label": "paso 1: runDurableGovernedStep → sin tool call → COMMITTED",
+      "variant": "default",
+      "note": "beginStep / recordModelResponse (CH-32) envuelven la llamada a ModelGateway: cada llamada al modelo es un paso registrado (P-32)"
+    },
+    {
+      "id": "step2",
+      "from": "canal",
+      "to": "journal",
+      "y": 269,
+      "label": "paso 2: modelo propone \"pagar\" → REQUIRE_APPROVAL",
+      "variant": "default",
+      "note": "CapabilityRegistry resuelve la capability y PolicyEngine exige aprobación; la HumanInteractionRequest sale de createHumanInteractionRequest (CH-06)"
+    },
+    {
+      "id": "park",
+      "from": "canal",
+      "to": "resumption",
+      "y": 311,
+      "label": "parkRun(DESIGNATED_PRINCIPAL) → WAITING_FOR_HUMAN",
+      "variant": "emphasis",
+      "note": "linkRequestToWait + parkedAgentState (CH-33) y createOrUpdateSessionCheckpoint (CH-10); el paso 2 queda STARTED, sin toolCall"
+    },
+    {
+      "id": "parked",
+      "from": "resumption",
+      "to": "canal",
+      "y": 339,
+      "label": "RUN_PARKED + checkpoint · el proceso termina",
+      "variant": "dashed",
+      "note": "esperar no consume cómputo (P-33): durante dos días no hay proceso vivo para este run"
+    },
+    {
+      "id": "delivery",
+      "from": "canal",
+      "to": "resumption",
+      "y": 367,
+      "label": "WaitDelivery(aprobador, APPROVED) → resumeDurableApproval",
+      "variant": "default",
+      "note": "acceptDelivery (CH-33) → resolveHumanInteractionRequest (CH-06); solo la entrega dirigida y autorizada reanuda (INV-E18); el aprobador queda como resolvedBy, no como llamante"
+    },
+    {
+      "id": "record",
+      "from": "canal",
+      "to": "journal",
+      "y": 395,
+      "label": "recordToolCallBeforeExecution → executeToolCallIsolated",
+      "variant": "emphasis",
+      "note": "write-ahead: la tool call se registra antes de ejecutarse; la tool corre en el entorno aislado de CH-35, sin secretos (P-35, INV-E20)"
+    },
+    {
+      "id": "crash",
+      "from": "journal",
+      "to": "canal",
+      "y": 423,
+      "label": "caída: paso 2 con toolCall, sin toolResult",
+      "variant": "dashed",
+      "note": "el proceso cae durante la ejecución; el journal sabe que la tool empezó, pero no si el pago ocurrió"
+    },
+    {
+      "id": "recover",
+      "from": "canal",
+      "to": "journal",
+      "y": 459,
+      "label": "recoverRun: paso 1 REPLAY_RECORDED · paso 2 RESOLVE_PENDING_TOOL",
+      "variant": "default",
+      "note": "proceso nuevo; un paso COMMITTED se reproduce, nunca se re-ejecuta (INV-E16); el paso 2 va a resolvePendingStepOnRecovery"
+    },
+    {
+      "id": "decide",
+      "from": "canal",
+      "to": "guard",
+      "y": 487,
+      "label": "decideUnknownOutcome(…, FALSE) → NEVER: REPORT_UNKNOWN → COMMITTED",
+      "variant": "emphasis",
+      "note": "\"pagar\" es NEVER: buildUnknownOutcomeResult → recordToolResult → commitStep; el modelo recibe \"resultado desconocido\" (INV-07, INV-E17)"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "admision",
+      "from": 181,
+      "to": 217,
+      "type": "backend"
+    },
+    {
+      "participant": "journal",
+      "from": 237,
+      "to": 273,
+      "type": "database"
+    },
+    {
+      "participant": "resumption",
+      "from": 307,
+      "to": 371,
+      "type": "backend"
+    },
+    {
+      "participant": "journal",
+      "from": 391,
+      "to": 427,
+      "type": "database"
+    },
+    {
+      "participant": "journal",
+      "from": 455,
+      "to": 463,
+      "type": "database"
+    },
+    {
+      "participant": "guard",
+      "from": 483,
+      "to": 491,
+      "type": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Cinco funciones de integración",
+      "items": [
+        "enterDurableTurn · bindDurableCaller · runDurableGovernedStep",
+        "resumeDurableApproval · resolvePendingStepOnRecovery; ningún componente nuevo (§8)"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Hallazgo: componer en vez de invocar CH-13",
+      "items": [
+        "beginToolApprovalPause no devuelve la solicitud que parkRun necesita",
+        "resumeAfterHumanResolution no expone el ToolResult que el journal registra"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Garantías de v0.2 en un turno",
+      "items": [
+        "P-31 · P-32 · P-33 · P-34 · P-35 en el mismo turno",
+        "INV-E15..E20 se sostienen tras espera y caída · chapter.md §9, §11"
+      ]
+    }
+  ]
+}

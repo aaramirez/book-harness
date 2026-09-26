@@ -1600,3 +1600,12 @@ terms:
     introduced_in: CH-35
     kind: contract
     ref: C-048
+
+  - term: Durable Governed Turn
+    definition: >
+      Un turno que entra por un canal con dirección, se admite con identidad verificada, se registra
+      paso a paso, se estaciona sin cómputo cuando espera, ejecuta el código del modelo en un entorno
+      sin secretos y se recupera de una caída sin repetir lo comprometido (runDurableGovernedStep,
+      CH-36).
+    introduced_in: CH-36
+    kind: concept

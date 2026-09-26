@@ -8,7 +8,7 @@ introduces_contracts: [C-047, C-048]
 modifies_contracts: []
 constitutional_articles: [P-27, P-35, INV-05, INV-E07, INV-E08, INV-E20]
 previous_chapter: CH-34
-next_chapter: null
+next_chapter: CH-36
 retrieval_set:
   expected_outcome:
     id: EO-CH35

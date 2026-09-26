@@ -86,3 +86,5 @@ chapters:
     file: chapters/34-canales-continuacion/chapter.md
   - id: CH-35
     file: chapters/35-entorno-aislado/chapter.md
+  - id: CH-36
+    file: chapters/36-integracion-turno-durable/chapter.md

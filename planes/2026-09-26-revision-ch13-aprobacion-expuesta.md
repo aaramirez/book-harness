@@ -17,7 +17,7 @@ CH-36 las rearmaba con `createHumanInteractionRequest`, `createOrUpdateSessionCh
 
 **CH-13 (`book/chapters/13-integracion-caminos-de-gobierno/chapter.md`):**
 - **§6:** dos tipos embebidos, `ApprovalPause` (pausedState, request) y `ApprovalResume` (resumedState, resolution).
-- **§11:** nota de revisión y cuatro funciones nuevas.
+- **§11:** nota de revisión y tres funciones nuevas.
   - `beginToolApprovalPauseForDecision(turnState, execution, decision, session, subs) -> ApprovalPause`: el cuerpo anterior de `beginToolApprovalPause`, a partir de la `PolicyDecision` ya evaluada.
   - `resolveApprovalForResume(...) -> ApprovalResume`: resuelve y construye el estado RUNNING; no ejecuta.
   - `observationForApproval(resolution, result?) -> AgentMessage`: TOOL con el `ToolResult`, o el rechazo `HUMAN_APPROVAL_REJECTED` (mismo mensaje que antes). Lanza `APPROVED_WITHOUT_TOOL_RESULT` si se aprobó y no hay resultado.

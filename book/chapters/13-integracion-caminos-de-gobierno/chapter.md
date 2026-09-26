@@ -749,7 +749,7 @@ por CH-01..CH-12, sin modificar ninguna.
 
 > **Revisión v0.2.1 (2026-09-26, deuda D-014).** `beginToolApprovalPause` y
 > `resumeAfterHumanResolution` conservan su firma y su comportamiento, pero ahora se arman con
-> cuatro funciones que exponen lo que antes quedaba adentro:
+> tres funciones nuevas que exponen lo que antes quedaba adentro:
 > - `beginToolApprovalPauseForDecision` recibe la `PolicyDecision` ya tomada y devuelve la
 >   solicitud junto con el estado pausado (`ApprovalPause`);
 > - `resolveApprovalForResume` resuelve la solicitud y devuelve el estado reanudado

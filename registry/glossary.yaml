@@ -1482,3 +1482,36 @@ terms:
     introduced_in: CH-31
     kind: contract
     ref: C-041
+
+  - term: Durable Step
+    definition: >
+      La unidad de durabilidad y recuperación de un turno: una llamada al modelo y la tool call que
+      su respuesta propuso. Un turno tiene varios pasos; la recuperación razona por paso, no por
+      turno (P-32, CH-32).
+    introduced_in: CH-32
+    kind: concept
+
+  - term: Write-Ahead Step
+    definition: >
+      La regla de que cada hecho de un paso se registra en el journal ANTES del efecto siguiente: la
+      tool call se registra antes de ejecutarse. Así, una tool call sin resultado significa "el efecto
+      pudo haber empezado", y una respuesta sin tool call registrada significa "ningún efecto empezó"
+      (CH-32).
+    introduced_in: CH-32
+    kind: concept
+
+  - term: StepRecord
+    definition: >
+      El registro durable de un paso: status (STARTED / COMMITTED), salida parcial del modelo,
+      respuesta, tool call y resultado (C-042, CH-32).
+    introduced_in: CH-32
+    kind: contract
+    ref: C-042
+
+  - term: RecoveryDecision
+    definition: >
+      Qué hace la recuperación con un paso del journal; un paso COMMITTED siempre se reproduce desde
+      el registro y nunca se re-ejecuta (C-043, INV-E16, CH-32).
+    introduced_in: CH-32
+    kind: contract
+    ref: C-043

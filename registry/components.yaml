@@ -740,3 +740,30 @@ components:
     produces: [C-010, C-011, C-035]
     introduced_in: CH-24
     constitutional_articles: [P-07, P-13, INV-18, INV-19, INV-20]
+
+  - id: CMP-023
+    name: ExecutionJournal
+    responsibility: >
+      Registrar, paso por paso, el progreso durable de un turno — una llamada al modelo y la tool
+      call que su respuesta propuso — escribiendo cada hecho antes del efecto siguiente, declarar un
+      paso COMMITTED solo cuando todo su resultado está persistido, y decidir, al recuperar un run
+      interrumpido, qué hacer con cada paso del journal — sin ejecutar tools, sin invocar al modelo,
+      sin decidir por sí mismo si un efecto cuyo resultado se desconoce puede repetirse, sin guardar
+      la historia de la sesión y sin decidir si el run puede continuar contra su presupuesto.
+    owns:
+      - "A turn MUST be decomposed into steps (one model call and its inline tool calls). Each step MUST be recorded as committed before its effects are considered durable, and recovery MUST reason per step, not per turn (cita literal, P-32)"
+      - "Process memory MUST NOT be the source of truth for durable runs (cita literal, P-23) — el journal, no el proceso, es la fuente de verdad del progreso de un turno"
+      - "Una ejecución durable debe poder reconstruirse desde estado persistido suficiente (cita literal, INV-13) — decidir qué es 'suficiente' a nivel de paso: la respuesta del modelo, la tool call registrada antes de ejecutarse y su resultado"
+      - "declarar un paso COMMITTED solo cuando su respuesta y su resultado están persistidos, y rechazar (fail-closed) cualquier escritura sobre un paso ya COMMITTED"
+      - "A committed step is never re-executed during recovery (cita literal, INV-E16) — decidir, por paso, REPLAY_RECORDED / COMMIT_RECORDED / CLOSE_WITH_PARTIAL / REEXECUTE_MODEL_CALL / RESUME_FROM_RESPONSE / RESOLVE_PENDING_TOOL"
+    does_not_own:
+      - "decidir si un efecto cuyo resultado se desconoce puede re-ejecutarse (IdempotencyGuard, CMP-015, ya introducido en CH-17 y ampliado en CH-30 — la frontera más importante de este capítulo: ExecutionJournal detecta QUÉ paso quedó con un efecto pendiente; IdempotencyGuard decide, con la ReplayPolicy de la capability, SI ese efecto se repite, INV-E17)"
+      - "persistir la historia y los checkpoints de la sesión (SessionManager, CMP-010, ya introducido en CH-10 — el checkpoint guarda el estado al final de una fase; el journal guarda el progreso dentro del turno)"
+      - "decidir si el run puede seguir operacionalmente contra su ExecutionBudget (ExecutionController, CMP-007, ya introducido en CH-07)"
+      - "ejecutar la tool call (ToolRuntime, CMP-002, ya introducido en CH-02) ni invocar al modelo (ModelGateway, CMP-003, ya introducido en CH-03)"
+      - "el mecanismo físico de escritura durable y atómica del journal (Preview, infraestructura de borde, no un componente propio de este registry — entra como una señal de entrada asumida)"
+    dependencies: []
+    consumes: [C-004, C-007, C-008, C-009]
+    produces: [C-010, C-011, C-042, C-043]
+    introduced_in: CH-32
+    constitutional_articles: [P-23, P-32, INV-13, INV-E16, INV-E17, INV-18, INV-19, INV-20]

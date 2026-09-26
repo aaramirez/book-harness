@@ -32,5 +32,6 @@ Los **22 componentes** del runtime del arnés, en orden de introducción.
 | CMP-020 | [[CMP-020-evaluationharness|EvaluationHarness]] | [[ch-22-evaluation-harness|CH-22]] |
 | CMP-021 | [[CMP-021-handoffcoordinator|HandoffCoordinator]] | [[ch-23-handoff-coordinator|CH-23]] |
 | CMP-022 | [[CMP-022-skilllibrary|SkillLibrary]] | [[ch-24-skill-library|CH-24]] |
+| CMP-023 | [[CMP-023-executionjournal|ExecutionJournal]] | [[ch-32-pasos-durables|CH-32]] |
 
 Ver también: [[Index|Mapa del libro]]

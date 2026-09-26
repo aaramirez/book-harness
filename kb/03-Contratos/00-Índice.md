@@ -51,5 +51,7 @@ Los **35 contratos** canónicos del libro, en orden de introducción.
 | C-039 | [[C-039-replaypolicy|ReplayPolicy]] | [[ch-30-politica-de-replay|CH-30]] |
 | C-040 | [[C-040-principal|Principal]] | [[ch-31-identidad-del-llamante|CH-31]] |
 | C-041 | [[C-041-callersnapshot|CallerSnapshot]] | [[ch-31-identidad-del-llamante|CH-31]] |
+| C-042 | [[C-042-steprecord|StepRecord]] | [[ch-32-pasos-durables|CH-32]] |
+| C-043 | [[C-043-recoverydecision|RecoveryDecision]] | [[ch-32-pasos-durables|CH-32]] |
 
 Ver también: [[Index|Mapa del libro]]

@@ -13,7 +13,7 @@ articulos_constitucionales: ["P-13", "P-17", "P-31", "INV-19", "INV-E02", "INV-E
 
 ## Navegación
 
-⬅ [[ch-30-politica-de-replay|CH-30]] · **CH-31**
+⬅ [[ch-30-politica-de-replay|CH-30]] · **CH-31** · [[ch-32-pasos-durables|CH-32]] ➡
 
 ## Resultado esperado
 

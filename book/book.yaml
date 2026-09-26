@@ -78,3 +78,5 @@ chapters:
     file: chapters/30-politica-de-replay/chapter.md
   - id: CH-31
     file: chapters/31-identidad-del-llamante/chapter.md
+  - id: CH-32
+    file: chapters/32-pasos-durables/chapter.md

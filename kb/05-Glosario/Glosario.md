@@ -159,5 +159,9 @@ Vocabulario técnico canónico del libro *¿Cómo construir un arnés?* — extr
 | **Fail-Closed Bootstrap** | Un arnés sin reglas de admisión configuradas no admite nada (INV-E15); la admisión de desarrollo depende del modo de proceso (ProcessMode, un dato del proceso), nunca de un campo del request. | [[ch-31-identidad-del-llamante|CH-31]] | concepto |
 | **Principal** `C-040` | La identidad verificada de un llamante: principalId, principalType (USER/SERVICE/RUNTIME), issuer, tenantId opcional y attributes. | [[ch-31-identidad-del-llamante|CH-31]] | contrato |
 | **CallerSnapshot** `C-041` | El par initiator (quien creó el run, fijo) y current (quien envió la entrega actual, renovado en cada una) que viaja en ExecutionContext v2. | [[ch-31-identidad-del-llamante|CH-31]] | contrato |
+| **Durable Step** | La unidad de durabilidad y recuperación de un turno: una llamada al modelo y la tool call que su respuesta propuso. La recuperación razona por paso, no por turno (P-32). | [[ch-32-pasos-durables|CH-32]] | concepto |
+| **Write-Ahead Step** | Cada hecho de un paso se registra ANTES del efecto siguiente: la tool call se registra antes de ejecutarse. Una tool call sin resultado significa "el efecto pudo haber empezado"; una respuesta sin tool call registrada, "ningún efecto empezó". | [[ch-32-pasos-durables|CH-32]] | concepto |
+| **StepRecord** `C-042` | El registro durable de un paso: status (STARTED / COMMITTED), salida parcial del modelo, respuesta, tool call y resultado. | [[ch-32-pasos-durables|CH-32]] | contrato |
+| **RecoveryDecision** `C-043` | Qué hace la recuperación con un paso del journal; un paso COMMITTED siempre se reproduce desde el registro y nunca se re-ejecuta (INV-E16). | [[ch-32-pasos-durables|CH-32]] | contrato |
 
 Ver también: [[Index|Mapa del libro]]

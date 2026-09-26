@@ -8,7 +8,7 @@ introduces_contracts: [C-040, C-041]
 modifies_contracts: [C-004, C-023]
 constitutional_articles: [P-13, P-17, P-31, INV-19, INV-E02, INV-E07, INV-E15]
 previous_chapter: CH-30
-next_chapter: null
+next_chapter: CH-32
 retrieval_set:
   expected_outcome:
     id: EO-CH31

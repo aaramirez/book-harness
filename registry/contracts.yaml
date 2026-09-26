@@ -978,3 +978,49 @@ contracts:
     used_by: [CMP-012]
     modified_by: []
     constitutional_impact: [P-31, INV-19]
+
+  # C-042 (StepRecord): el registro durable de UN paso de un turno (una llamada al modelo y la tool
+  # call que esa respuesta propuso). Se escribe ANTES de cada efecto (write-ahead): toolCall se
+  # registra antes de que ToolRuntime ejecute nada, así que un toolCall sin toolResult significa
+  # "el efecto pudo haber empezado". partialOutput guarda la salida parcial ya recibida del modelo
+  # (aporte de pi: cerrar una llamada huérfana sin volver a llamar al proveedor). CH-32, P-32.
+  - id: C-042
+    name: StepRecord
+    version: v1
+    introduced_in: CH-32
+    current_definition: |
+      STRUCT StepRecord
+          stepId: StepId
+          runId: RunId
+          turn: Integer
+          index: Integer
+          status: StepStatus
+          partialOutput: Optional<Value>
+          modelResponse: Optional<ModelResponse>
+          toolCall: Optional<ToolCall>
+          toolResult: Optional<ToolResult>
+          startedAt: Timestamp
+          committedAt: Optional<Timestamp>
+      END
+    used_by: [CMP-023]
+    modified_by: []
+    constitutional_impact: [P-23, P-32, INV-13, INV-E16]
+
+  # C-043 (RecoveryDecision): qué hace la recuperación con un paso concreto del journal. Un paso
+  # COMMITTED se reproduce desde el registro y nunca se re-ejecuta (INV-E16); un efecto que pudo
+  # haber empezado se entrega a IdempotencyGuard (CH-30), que aplica INV-E17. CH-32.
+  - id: C-043
+    name: RecoveryDecision
+    version: v1
+    introduced_in: CH-32
+    current_definition: |
+      STRUCT RecoveryDecision
+          runId: RunId
+          stepId: StepId
+          action: RecoveryAction
+          pendingToolCall: Optional<ToolCallId>
+          decidedAt: Timestamp
+      END
+    used_by: [CMP-023]
+    modified_by: []
+    constitutional_impact: [P-32, INV-13, INV-E16, INV-E17, INV-19]

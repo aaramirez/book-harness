@@ -1,0 +1,241 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 32 — Pasos Durables",
+    "output": "capitulo-32-pasos-durables.html",
+    "viewBox": [
+      1080,
+      570
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "paso",
+        "label": "Un paso durable",
+        "focus": [
+          "integracion",
+          "journal",
+          "runtime"
+        ],
+        "note": "Write-ahead: la tool call se registra antes de que ToolRuntime la ejecute; commitStep solo con respuesta y resultado persistidos."
+      },
+      {
+        "id": "recuperar",
+        "label": "Recuperar sin repetir lo comprometido",
+        "focus": [
+          "integracion",
+          "journal"
+        ],
+        "note": "recoverRun decide por paso: un paso COMMITTED se reproduce desde el registro y nunca se re-ejecuta (INV-E16)."
+      },
+      {
+        "id": "pendiente",
+        "label": "El efecto que pudo haber empezado",
+        "focus": [
+          "integracion",
+          "journal",
+          "guard"
+        ],
+        "note": "RESOLVE_PENDING_TOOL entrega la tool call a IdempotencyGuard: solo SAFE se re-ejecuta, NEVER se reporta como desconocido (INV-E17)."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "integracion",
+      "type": "external",
+      "label": "Integración",
+      "sublabel": "turno durable, CH-36"
+    },
+    {
+      "id": "journal",
+      "type": "database",
+      "label": "ExecutionJournal",
+      "sublabel": "CMP-023, write-ahead"
+    },
+    {
+      "id": "runtime",
+      "type": "backend",
+      "label": "ModelGateway / ToolRuntime",
+      "sublabel": "CMP-003 · CMP-002, efectos"
+    },
+    {
+      "id": "guard",
+      "type": "backend",
+      "label": "IdempotencyGuard",
+      "sublabel": "CMP-015, CH-30"
+    }
+  ],
+  "segments": [
+    {
+      "from": 172,
+      "to": 338,
+      "label": "Paso con write-ahead"
+    },
+    {
+      "from": 351,
+      "to": 434,
+      "label": "Caída y recuperación"
+    },
+    {
+      "from": 446,
+      "to": 500,
+      "label": "El efecto pendiente"
+    }
+  ],
+  "messages": [
+    {
+      "id": "begin",
+      "from": "integracion",
+      "to": "journal",
+      "y": 185,
+      "label": "beginStep(…) → StepRecord STARTED",
+      "variant": "emphasis",
+      "note": "beginStep(runId, turn, index, previous), antes de invocar a ModelGateway; con el paso anterior sin comprometer → PREVIOUS_STEP_NOT_COMMITTED"
+    },
+    {
+      "id": "response",
+      "from": "integracion",
+      "to": "journal",
+      "y": 213,
+      "label": "recordModelResponse(record, response)",
+      "variant": "default",
+      "note": "mientras llega la respuesta, recordPartialOutput guarda la salida parcial (aporte de pi)"
+    },
+    {
+      "id": "toolcall",
+      "from": "integracion",
+      "to": "journal",
+      "y": 241,
+      "label": "recordToolCallBeforeExecution(record, toolCall) ← antes del efecto",
+      "variant": "emphasis",
+      "note": "después de resolución y política (CH-08/CH-05); sin propuesta del modelo → TOOL_CALL_WITHOUT_PROPOSAL"
+    },
+    {
+      "id": "execute",
+      "from": "integracion",
+      "to": "runtime",
+      "y": 269,
+      "label": "ToolRuntime ejecuta la tool call",
+      "variant": "default",
+      "note": "el efecto empieza solo después de que la tool call quedó registrada"
+    },
+    {
+      "id": "result",
+      "from": "integracion",
+      "to": "journal",
+      "y": 297,
+      "label": "recordToolResult(record, result)",
+      "variant": "default",
+      "note": "result.callId debe coincidir con la tool call registrada o TOOL_RESULT_WITHOUT_RECORDED_CALL"
+    },
+    {
+      "id": "commit",
+      "from": "integracion",
+      "to": "journal",
+      "y": 325,
+      "label": "commitStep(record, resultPersisted = TRUE) → COMMITTED + STEP_COMMITTED",
+      "variant": "emphasis",
+      "note": "sin escritura durable confirmada → STEP_NOT_READY_TO_COMMIT (reintentable); desde aquí el paso es de solo lectura"
+    },
+    {
+      "id": "recover",
+      "from": "integracion",
+      "to": "journal",
+      "y": 363,
+      "label": "recoverRun(journal, execution, agentId)",
+      "variant": "emphasis",
+      "note": "lo invoca un proceso nuevo tras la caída; journal ordenado por turn e index; mezcla de runs o paso tras uno abierto → JOURNAL_INCONSISTENT"
+    },
+    {
+      "id": "replay",
+      "from": "journal",
+      "to": "integracion",
+      "y": 391,
+      "label": "pasos COMMITTED → REPLAY_RECORDED (INV-E16)",
+      "variant": "return",
+      "note": "reproduce respuesta y resultado desde el registro; emite STEP_RECOVERY_DECIDED por cada paso"
+    },
+    {
+      "id": "pending",
+      "from": "journal",
+      "to": "integracion",
+      "y": 419,
+      "label": "paso STARTED, toolCall sin resultado → RESOLVE_PENDING_TOOL",
+      "variant": "return",
+      "note": "otros STARTED: CLOSE_WITH_PARTIAL · REEXECUTE_MODEL_CALL · RESUME_FROM_RESPONSE · COMMIT_RECORDED"
+    },
+    {
+      "id": "decide",
+      "from": "integracion",
+      "to": "guard",
+      "y": 459,
+      "label": "decideUnknownOutcome(…, executionStillInFlight = FALSE)",
+      "variant": "emphasis",
+      "note": "el proceso que ejecutaba el efecto ya no existe; decide con la ReplayPolicy de la capability (CH-30)"
+    },
+    {
+      "id": "outcome",
+      "from": "guard",
+      "to": "integracion",
+      "y": 487,
+      "label": "SAFE → REEXECUTE · NEVER → REPORT_UNKNOWN (INV-E17)",
+      "variant": "return",
+      "note": "REPORT_UNKNOWN vuelve al ciclo como observación explícita (INV-07)"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "journal",
+      "from": 181,
+      "to": 329,
+      "type": "database"
+    },
+    {
+      "participant": "runtime",
+      "from": 265,
+      "to": 273,
+      "type": "backend"
+    },
+    {
+      "participant": "journal",
+      "from": 359,
+      "to": 423,
+      "type": "database"
+    },
+    {
+      "participant": "guard",
+      "from": 455,
+      "to": 491,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "StepRecord (C-042)",
+      "items": [
+        "Write-ahead: cada hecho del paso se guarda antes del efecto siguiente",
+        "toolCall sin toolResult = el efecto pudo haber empezado; COMMITTED es solo lectura"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "RecoveryDecision (C-043)",
+      "items": [
+        "Seis acciones: REPLAY_RECORDED, COMMIT_RECORDED, CLOSE_WITH_PARTIAL,",
+        "REEXECUTE_MODEL_CALL, RESUME_FROM_RESPONSE, RESOLVE_PENDING_TOOL"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Frontera ExecutionJournal / IdempotencyGuard",
+      "items": [
+        "INV-E16: el journal detecta QUÉ paso quedó pendiente y nunca repite uno comprometido",
+        "INV-E17: IdempotencyGuard decide SI el efecto se repite · chapter.md §11–§12"
+      ]
+    }
+  ]
+}

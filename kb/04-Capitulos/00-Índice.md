@@ -48,5 +48,6 @@ Los **37 capítulos** del libro *¿Cómo construir un arnés?* (CH-00 a CH-36).
 | CH-35 | [[ch-35-entorno-aislado|El Entorno Aislado y las Credenciales que Solo Existen en el Egress]] |
 | CH-36 | [[ch-36-integracion-turno-durable|Integración: el Turno Durable Gobernado]] |
 | CH-37 | [[ch-37-esperas-credenciales-canales|Esperas, Credenciales y Canales Completos]] |
+| CH-38 | [[ch-38-identidad-auditoria-retencion|Identidad, Auditoría y Retención en Todo el Turno]] |
 
 Ver también: [[Index|Mapa del libro]]

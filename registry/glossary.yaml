@@ -1625,3 +1625,18 @@ terms:
       (P-34, CH-37).
     introduced_in: CH-37
     kind: concept
+
+  - term: Identity Narrows, Never Widens
+    definition: >
+      La regla de que una decisión basada en el Principal (admisión, política, credencial) solo puede
+      restringir lo que la regla base ya permite, nunca conceder algo que la regla base deniega (P-13,
+      CH-38).
+    introduced_in: CH-38
+    kind: concept
+
+  - term: Commit-Acknowledged Input
+    definition: >
+      Una entrada pendiente (PendingInput) que sale de la cola solo cuando el paso que la incluyó quedó
+      COMMITTED; si el proceso se cae antes, la recuperación la vuelve a aplicar (CH-38).
+    introduced_in: CH-38
+    kind: concept

@@ -1,0 +1,258 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 38 — Identidad y Retención",
+    "output": "capitulo-38-identidad-auditoria-retencion.html",
+    "viewBox": [
+      1080,
+      570
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "identidad",
+        "label": "La identidad solo restringe (P-13)",
+        "focus": [
+          "integracion",
+          "identidad"
+        ],
+        "note": "La regla base decide primero; la regla por Principal solo convierte ADMIT en REJECT o ALLOW en DENY, nunca al revés."
+      },
+      {
+        "id": "durable",
+        "label": "Compactación y cola sobreviven a la caída (P-32)",
+        "focus": [
+          "integracion",
+          "journal"
+        ],
+        "note": "El resumen es un paso del journal: tras la caída se aplica la propuesta registrada; la entrada sale de la cola al comprometer."
+      },
+      {
+        "id": "evidencia",
+        "label": "Evidencia que no se borra, journal que sí",
+        "focus": [
+          "integracion",
+          "audit",
+          "gobierno"
+        ],
+        "note": "SAFE y continuar una sesión quedan en el AuditLedger write-once (P-25); el journal se retiene, nunca con el run vivo."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "integracion",
+      "type": "external",
+      "label": "Integración",
+      "sublabel": "turno durable, CH-36"
+    },
+    {
+      "id": "identidad",
+      "type": "security",
+      "label": "Admisión + Política",
+      "sublabel": "CMP-012 · CMP-005"
+    },
+    {
+      "id": "journal",
+      "type": "database",
+      "label": "ExecutionJournal",
+      "sublabel": "CMP-023, pasos"
+    },
+    {
+      "id": "audit",
+      "type": "database",
+      "label": "AuditLedger",
+      "sublabel": "CMP-017, write-once"
+    },
+    {
+      "id": "gobierno",
+      "type": "backend",
+      "label": "DataGovernance",
+      "sublabel": "CMP-018, retención"
+    }
+  ],
+  "segments": [
+    {
+      "from": 172,
+      "to": 282,
+      "label": "La identidad restringe"
+    },
+    {
+      "from": 298,
+      "to": 432,
+      "label": "Compactar, cola"
+    },
+    {
+      "from": 446,
+      "to": 500,
+      "label": "Evidencia"
+    }
+  ],
+  "messages": [
+    {
+      "id": "admit",
+      "from": "integracion",
+      "to": "identidad",
+      "y": 185,
+      "label": "admitWithPrincipalRules → base ADMIT (CH-31)",
+      "variant": "emphasis",
+      "note": "reemplaza a admitWithVerifiedIdentity dentro de enterDurableTurn; si la base rechaza, o la admisión no está configurada (desarrollo), la decisión base se devuelve tal cual"
+    },
+    {
+      "id": "reject",
+      "from": "identidad",
+      "to": "integracion",
+      "y": 213,
+      "label": "ninguna regla coincide → REJECT PRINCIPAL_NOT_ADMITTED",
+      "variant": "return",
+      "note": "principalRulesGrantAccess: un campo NULL es \"cualquiera\"; reglas vacías no conceden: admitir a cualquier Principal verificado exige escribir esa regla (§15)"
+    },
+    {
+      "id": "policy",
+      "from": "integracion",
+      "to": "identidad",
+      "y": 241,
+      "label": "evaluatePolicyForCaller → base ALLOW (CH-05)",
+      "variant": "emphasis",
+      "note": "reemplaza a evaluatePolicyForToolCall en runDurableGovernedStep; una base DENY se devuelve sin mirar las reglas por llamante"
+    },
+    {
+      "id": "deny",
+      "from": "identidad",
+      "to": "integracion",
+      "y": 269,
+      "label": "SERVICE sin tenant → DENY CALLER_NOT_PERMITTED",
+      "variant": "return",
+      "note": "CallerPolicyRule(\"leer facturas\", requireTenant = TRUE); nunca DENY→ALLOW: la política base es el techo (P-13)"
+    },
+    {
+      "id": "compact",
+      "from": "integracion",
+      "to": "journal",
+      "y": 311,
+      "label": "compactHistoryInDurableTurn → beginStep → recordModelResponse",
+      "variant": "emphasis",
+      "note": "shouldCompactHistory + planHistoryCompaction (CH-29); con needsSummary, paso 7 STARTED → resumen del modelo (invokeModelForTurn, CH-03) → la propuesta queda en modelResponse"
+    },
+    {
+      "id": "recover",
+      "from": "journal",
+      "to": "integracion",
+      "y": 339,
+      "label": "caída → recoverRun: paso 7 COMMIT_RECORDED",
+      "variant": "return",
+      "note": "el proceso cae antes de commitStep; paso STARTED con respuesta y sin tool call → COMMIT_RECORDED (CH-32); sin respuesta sería REEXECUTE_MODEL_CALL"
+    },
+    {
+      "id": "apply",
+      "from": "integracion",
+      "to": "journal",
+      "y": 367,
+      "label": "applyHistoryCompaction(propuesta registrada) → commitStep",
+      "variant": "default",
+      "note": "aplicar la propuesta es determinístico: el resumen no se pide de nuevo ni se paga dos veces; STEP_COMMITTED (CH-32)"
+    },
+    {
+      "id": "take",
+      "from": "integracion",
+      "to": "journal",
+      "y": 395,
+      "label": "takePendingInputsForStep → \"cambia de plan\" en el paso 8",
+      "variant": "emphasis",
+      "note": "selectPendingInputsAtBoundary(BEFORE_MODEL_CALL) (CH-28); la cola todavía conserva la entrada"
+    },
+    {
+      "id": "confirm",
+      "from": "journal",
+      "to": "integracion",
+      "y": 423,
+      "label": "paso 8 COMMITTED → confirmPendingInputsAfterCommit",
+      "variant": "return",
+      "note": "la entrada sale de la cola solo al comprometer; si el proceso cae antes, sigue en la cola y la recuperación la vuelve a aplicar"
+    },
+    {
+      "id": "audit",
+      "from": "integracion",
+      "to": "audit",
+      "y": 459,
+      "label": "auditSafeReplayDeclaration · auditSessionContinuation → recordAuditEntry",
+      "variant": "default",
+      "note": "declarar SAFE (effectiveReplayPolicy, CH-30) registra actor y versiones; un CONTINUE_SESSION (CH-34) registra el Principal que continuó; evidencia write-once, sin ExecutionContext (P-25)"
+    },
+    {
+      "id": "retention",
+      "from": "integracion",
+      "to": "gobierno",
+      "y": 487,
+      "label": "evaluateJournalRetention → NOT_YET_DUE | enforceRetention",
+      "variant": "emphasis",
+      "note": "run vivo o algún paso STARTED → NOT_YET_DUE; run terminado → enforceRetention (CH-20): NOT_YET_DUE | DELETION_DUE | SUSPENDED_BY_LEGAL_HOLD; la preservación legal suspende el borrado"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "identidad",
+      "from": 181,
+      "to": 217,
+      "type": "security"
+    },
+    {
+      "participant": "identidad",
+      "from": 237,
+      "to": 273,
+      "type": "security"
+    },
+    {
+      "participant": "journal",
+      "from": 307,
+      "to": 371,
+      "type": "database"
+    },
+    {
+      "participant": "journal",
+      "from": 391,
+      "to": 427,
+      "type": "database"
+    },
+    {
+      "participant": "audit",
+      "from": 455,
+      "to": 463,
+      "type": "database"
+    },
+    {
+      "participant": "gobierno",
+      "from": 483,
+      "to": 491,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Identity narrows, never widens",
+      "items": [
+        "Admisión y política: la regla base es el techo; la identidad solo resta",
+        "La credencial del usuario exige un llamante USER con tenant"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Durable sin tocar el journal",
+      "items": [
+        "Compactación = paso sin tool call; la propuesta queda en modelResponse",
+        "Entrada pendiente confirmada al comprometer el paso"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Deuda de v0.2 cerrada",
+      "items": [
+        "D-001..D-014 resueltas, sin contratos ni componentes nuevos",
+        "Quedan 12 con destino en v0.3 · chapter.md §8, §11"
+      ]
+    }
+  ]
+}

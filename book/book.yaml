@@ -90,3 +90,5 @@ chapters:
     file: chapters/36-integracion-turno-durable/chapter.md
   - id: CH-37
     file: chapters/37-esperas-credenciales-canales/chapter.md
+  - id: CH-38
+    file: chapters/38-identidad-auditoria-retencion/chapter.md

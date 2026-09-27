@@ -26,55 +26,55 @@ debts:
   - id: D-001
     title: "PendingInput durable entre pasos y aplicado por el turno durable"
     origin: CH-28
-    status: open
-    target: CH-38
+    status: resolved
+    resolved_in: CH-38
     retargeted_from: [CH-32, CH-36]
 
   - id: D-002
     title: "Compactación del historial cableada en el turno durable"
     origin: CH-29
-    status: open
-    target: CH-38
+    status: resolved
+    resolved_in: CH-38
     retargeted_from: [CH-36]
 
   - id: D-003
     title: "Recuperación de una compactación interrumpida a la mitad"
     origin: CH-29
-    status: open
-    target: CH-38
+    status: resolved
+    resolved_in: CH-38
     retargeted_from: [CH-32]
 
   - id: D-004
     title: "Auditoría de las capabilities que declaran replayPolicy = SAFE"
     origin: CH-30
-    status: open
-    target: CH-38
+    status: resolved
+    resolved_in: CH-38
 
   - id: D-005
     title: "Reglas de admisión que usan el Principal (tipo, tenant) sin cambiar la firma de CH-14"
     origin: CH-31
-    status: open
-    target: CH-38
+    status: resolved
+    resolved_in: CH-38
     retargeted_from: [CH-36]
 
   - id: D-006
     title: "PolicyEngine y CredentialBroker deciden con execution.caller.current"
     origin: CH-31
-    status: open
-    target: CH-38
+    status: resolved
+    resolved_in: CH-38
     retargeted_from: [CH-36]
 
   - id: D-007
     title: "Auditoría de quién continuó cada sesión"
     origin: CH-31
-    status: open
-    target: CH-38
+    status: resolved
+    resolved_in: CH-38
 
   - id: D-008
     title: "Retención y archivo del journal de runs terminados"
     origin: CH-32
-    status: open
-    target: CH-38
+    status: resolved
+    resolved_in: CH-38
 
   - id: D-009
     title: "Vencimiento activo de esperas (EXPIRED) con un schedule interno"

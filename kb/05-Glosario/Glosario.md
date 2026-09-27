@@ -177,5 +177,7 @@ Vocabulario técnico canónico del libro *¿Cómo construir un arnés?* — extr
 | **Durable Governed Turn** | Un turno que entra por un canal con dirección, se admite con identidad verificada, se registra paso a paso, se estaciona sin cómputo cuando espera, ejecuta el código del modelo en un entorno sin secretos y se recupera de una caída sin repetir lo comprometido. | [[ch-36-integracion-turno-durable|CH-36]] | concepto |
 | **Active Wait Expiry** | El vencimiento de una espera estacionada sin respuesta: un schedule interno marca EXPIRED las esperas cuyo expiresAt pasó, y el run continúa como con un rechazo. | [[ch-37-esperas-credenciales-canales|CH-37]] | concepto |
 | **Outbound Reply** | Un mensaje que el arnés envía por el canal de la dirección que la sesión posee (una respuesta, o un aviso de espera con su waitId), nunca a una dirección inferida (P-34). | [[ch-37-esperas-credenciales-canales|CH-37]] | concepto |
+| **Identity Narrows, Never Widens** | Una decisión basada en el Principal (admisión, política, credencial) solo puede restringir lo que la regla base ya permite, nunca conceder algo que la regla base deniega (P-13). | [[ch-38-identidad-auditoria-retencion|CH-38]] | concepto |
+| **Commit-Acknowledged Input** | Una entrada pendiente que sale de la cola solo cuando el paso que la incluyó quedó COMMITTED; si el proceso se cae antes, la recuperación la vuelve a aplicar. | [[ch-38-identidad-auditoria-retencion|CH-38]] | concepto |
 
 Ver también: [[Index|Mapa del libro]]

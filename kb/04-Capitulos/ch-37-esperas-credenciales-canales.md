@@ -13,7 +13,7 @@ articulos_constitucionales: ["P-11", "P-16", "P-31", "P-33", "P-34", "INV-14", "
 
 ## Navegación
 
-⬅ [[ch-36-integracion-turno-durable|CH-36]] · **CH-37**
+⬅ [[ch-36-integracion-turno-durable|CH-36]] · **CH-37** · [[ch-38-identidad-auditoria-retencion|CH-38]] ➡
 
 ## Resultado esperado
 

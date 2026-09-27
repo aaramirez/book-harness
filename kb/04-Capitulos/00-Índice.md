@@ -6,7 +6,7 @@ tags: [capitulo, indice]
 
 # Índice de Capítulos
 
-Los **37 capítulos** del libro *¿Cómo construir un arnés?* (CH-00 a CH-36).
+Los **39 capítulos** del libro *¿Cómo construir un arnés?* (CH-00 a CH-38).
 
 | ID | Capítulo |
 |----|----------|

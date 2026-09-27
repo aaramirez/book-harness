@@ -374,6 +374,11 @@ nuevos es multi-agente: `P-09` se sigue cumpliendo, y la única pieza multi-agen
 siendo `AgentCommunicationGateway` (CH-15). La próxima (invocación durable entre agentes, CH-44)
 está planeada en la versión 0.3, después de los presupuestos que se heredan.
 
+**Actualización (cierre de v0.2.1, 2026-09-26).** Dos capítulos de integración más, sin componentes
+ni contratos nuevos, cierran la deuda que el Tramo 4 dejó pendiente (`registry/debt.yaml`): CH-37
+(esperas, credenciales y canales completos) y CH-38 (identidad, auditoría y retención en todo el
+turno). Los capítulos de la versión 0.3 pasaron a CH-39..CH-49.
+
 ## 2. El Problema (Problem)
 
 `P-09` no es un descuido editorial: es la única regla de las sesenta y cuatro que, por su propia

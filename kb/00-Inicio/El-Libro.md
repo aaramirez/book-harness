@@ -10,9 +10,9 @@ Libro que enseña a construir, capítulo a capítulo, un **Agent Harness** ("arn
 
 ## Datos
 
-- **Versión**: 0.2
+- **Versión**: 0.2.1
 - **Idioma**: español (identificadores técnicos en inglés)
-- **Estructura**: 37 capítulos (CH-00..CH-36)
+- **Estructura**: 39 capítulos (CH-00..CH-38)
 - **Regla suprema**: *Probabilistic systems may propose decisions. Deterministic systems must govern consequences.*
 
 ## Cómo se construye

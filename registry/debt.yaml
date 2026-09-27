@@ -293,3 +293,26 @@ debts:
     rationale: >
       La EgressRule une dominio y credencial, que es lo que P-35 exige. Reescrituras de ruta o
       filtros por método son configuración del proxy, no una decisión nueva del arnés.
+
+  # --- registradas al cerrar v0.2.1 (2026-09-26) ------------------------------------------------
+
+  - id: D-041
+    title: "Reescribir enterDurableTurn y runDurableGovernedStep con las funciones de CH-37 y CH-38"
+    origin: CH-38
+    status: open
+    target: CH-49
+
+  - id: D-042
+    title: "Avisar a un aprobador por un canal distinto del de la sesión"
+    origin: CH-37
+    status: open
+    target: CH-49
+
+  - id: D-043
+    title: "Reglas de política más ricas por Principal (atributos, horarios, jerarquías)"
+    origin: CH-38
+    status: out_of_scope
+    rationale: >
+      El mecanismo ya existe: CallerPolicyRule restringe la decisión base con el Principal, y cubre
+      tipo y tenant, que es lo que INV-E07 exige. Reglas concretas por atributo u horario son datos de
+      configuración de PolicyEngine, no una decisión nueva del arnés.

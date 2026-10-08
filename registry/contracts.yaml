@@ -108,33 +108,41 @@ contracts:
     modified_by: []
     constitutional_impact: [P-01, P-14, INV-09]
 
+  # C-006 v2 (CH-39): agrega cacheRetention (Optional<CacheRetention>: NONE | SHORT | LONG). NULL = sin
+  # cache, como en v1. ModelGateway la reduce a NONE si el modelo del catálogo no soporta cache.
   - id: C-006
     name: ModelRequest
-    version: v1
+    version: v2
     introduced_in: CH-03
     current_definition: |
       STRUCT ModelRequest
           messages: List<AgentMessage>
           budget: ExecutionBudget
+          cacheRetention: Optional<CacheRetention>
           requestedAt: Timestamp
       END
     used_by: [CMP-003]
-    modified_by: []
+    modified_by: [CH-39]
     constitutional_impact: [P-01, P-02, INV-02]
 
+  # C-007 v2 (CH-39): agrega proposedToolCalls (List<RawToolCallProposal>, vacía en v1) y usage
+  # (Optional<UsageRecord>). proposedToolCall se conserva y es el primero de la lista; la lista entera
+  # se lee con effectiveToolCallProposals (D-021). El journal de varias propuestas es D-044 (CH-49).
   - id: C-007
     name: ModelResponse
-    version: v1
+    version: v2
     introduced_in: CH-03
     current_definition: |
       STRUCT ModelResponse
           finished: Boolean
           content: Optional<Value>
           proposedToolCall: Optional<RawToolCallProposal>
+          proposedToolCalls: List<RawToolCallProposal>
+          usage: Optional<UsageRecord>
           producedAt: Timestamp
       END
     used_by: [CMP-003, CMP-008]
-    modified_by: []
+    modified_by: [CH-39]
     constitutional_impact: [P-10, P-13, INV-03]
 
   - id: C-008
@@ -1138,3 +1146,47 @@ contracts:
     used_by: [CMP-026]
     modified_by: []
     constitutional_impact: [P-35, INV-E08, INV-E20]
+
+  # C-049 (ModelDescriptor): el modelo como dato del catálogo — proveedor, ventana de contexto, salida
+  # máxima, precios y capacidades —, con una versión exacta que INV-E10 exige registrar. Es lo que
+  # ModelGateway selecciona; el proveedor concreto sigue siendo un adapter (P-02). CH-39.
+  - id: C-049
+    name: ModelDescriptor
+    version: v1
+    introduced_in: CH-39
+    current_definition: |
+      STRUCT ModelDescriptor
+          modelId: Text
+          provider: Text
+          descriptorVersion: Text
+          contextWindow: Integer
+          maxOutputTokens: Integer
+          pricing: ModelPricing
+          capabilities: List<ModelCapability>
+      END
+    used_by: [CMP-003]
+    modified_by: []
+    constitutional_impact: [P-02, INV-E10]
+
+  # C-050 (UsageRecord): uso y costo de una llamada al modelo — tokens de entrada, salida, lectura y
+  # escritura de cache, y costo calculado con el precio del ModelDescriptor —. Alimenta ExecutionUsage
+  # (presupuesto, INV-09) y el costo por resultado de negocio (P-29). CH-39.
+  - id: C-050
+    name: UsageRecord
+    version: v1
+    introduced_in: CH-39
+    current_definition: |
+      STRUCT UsageRecord
+          modelId: Text
+          descriptorVersion: Text
+          inputTokens: Integer
+          outputTokens: Integer
+          cacheReadTokens: Integer
+          cacheWriteTokens: Integer
+          cost: Number
+          currency: Text
+          recordedAt: Timestamp
+      END
+    used_by: [CMP-003, CMP-020]
+    modified_by: []
+    constitutional_impact: [P-29, INV-09, INV-E10]

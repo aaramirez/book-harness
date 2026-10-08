@@ -1,0 +1,253 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 39 — El Modelo como Dato",
+    "output": "capitulo-39-modelo-como-dato.html",
+    "viewBox": [
+      1080,
+      570
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "catalogo",
+        "label": "Cambiar de modelo es cambiar un dato (P-02)",
+        "focus": [
+          "integracion",
+          "gateway",
+          "catalogo"
+        ],
+        "note": "Solo se invocan modelos del catálogo con las capacidades que el turno exige; agregar uno es una decisión registrada, no código."
+      },
+      {
+        "id": "costo",
+        "label": "El costo lo calcula el arnés",
+        "focus": [
+          "gateway",
+          "proveedor",
+          "catalogo"
+        ],
+        "note": "El proveedor informa tokens; el costo sale del precio del catálogo y queda en un UsageRecord con su descriptorVersion (INV-E10)."
+      },
+      {
+        "id": "presupuesto",
+        "label": "El costo cuenta: presupuesto y resultado",
+        "focus": [
+          "integracion",
+          "controller"
+        ],
+        "note": "costUsed alimenta maxCost (INV-09) y decide ExecutionController; al cerrar el run, costForOutcome pone el costo junto al resultado (P-29)."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "integracion",
+      "type": "external",
+      "label": "Integración",
+      "sublabel": "el turno, CH-36"
+    },
+    {
+      "id": "gateway",
+      "type": "backend",
+      "label": "ModelGateway",
+      "sublabel": "CMP-003, selección y costo"
+    },
+    {
+      "id": "catalogo",
+      "type": "database",
+      "label": "Catálogo",
+      "sublabel": "ModelDescriptor, datos"
+    },
+    {
+      "id": "proveedor",
+      "type": "external",
+      "label": "Proveedor",
+      "sublabel": "adapter, P-02"
+    },
+    {
+      "id": "controller",
+      "type": "backend",
+      "label": "ExecutionController",
+      "sublabel": "CMP-007, presupuesto"
+    }
+  ],
+  "segments": [
+    {
+      "from": 172,
+      "to": 282,
+      "label": "Elegir del catálogo"
+    },
+    {
+      "from": 298,
+      "to": 432,
+      "label": "Costo del arnés"
+    },
+    {
+      "from": 446,
+      "to": 500,
+      "label": "Presupuesto"
+    }
+  ],
+  "messages": [
+    {
+      "id": "select",
+      "from": "integracion",
+      "to": "gateway",
+      "y": 185,
+      "label": "selectModelDescriptor(catálogo, \"modelo-a\", [TOOL_CALLS])",
+      "variant": "emphasis",
+      "note": "el turno exige las capacidades que necesita: un turno con tools no puede usar un modelo sin TOOL_CALLS (§5)"
+    },
+    {
+      "id": "selected",
+      "from": "catalogo",
+      "to": "integracion",
+      "y": 213,
+      "label": "ModelDescriptor + MODEL_SELECTED",
+      "variant": "return",
+      "note": "fuera del catálogo → MODEL_NOT_IN_CATALOG; en el catálogo sin una capacidad → MODEL_LACKS_CAPABILITY; ambos recoverable = FALSE (§12, §13)"
+    },
+    {
+      "id": "fits",
+      "from": "gateway",
+      "to": "catalogo",
+      "y": 241,
+      "label": "fitsContextWindow → TRUE",
+      "variant": "default",
+      "note": "fitsContextWindow(descriptor, 180 000, 4 000): entrada + salida dentro de contextWindow y salida ≤ maxOutputTokens; FALSE no es error: es la señal para compactar (CH-29)"
+    },
+    {
+      "id": "cache",
+      "from": "gateway",
+      "to": "catalogo",
+      "y": 269,
+      "label": "effectiveCacheRetention → SHORT",
+      "variant": "default",
+      "note": "pedido SHORT; la retención es un pedido: cacheRetention NULL o un modelo sin PROMPT_CACHE → NONE; ModelRequest v2 (C-006)"
+    },
+    {
+      "id": "invoke",
+      "from": "gateway",
+      "to": "proveedor",
+      "y": 311,
+      "label": "invokeModelForTurn (CH-03) → adapter",
+      "variant": "emphasis",
+      "note": "provider es una referencia al adapter; el nombre del proveedor es configuración (P-27) y la credencial la resuelve CredentialBroker (INV-E08)"
+    },
+    {
+      "id": "tokens",
+      "from": "proveedor",
+      "to": "gateway",
+      "y": 339,
+      "label": "tokens: 12 000 · 800 · cache 150 000 · 0",
+      "variant": "return",
+      "note": "inputTokens cuenta solo la entrada que no salió de cache; los tokens leídos de cache van aparte, con su propio precio"
+    },
+    {
+      "id": "cost",
+      "from": "gateway",
+      "to": "catalogo",
+      "y": 367,
+      "label": "calculateUsageCost(precio del catálogo) → UsageRecord",
+      "variant": "emphasis",
+      "note": "el costo no lo informa el proveedor: tokens × ModelPricing / 1 000 000; cache read a su propio precio; UsageRecord guarda descriptorVersion (INV-E10)"
+    },
+    {
+      "id": "attach",
+      "from": "gateway",
+      "to": "integracion",
+      "y": 395,
+      "label": "attachUsage → ModelResponse v2",
+      "variant": "return",
+      "note": "usage = UsageRecord; ModelResponse v2 (C-007) agrega usage y proposedToolCalls; una respuesta v1 tiene la lista vacía y usage NULL"
+    },
+    {
+      "id": "proposals",
+      "from": "gateway",
+      "to": "integracion",
+      "y": 423,
+      "label": "effectiveToolCallProposals → todas",
+      "variant": "return",
+      "note": "entrega todas las propuestas, ninguna se pierde (D-021); cada una pasa por PolicyEngine. El journal registra una por paso: varias = D-044, destino CH-49"
+    },
+    {
+      "id": "budget",
+      "from": "integracion",
+      "to": "controller",
+      "y": 459,
+      "label": "accumulateUsage → costUsed → CONTINUE | STOP (maxCost)",
+      "variant": "emphasis",
+      "note": "accumulateUsage suma record.cost a ExecutionUsage.costUsed; evaluateExecutionContinuation (CH-07) decide CONTINUE o STOP por maxCost (INV-09)"
+    },
+    {
+      "id": "outcome",
+      "from": "integracion",
+      "to": "controller",
+      "y": 487,
+      "label": "fin del run → costForOutcome → costo por resultado",
+      "variant": "default",
+      "note": "suma los UsageRecord del run junto al BusinessOutcomeCorrelation (CH-22) → OutcomeCost (P-29); una sola moneda: mezclar monedas → MIXED_CURRENCY"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "gateway",
+      "from": 181,
+      "to": 273,
+      "type": "backend"
+    },
+    {
+      "participant": "catalogo",
+      "from": 237,
+      "to": 273,
+      "type": "database"
+    },
+    {
+      "participant": "proveedor",
+      "from": 307,
+      "to": 343,
+      "type": "external"
+    },
+    {
+      "participant": "catalogo",
+      "from": 363,
+      "to": 371,
+      "type": "database"
+    },
+    {
+      "participant": "controller",
+      "from": 455,
+      "to": 491,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "ModelDescriptor (C-049)",
+      "items": [
+        "modelId, provider (adapter) y descriptorVersion (INV-E10)",
+        "Ventana, salida máxima, precio y capacidades: el modelo es un dato"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "UsageRecord (C-050)",
+      "items": [
+        "Tokens, cache leída y escrita, costo y moneda, con el precio del catálogo",
+        "Suma en ExecutionUsage (maxCost) y en el costo por resultado (P-29)"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "ModelResponse v2 (C-007)",
+      "items": [
+        "proposedToolCalls con todas las propuestas + usage",
+        "proposedToolCall = la primera; v1 sigue valiendo · chapter.md §6, §11"
+      ]
+    }
+  ]
+}

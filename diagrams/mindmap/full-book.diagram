@@ -216,6 +216,10 @@ digraph BookMindMap {
   "CH-38" [label="Identidad, Auditoría y Retención en Todo el Turno", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-38.html", style="filled,bold"];
   "CONCEPT-identity-narrows-never-widens" [label="Identity Narrows, Never Widens", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-38.html#CONCEPT-identity-narrows-never-widens", style="filled"];
   "CONCEPT-commit-acknowledged-input" [label="Commit-Acknowledged Input", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-38.html#CONCEPT-commit-acknowledged-input", style="filled"];
+  "CH-39" [label="El Modelo como Dato: Catálogo, Costo y Cache", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-39.html", style="filled,bold"];
+  "C-049" [label="ModelDescriptor", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-39.html#C-049", style="filled"];
+  "C-050" [label="UsageRecord", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-39.html#C-050", style="filled"];
+  "CONCEPT-model-catalog" [label="Model Catalog", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-39.html#CONCEPT-model-catalog", style="filled"];
   "CH-00" -> "C-001" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-002" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-003" [label="INTRODUCES", color="#2a5fa5", style="bold"];
@@ -535,4 +539,9 @@ digraph BookMindMap {
   "CH-37" -> "CONCEPT-outbound-reply" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-38" -> "CONCEPT-identity-narrows-never-widens" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-38" -> "CONCEPT-commit-acknowledged-input" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-39" -> "C-049" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-39" -> "C-050" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-39" -> "CONCEPT-model-catalog" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-39" -> "C-006" [label="MODIFIES", color="#c77c00", style="dashed"];
+  "CH-39" -> "C-007" [label="MODIFIES", color="#c77c00", style="dashed"];
 }

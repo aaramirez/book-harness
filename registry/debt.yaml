@@ -161,8 +161,10 @@ debts:
   - id: D-021
     title: "Varias tool calls por respuesta del modelo"
     origin: CH-32
-    status: open
-    target: CH-39
+    status: resolved
+    resolved_in: CH-39
+    # CH-39 resuelve el contrato: ModelResponse v2 trae proposedToolCalls y ModelGateway normaliza
+    # todas las propuestas. Registrar varias en el journal es D-044.
 
   - id: D-022
     title: "sessionMayMigrate lee los pasos sin comprometer (INV-E22)"
@@ -316,3 +318,11 @@ debts:
       El mecanismo ya existe: CallerPolicyRule restringe la decisión base con el Principal, y cubre
       tipo y tenant, que es lo que INV-E07 exige. Reglas concretas por atributo u horario son datos de
       configuración de PolicyEngine, no una decisión nueva del arnés.
+
+  # --- registradas en CH-39 -------------------------------------------------------------------
+
+  - id: D-044
+    title: "Registrar en el journal una respuesta con varias tool calls sin volver a llamar al modelo"
+    origin: CH-39
+    status: open
+    target: CH-49

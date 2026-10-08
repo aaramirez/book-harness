@@ -92,3 +92,5 @@ chapters:
     file: chapters/37-esperas-credenciales-canales/chapter.md
   - id: CH-38
     file: chapters/38-identidad-auditoria-retencion/chapter.md
+  - id: CH-39
+    file: chapters/39-modelo-como-dato/chapter.md

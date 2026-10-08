@@ -49,5 +49,6 @@ Los **39 capítulos** del libro *¿Cómo construir un arnés?* (CH-00 a CH-38).
 | CH-36 | [[ch-36-integracion-turno-durable|Integración: el Turno Durable Gobernado]] |
 | CH-37 | [[ch-37-esperas-credenciales-canales|Esperas, Credenciales y Canales Completos]] |
 | CH-38 | [[ch-38-identidad-auditoria-retencion|Identidad, Auditoría y Retención en Todo el Turno]] |
+| CH-39 | [[ch-39-modelo-como-dato|El Modelo como Dato: Catálogo, Costo y Cache]] |
 
 Ver también: [[Index|Mapa del libro]]

@@ -2,17 +2,17 @@
 id: "C-006"
 tipo: contrato
 nombre: "ModelRequest"
-version: "v1"
+version: "v2"
 capitulo: "CH-03"
 tags: [contrato, c-006]
 used_by: ["CMP-003"]
-modified_by: []
+modified_by: ["CH-39"]
 articulos_constitucionales: ["P-01", "P-02", "INV-02"]
 ---
 
 # ModelRequest (C-006)
 
-> Contrato v1 — introducido en [[ch-03-model-gateway|CH-03]].
+> Contrato **v2** — introducido en [[ch-03-model-gateway|CH-03]], modificado en [[ch-39-modelo-como-dato|CH-39]].
 
 ## Definición canónica
 
@@ -20,6 +20,7 @@ articulos_constitucionales: ["P-01", "P-02", "INV-02"]
 STRUCT ModelRequest
     messages: List<AgentMessage>
     budget: ExecutionBudget
+    cacheRetention: Optional<CacheRetention>
     requestedAt: Timestamp
 END
 ```
@@ -30,7 +31,7 @@ END
 
 ## Modificado por
 
-Ninguno
+[[ch-39-modelo-como-dato|CH-39]]: agrega `cacheRetention` (NONE / SHORT / LONG; NULL = sin cache, como en v1)
 
 ## Impacto constitucional
 

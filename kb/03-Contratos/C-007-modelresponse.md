@@ -2,17 +2,17 @@
 id: "C-007"
 tipo: contrato
 nombre: "ModelResponse"
-version: "v1"
+version: "v2"
 capitulo: "CH-03"
 tags: [contrato, c-007]
 used_by: ["CMP-003", "CMP-008"]
-modified_by: []
+modified_by: ["CH-39"]
 articulos_constitucionales: ["P-10", "P-13", "INV-03"]
 ---
 
 # ModelResponse (C-007)
 
-> Contrato v1 — introducido en [[ch-03-model-gateway|CH-03]].
+> Contrato **v2** — introducido en [[ch-03-model-gateway|CH-03]], modificado en [[ch-39-modelo-como-dato|CH-39]].
 
 ## Definición canónica
 
@@ -21,6 +21,8 @@ STRUCT ModelResponse
     finished: Boolean
     content: Optional<Value>
     proposedToolCall: Optional<RawToolCallProposal>
+    proposedToolCalls: List<RawToolCallProposal>
+    usage: Optional<UsageRecord>
     producedAt: Timestamp
 END
 ```
@@ -31,7 +33,7 @@ END
 
 ## Modificado por
 
-Ninguno
+[[ch-39-modelo-como-dato|CH-39]]: agrega `proposedToolCalls` (todas las propuestas; `proposedToolCall` es la primera) y `usage` (UsageRecord)
 
 ## Impacto constitucional
 

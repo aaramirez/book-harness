@@ -13,7 +13,7 @@ articulos_constitucionales: ["P-13", "P-17", "P-22", "P-25", "P-31", "P-32", "IN
 
 ## Navegación
 
-⬅ [[ch-37-esperas-credenciales-canales|CH-37]] · **CH-38**
+⬅ [[ch-37-esperas-credenciales-canales|CH-37]] · **CH-38** · [[ch-39-modelo-como-dato|CH-39]] ➡
 
 ## Resultado esperado
 

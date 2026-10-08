@@ -58,5 +58,7 @@ Los **48 contratos** canónicos del libro, en orden de introducción.
 | C-046 | [[C-046-continuationaddress|ContinuationAddress]] | [[ch-34-canales-continuacion|CH-34]] |
 | C-047 | [[C-047-sandboxsession|SandboxSession]] | [[ch-35-entorno-aislado|CH-35]] |
 | C-048 | [[C-048-networkpolicy|NetworkPolicy]] | [[ch-35-entorno-aislado|CH-35]] |
+| C-049 | [[C-049-modeldescriptor|ModelDescriptor]] | [[ch-39-modelo-como-dato|CH-39]] |
+| C-050 | [[C-050-usagerecord|UsageRecord]] | [[ch-39-modelo-como-dato|CH-39]] |
 
 Ver también: [[Index|Mapa del libro]]

@@ -179,5 +179,8 @@ Vocabulario técnico canónico del libro *¿Cómo construir un arnés?* — extr
 | **Outbound Reply** | Un mensaje que el arnés envía por el canal de la dirección que la sesión posee (una respuesta, o un aviso de espera con su waitId), nunca a una dirección inferida (P-34). | [[ch-37-esperas-credenciales-canales|CH-37]] | concepto |
 | **Identity Narrows, Never Widens** | Una decisión basada en el Principal (admisión, política, credencial) solo puede restringir lo que la regla base ya permite, nunca conceder algo que la regla base deniega (P-13). | [[ch-38-identidad-auditoria-retencion|CH-38]] | concepto |
 | **Commit-Acknowledged Input** | Una entrada pendiente que sale de la cola solo cuando el paso que la incluyó quedó COMMITTED; si el proceso se cae antes, la recuperación la vuelve a aplicar. | [[ch-38-identidad-auditoria-retencion|CH-38]] | concepto |
+| **Model Catalog** | La lista de ModelDescriptor que ModelGateway puede seleccionar, cada uno con proveedor, ventana, salida máxima, precios, capacidades y versión exacta. Un modelo fuera del catálogo, o sin la capacidad pedida, no se usa. | [[ch-39-modelo-como-dato|CH-39]] | concepto |
+| **ModelDescriptor** `C-049` | El modelo como dato: modelId, provider, descriptorVersion, contextWindow, maxOutputTokens, pricing y capabilities. | [[ch-39-modelo-como-dato|CH-39]] | contrato |
+| **UsageRecord** `C-050` | Uso y costo de una llamada al modelo: tokens de entrada, salida y cache, y costo según el precio del ModelDescriptor. | [[ch-39-modelo-como-dato|CH-39]] | contrato |
 
 Ver también: [[Index|Mapa del libro]]

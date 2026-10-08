@@ -1640,3 +1640,27 @@ terms:
       COMMITTED; si el proceso se cae antes, la recuperación la vuelve a aplicar (CH-38).
     introduced_in: CH-38
     kind: concept
+
+  - term: Model Catalog
+    definition: >
+      La lista de ModelDescriptor que ModelGateway puede seleccionar: cada modelo con su proveedor,
+      ventana de contexto, salida máxima, precios, capacidades y versión exacta. Un modelo fuera del
+      catálogo, o sin la capacidad pedida, no se usa (CH-39).
+    introduced_in: CH-39
+    kind: concept
+
+  - term: ModelDescriptor
+    definition: >
+      El modelo como dato: modelId, provider, descriptorVersion, contextWindow, maxOutputTokens,
+      pricing y capabilities (C-049, CH-39).
+    introduced_in: CH-39
+    kind: contract
+    ref: C-049
+
+  - term: UsageRecord
+    definition: >
+      Uso y costo de una llamada al modelo: tokens de entrada, salida y cache, y costo según el precio
+      del ModelDescriptor (C-050, CH-39).
+    introduced_in: CH-39
+    kind: contract
+    ref: C-050

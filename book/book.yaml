@@ -110,3 +110,5 @@ chapters:
     file: chapters/46-observabilidad-por-audiencia/chapter.md
   - id: CH-47
     file: chapters/47-evaluacion-con-lift/chapter.md
+  - id: CH-48
+    file: chapters/48-agente-como-directorio/chapter.md

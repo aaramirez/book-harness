@@ -256,6 +256,10 @@ digraph BookMindMap {
   "CH-47" [label="Medir el Aporte de un Cambio: Evaluación con Lift", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-47.html", style="filled,bold"];
   "C-064" [label="LiftReport", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-47.html#C-064", style="filled"];
   "CONCEPT-lift" [label="Lift", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-47.html#CONCEPT-lift", style="filled"];
+  "CH-48" [label="El Agente como Directorio: Autoría por Convención", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-48.html", style="filled,bold"];
+  "C-065" [label="AgentManifest", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-48.html#C-065", style="filled"];
+  "C-066" [label="AuthoringDiagnostic", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-48.html#C-066", style="filled"];
+  "CONCEPT-filesystem-first-authoring" [label="Filesystem-First Authoring", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-48.html#CONCEPT-filesystem-first-authoring", style="filled"];
   "CH-00" -> "C-001" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-002" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-003" [label="INTRODUCES", color="#2a5fa5", style="bold"];
@@ -634,4 +638,7 @@ digraph BookMindMap {
   "CH-47" -> "C-064" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-47" -> "CONCEPT-lift" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-47" -> "C-032" [label="MODIFIES", color="#c77c00", style="dashed"];
+  "CH-48" -> "C-065" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-48" -> "C-066" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-48" -> "CONCEPT-filesystem-first-authoring" [label="INTRODUCES", color="#2a5fa5", style="bold"];
 }

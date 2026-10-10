@@ -74,5 +74,7 @@ Los **48 contratos** canónicos del libro, en orden de introducción.
 | C-062 | [[C-062-tracecapturepolicy|TraceCapturePolicy]] | [[ch-46-observabilidad-por-audiencia|CH-46]] |
 | C-063 | [[C-063-telemetryspan|TelemetrySpan]] | [[ch-46-observabilidad-por-audiencia|CH-46]] |
 | C-064 | [[C-064-liftreport|LiftReport]] | [[ch-47-evaluacion-con-lift|CH-47]] |
+| C-065 | [[C-065-agentmanifest|AgentManifest]] | [[ch-48-agente-como-directorio|CH-48]] |
+| C-066 | [[C-066-authoringdiagnostic|AuthoringDiagnostic]] | [[ch-48-agente-como-directorio|CH-48]] |
 
 Ver también: [[Index|Mapa del libro]]

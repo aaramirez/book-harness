@@ -58,5 +58,6 @@ Los **39 capítulos** del libro *¿Cómo construir un arnés?* (CH-00 a CH-38).
 | CH-45 | [[ch-45-evolucion-del-runtime|Evolución del Runtime con Sesiones Abiertas]] |
 | CH-46 | [[ch-46-observabilidad-por-audiencia|Observabilidad Acotada por Audiencia]] |
 | CH-47 | [[ch-47-evaluacion-con-lift|Medir el Aporte de un Cambio: Evaluación con Lift]] |
+| CH-48 | [[ch-48-agente-como-directorio|El Agente como Directorio: Autoría por Convención]] |
 
 Ver también: [[Index|Mapa del libro]]

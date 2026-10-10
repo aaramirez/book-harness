@@ -1523,3 +1523,39 @@ contracts:
     used_by: [CMP-020]
     modified_by: []
     constitutional_impact: [P-28, INV-19, INV-E07, INV-E13]
+
+  # C-065 (AgentManifest): lo que el adaptador de autoría descubrió en el directorio de un agente — cada
+  # fuente con su ranura, nombre (derivado de la ruta), ruta y origen — más sus diagnósticos. El runtime
+  # no infiere nada que el manifiesto no declare, y lo expone (P-39). CH-48.
+  - id: C-065
+    name: AgentManifest
+    version: v1
+    introduced_in: CH-48
+    current_definition: |
+      STRUCT AgentManifest
+          agentRoot: Text
+          sources: List<ManifestSource>
+          diagnostics: List<AuthoringDiagnostic>
+          trusted: Boolean
+          discoveredAt: Timestamp
+      END
+    used_by: [CMP-011]
+    modified_by: []
+    constitutional_impact: [P-06, P-39, INV-E27]
+
+  # C-066 (AuthoringDiagnostic): un problema de autoría con nivel, código y ruta. Uno de nivel ERROR
+  # impide activar el agente (INV-E27). CH-48.
+  - id: C-066
+    name: AuthoringDiagnostic
+    version: v1
+    introduced_in: CH-48
+    current_definition: |
+      STRUCT AuthoringDiagnostic
+          level: DiagnosticLevel
+          code: Text
+          path: Text
+          message: Text
+      END
+    used_by: [CMP-011]
+    modified_by: []
+    constitutional_impact: [P-39, INV-E27]

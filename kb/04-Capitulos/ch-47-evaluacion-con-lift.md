@@ -13,7 +13,7 @@ articulos_constitucionales: ["P-28", "P-29", "INV-19", "INV-E07", "INV-E13"]
 
 ## Navegación
 
-⬅ [[ch-46-observabilidad-por-audiencia|CH-46]] · **CH-47**
+⬅ [[ch-46-observabilidad-por-audiencia|CH-46]] · **CH-47** · [[ch-48-agente-como-directorio|CH-48]] ➡
 
 ## Resultado esperado
 

@@ -207,5 +207,8 @@ Vocabulario técnico canónico del libro *¿Cómo construir un arnés?* — extr
 | **TelemetrySpan** `C-063` | Un tramo de diagnóstico, con atributos, cuerpo opcional y clasificación. Datos de diagnóstico, no estado de negocio. | [[ch-46-observabilidad-por-audiencia|CH-46]] | contrato |
 | **Lift** | La diferencia entre el puntaje medio de un tratamiento y el de su línea base, en la misma métrica y sobre los mismos casos. Solo cuenta como mejora si supera un umbral mínimo y hay casos suficientes. | [[ch-47-evaluacion-con-lift|CH-47]] | concepto |
 | **LiftReport** `C-064` | El informe de una comparación línea base / tratamiento: puntajes por caso, lift, umbral, veredicto (IMPROVED, INCONCLUSIVE, REGRESSED) y los entornos aislados de cada corrida. | [[ch-47-evaluacion-con-lift|CH-47]] | contrato |
+| **Filesystem-First Authoring** | Escribir un agente como archivos en ubicaciones convencionales, donde la ruta determina la identidad de cada parte. Un adaptador de autoría descubre el directorio y produce un manifiesto; el runtime no infiere nada que no esté declarado (P-39). | [[ch-48-agente-como-directorio|CH-48]] | concepto |
+| **AgentManifest** `C-065` | Lo que se descubrió en el directorio de un agente: cada fuente con ranura, nombre, ruta y origen, y los diagnósticos de autoría. | [[ch-48-agente-como-directorio|CH-48]] | contrato |
+| **AuthoringDiagnostic** `C-066` | Un problema de autoría con nivel (ERROR, WARNING, INFO), código y ruta. Un ERROR impide activar el agente (INV-E27). | [[ch-48-agente-como-directorio|CH-48]] | contrato |
 
 Ver también: [[Index|Mapa del libro]]

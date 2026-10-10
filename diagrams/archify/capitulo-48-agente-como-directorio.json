@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 48 — El Agente como Directorio",
+    "output": "capitulo-48-agente-como-directorio.html",
+    "viewBox": [
+      1080,
+      570
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "descubrir",
+        "label": "La ruta es la identidad",
+        "focus": [
+          "operador",
+          "directorio",
+          "adaptador"
+        ],
+        "note": "tools/facturacion/reembolso se llama facturacion-reembolso; dos fuentes con el mismo nombre: authoring/duplicate-name."
+      },
+      {
+        "id": "manifiesto",
+        "label": "Un ERROR impide activar",
+        "focus": [
+          "operador",
+          "adaptador",
+          "core"
+        ],
+        "note": "Repo sin confianza: ERROR authoring/untrusted-code → AGENT_MANIFEST_REJECTED y AGENT_MANIFEST_HAS_ERRORS (INV-E27)."
+      },
+      {
+        "id": "contratos",
+        "label": "Cada fuente, su contrato de siempre",
+        "focus": [
+          "adaptador",
+          "core",
+          "duenos"
+        ],
+        "note": "Nada se infiere (P-39): cada fuente produce un contrato que ya existe y su componente dueño lo recibe sin cambios."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "operador",
+      "type": "external",
+      "label": "Autor",
+      "sublabel": "escribe y activa el agente"
+    },
+    {
+      "id": "directorio",
+      "type": "database",
+      "label": "Directorio soporte/",
+      "sublabel": "archivos en ranuras"
+    },
+    {
+      "id": "adaptador",
+      "type": "backend",
+      "label": "Adaptador de autoría",
+      "sublabel": "sin componente · EVO-01"
+    },
+    {
+      "id": "core",
+      "type": "security",
+      "label": "AgentCore",
+      "sublabel": "CMP-011"
+    },
+    {
+      "id": "duenos",
+      "type": "cloud",
+      "label": "Componentes dueños",
+      "sublabel": "CapabilityRegistry, Admission…"
+    }
+  ],
+  "segments": [
+    {
+      "from": 172,
+      "to": 282,
+      "label": "Cada archivo en su ranura"
+    },
+    {
+      "from": 298,
+      "to": 432,
+      "label": "Manifiesto expuesto y activación"
+    },
+    {
+      "from": 446,
+      "to": 500,
+      "label": "Los contratos de siempre"
+    }
+  ],
+  "messages": [
+    {
+      "id": "descubrir",
+      "from": "operador",
+      "to": "adaptador",
+      "y": 185,
+      "label": "discoverAgent(soporte/, confiable)",
+      "variant": "default",
+      "note": "directorio confiable: el código de tools/ puede cargarse; el markdown se lee siempre, el código necesita confianza (§5, §10)"
+    },
+    {
+      "id": "leer",
+      "from": "adaptador",
+      "to": "directorio",
+      "y": 213,
+      "label": "slotOf: agent, instructions, tools/, connections/, data/, channels/, policies/",
+      "variant": "default",
+      "note": "la ranura sale del primer segmento; agent e instructions son obligatorias: si faltan, authoring/required-slot-missing (§5, §9, §13)"
+    },
+    {
+      "id": "identidad",
+      "from": "directorio",
+      "to": "adaptador",
+      "y": 241,
+      "label": "tools/facturacion/reembolso → \"facturacion-reembolso\"",
+      "variant": "emphasis",
+      "note": "la ruta es la identidad: segmentos tras la ranura, sin extensión, unidos con guion; nombre repetido: authoring/duplicate-name (§5, §11)"
+    },
+    {
+      "id": "fuentes",
+      "from": "directorio",
+      "to": "adaptador",
+      "y": 269,
+      "label": "= buscar-ticket, tickets, clientes, cli (reemplaza el default), chat-web",
+      "variant": "return",
+      "note": "cada fuente es un ManifestSource PROJECT; el default cli no entra porque un archivo propio con su nombre lo reemplaza (§5, §6, §11)"
+    },
+    {
+      "id": "canales",
+      "from": "adaptador",
+      "to": "operador",
+      "y": 311,
+      "label": "closedChannelDiagnostics → WARNING channels/chat-web",
+      "variant": "security",
+      "note": "policies/admision solo tiene regla para cli: chat-web se descubre, pero no escucha; es WARNING, no ERROR (§11, §12)"
+    },
+    {
+      "id": "manifiesto",
+      "from": "adaptador",
+      "to": "operador",
+      "y": 339,
+      "label": "= AgentManifest expuesto: fuentes, rutas, origen, diagnósticos",
+      "variant": "return",
+      "note": "AgentManifest (C-065) es lo único que el runtime conoce del agente; nada se infiere y todo se muestra (P-39) (§5, §6, §9)"
+    },
+    {
+      "id": "exigir",
+      "from": "operador",
+      "to": "core",
+      "y": 367,
+      "label": "requireActivatableManifest(manifiesto de soporte)",
+      "variant": "default",
+      "note": "con un ERROR (p. ej. authoring/untrusted-code en un repo clonado sin confianza): AGENT_MANIFEST_REJECTED y AGENT_MANIFEST_HAS_ERRORS (§10, §13)"
+    },
+    {
+      "id": "activable",
+      "from": "core",
+      "to": "operador",
+      "y": 395,
+      "label": "= sin ERROR: activable (el WARNING no lo impide)",
+      "variant": "return",
+      "note": "hasErrors solo mira el nivel ERROR (INV-E27); WARNING e INFO quedan visibles en el manifiesto y no impiden activar (§11, §12)"
+    },
+    {
+      "id": "activar",
+      "from": "core",
+      "to": "duenos",
+      "y": 423,
+      "label": "activateAgent (CH-11) · sin cambios",
+      "variant": "emphasis",
+      "note": "requireActivatableManifest va antes; activateAgent no cambia y AgentCore no lee el sistema de archivos (§8, §9, §11)"
+    },
+    {
+      "id": "contratos",
+      "from": "adaptador",
+      "to": "duenos",
+      "y": 459,
+      "label": "C-002 + C-012 · C-018 · C-054 · C-055 → su componente dueño",
+      "variant": "emphasis",
+      "note": "agent → AgentConfig con ExecutionBudget; tools/ → CapabilityDescriptor; connections/ → ConnectionDescriptor; data/ → DataSourceDescriptor (§5, §9)"
+    },
+    {
+      "id": "admision",
+      "from": "adaptador",
+      "to": "duenos",
+      "y": 487,
+      "label": "channels/ → Ingress Adapters · policies/admision → AdmissionController",
+      "variant": "security",
+      "note": "solo cli escucha; chat-web espera a que alguien escriba su regla: quien decide si un canal escucha es AdmissionController (CH-14) (§8, §12)"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "adaptador",
+      "from": 181,
+      "to": 343,
+      "type": "backend"
+    },
+    {
+      "participant": "directorio",
+      "from": 209,
+      "to": 273,
+      "type": "database"
+    },
+    {
+      "participant": "core",
+      "from": 363,
+      "to": 427,
+      "type": "security"
+    },
+    {
+      "participant": "duenos",
+      "from": 419,
+      "to": 491,
+      "type": "cloud"
+    },
+    {
+      "participant": "adaptador",
+      "from": 455,
+      "to": 491,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "AgentManifest (C-065)",
+      "items": [
+        "Fuentes con ranura, nombre, ruta y origen",
+        "Se expone: el runtime no infiere nada"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "AuthoringDiagnostic (C-066)",
+      "items": [
+        "Nivel, código y ruta exacta",
+        "ERROR impide activar; WARNING se ve"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "P-39 · INV-E27",
+      "items": [
+        "El agente son archivos en ranuras conocidas",
+        "Un ERROR impide toda activación · §15"
+      ]
+    }
+  ]
+}

@@ -8,7 +8,7 @@ introduces_contracts: [C-064]
 modifies_contracts: [C-032]
 constitutional_articles: [P-28, P-29, INV-19, INV-E07, INV-E13]
 previous_chapter: CH-46
-next_chapter: null
+next_chapter: CH-48
 retrieval_set:
   expected_outcome:
     id: EO-CH47

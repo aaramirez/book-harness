@@ -1863,3 +1863,27 @@ terms:
     introduced_in: CH-47
     kind: contract
     ref: C-064
+
+  - term: Filesystem-First Authoring
+    definition: >
+      Escribir un agente como archivos en ubicaciones convencionales, donde la ruta determina la
+      identidad de cada parte. Un adaptador de autoría descubre el directorio y produce un manifiesto; el
+      runtime no infiere nada que no esté declarado (P-39, CH-48).
+    introduced_in: CH-48
+    kind: concept
+
+  - term: AgentManifest
+    definition: >
+      Lo que se descubrió en el directorio de un agente: cada fuente con ranura, nombre, ruta y origen, y
+      los diagnósticos de autoría (C-065).
+    introduced_in: CH-48
+    kind: contract
+    ref: C-065
+
+  - term: AuthoringDiagnostic
+    definition: >
+      Un problema de autoría con nivel (ERROR, WARNING, INFO), código y ruta. Un ERROR impide activar el
+      agente (C-066, INV-E27).
+    introduced_in: CH-48
+    kind: contract
+    ref: C-066

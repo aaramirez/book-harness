@@ -1436,3 +1436,63 @@ contracts:
     used_by: [CMP-010, CMP-028]
     modified_by: []
     constitutional_impact: [P-36, INV-13, INV-E10, INV-E22]
+
+  # C-061 (SessionAudience): quién puede ver una sesión — PUBLIC, PRIVATE o UNKNOWN —, asignada al
+  # crearla (P-37). Dentro de una sesión solo se vuelve más restrictiva. La asigna DataGovernanceEngine;
+  # SessionState no cambia. CH-46.
+  - id: C-061
+    name: SessionAudience
+    version: v1
+    introduced_in: CH-46
+    current_definition: |
+      STRUCT SessionAudience
+          sessionId: SessionId
+          kind: AudienceKind
+          decidedBy: Text
+          decidedAt: Timestamp
+      END
+    used_by: [CMP-018]
+    modified_by: []
+    constitutional_impact: [P-37, INV-E23]
+
+  # C-062 (TraceCapturePolicy): el techo de captura de telemetría para una audiencia: hasta qué
+  # clasificación puede llegar a un destino de trazas y si se capturan cuerpos (prompts, salidas,
+  # argumentos). Sin política, el techo más restrictivo (fail-closed). CH-46.
+  - id: C-062
+    name: TraceCapturePolicy
+    version: v1
+    introduced_in: CH-46
+    current_definition: |
+      STRUCT TraceCapturePolicy
+          audience: AudienceKind
+          ceiling: DataClassificationLevel
+          captureBodies: Boolean
+      END
+    used_by: [CMP-018, CMP-009]
+    modified_by: []
+    constitutional_impact: [P-37, INV-E23]
+
+  # C-063 (TelemetrySpan): un tramo de diagnóstico — "diagnostic data, not business state". Distinto de
+  # un AgentEvent (observa) y de una entrada de auditoría (prueba): el span diagnostica, y es lo único que
+  # el techo de captura recorta (P-25). CH-46.
+  - id: C-063
+    name: TelemetrySpan
+    version: v1
+    introduced_in: CH-46
+    current_definition: |
+      STRUCT TelemetrySpan
+          spanId: SpanId
+          traceId: TraceId
+          parentSpanId: Optional<SpanId>
+          sessionId: SessionId
+          name: Text
+          startedAt: Timestamp
+          endedAt: Optional<Timestamp>
+          attributes: Map<Text, Value>
+          body: Optional<Value>
+          classification: DataClassificationLevel
+          redacted: Boolean
+      END
+    used_by: [CMP-009, CMP-018]
+    modified_by: []
+    constitutional_impact: [P-04, P-25, INV-E23]

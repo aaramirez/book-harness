@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 46 — Observabilidad por Audiencia",
+    "output": "capitulo-46-observabilidad-por-audiencia.html",
+    "viewBox": [
+      1080,
+      570
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "privada",
+        "label": "La sesión privada baja el techo de captura",
+        "focus": [
+          "canal",
+          "dge",
+          "bus"
+        ],
+        "note": "Si el canal no dice la audiencia, es UNKNOWN: lo más restrictivo de los dos lados, contexto y telemetría."
+      },
+      {
+        "id": "recortar",
+        "label": "Cada destino recibe el span ya recortado",
+        "focus": [
+          "bus",
+          "dge",
+          "destinos"
+        ],
+        "note": "Lo recortado nunca llegó y nadie lo restaura. La auditoría no pasa por el techo y sigue completa (P-25)."
+      },
+      {
+        "id": "publico",
+        "label": "El hilo público baja el techo de contexto",
+        "focus": [
+          "canal",
+          "dge",
+          "ctx"
+        ],
+        "note": "Dentro de una sesión la audiencia solo se vuelve más restrictiva; relajarla da AUDIENCE_RELAXATION_NOT_ALLOWED."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "canal",
+      "type": "frontend",
+      "label": "Canal",
+      "sublabel": "adaptador · s-8, s-9"
+    },
+    {
+      "id": "dge",
+      "type": "security",
+      "label": "DataGovernance",
+      "sublabel": "Engine · CMP-018"
+    },
+    {
+      "id": "bus",
+      "type": "backend",
+      "label": "EventBus",
+      "sublabel": "CMP-009"
+    },
+    {
+      "id": "destinos",
+      "type": "cloud",
+      "label": "Destinos",
+      "sublabel": "trazas-ops · pruebas"
+    },
+    {
+      "id": "ctx",
+      "type": "database",
+      "label": "ContextEngine",
+      "sublabel": "CH-42"
+    }
+  ],
+  "segments": [
+    {
+      "from": 172,
+      "to": 282,
+      "label": "La conversación privada"
+    },
+    {
+      "from": 298,
+      "to": 432,
+      "label": "Recortar antes de distribuir"
+    },
+    {
+      "from": 446,
+      "to": 500,
+      "label": "El hilo público"
+    }
+  ],
+  "messages": [
+    {
+      "id": "clasificar",
+      "from": "canal",
+      "to": "dge",
+      "y": 185,
+      "label": "classifySessionAudience(s-8, canal directo)",
+      "variant": "default",
+      "note": "la audiencia la declara el adaptador del canal (CH-34) o una regla del despliegue; si el canal no lo dice, UNKNOWN (§5, §9, §11)"
+    },
+    {
+      "id": "privada",
+      "from": "dge",
+      "to": "canal",
+      "y": 213,
+      "label": "= PRIVATE · SESSION_AUDIENCE_CLASSIFIED",
+      "variant": "return",
+      "note": "SessionAudience (C-061) es un registro de gobierno: SessionState no cambia; el evento lleva la audiencia como payload (§6, §14)"
+    },
+    {
+      "id": "techo",
+      "from": "bus",
+      "to": "dge",
+      "y": 241,
+      "label": "captureCeilingFor(PRIVATE)",
+      "variant": "emphasis",
+      "note": "busca la TraceCapturePolicy (C-062) de la audiencia; sin política, el techo es el más restrictivo: PUBLIC, sin cuerpos (§11, §13)"
+    },
+    {
+      "id": "interno",
+      "from": "dge",
+      "to": "bus",
+      "y": 269,
+      "label": "= techo INTERNAL, sin cuerpos",
+      "variant": "return",
+      "note": "PRIVATE baja el techo de la telemetría: los operadores no leen conversaciones privadas en las trazas (§5, §15)"
+    },
+    {
+      "id": "span",
+      "from": "canal",
+      "to": "bus",
+      "y": 311,
+      "label": "span \"model.call\" CONFIDENTIAL → fanOutSpan",
+      "variant": "default",
+      "note": "el prompt del turno de s-8 lleva el salario; classification es la del contenido más sensible, asignada por quien produce el span (§6, §10)"
+    },
+    {
+      "id": "ops",
+      "from": "bus",
+      "to": "dge",
+      "y": 339,
+      "label": "governSpanForDestination(trazas-ops, techo CONFIDENTIAL)",
+      "variant": "emphasis",
+      "note": "techo efectivo = lowerCeiling(techo de la sesión, techo del destino): un destino puede bajarlo, nunca subirlo (§6, §11)"
+    },
+    {
+      "id": "opsrecorte",
+      "from": "dge",
+      "to": "bus",
+      "y": 367,
+      "label": "efectivo INTERNAL → metadatos, body NULL, redacted",
+      "variant": "security",
+      "note": "CONFIDENTIAL queda por encima del techo: el span conserva duración, códigos e ids para diagnosticar, sin lo que se dijo (§11, §12)"
+    },
+    {
+      "id": "pruebas",
+      "from": "bus",
+      "to": "dge",
+      "y": 395,
+      "label": "governSpanForDestination(pruebas, techo PUBLIC)",
+      "variant": "emphasis",
+      "note": "el destino de pruebas declara un techo más bajo que la sesión: efectivo PUBLIC; agregar un destino no agrega exposición (§6, §15)"
+    },
+    {
+      "id": "entrega",
+      "from": "bus",
+      "to": "destinos",
+      "y": 423,
+      "label": "SpanDelivery × 2: solo metadatos · sin el salario",
+      "variant": "security",
+      "note": "ninguno de los dos destinos recibió el salario; recortar no emite evento: el span lo dice con redacted = TRUE (§10, §14)"
+    },
+    {
+      "id": "publico",
+      "from": "canal",
+      "to": "dge",
+      "y": 459,
+      "label": "s-9 PUBLIC: contextCeilingForAudience(PUBLIC, CONFIDENTIAL, INTERNAL)",
+      "variant": "default",
+      "note": "canal de toda la empresa; PolicyEngine fija techo CONFIDENTIAL (CH-05) y el despliegue un techo público INTERNAL (§10, §11)"
+    },
+    {
+      "id": "contexto",
+      "from": "dge",
+      "to": "ctx",
+      "y": 487,
+      "label": "= INTERNAL → selectRetrievedCandidates sin la planilla",
+      "variant": "emphasis",
+      "note": "PUBLIC baja el techo del contexto: la planilla de salarios (CONFIDENTIAL) no entra; nunca se sube el techo de la política (§5, §11)"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "dge",
+      "from": 181,
+      "to": 273,
+      "type": "security"
+    },
+    {
+      "participant": "bus",
+      "from": 307,
+      "to": 427,
+      "type": "backend"
+    },
+    {
+      "participant": "dge",
+      "from": 335,
+      "to": 399,
+      "type": "security"
+    },
+    {
+      "participant": "dge",
+      "from": 455,
+      "to": 491,
+      "type": "security"
+    },
+    {
+      "participant": "ctx",
+      "from": 483,
+      "to": 491,
+      "type": "database"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "SessionAudience (C-061)",
+      "items": [
+        "PUBLIC, PRIVATE o UNKNOWN; solo se restringe",
+        "PUBLIC baja el contexto; PRIVATE, la telemetría"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "TraceCapturePolicy (C-062)",
+      "items": [
+        "Techo de clasificación y si se capturan cuerpos",
+        "Cada destino puede bajarlo, nunca subirlo"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "TelemetrySpan (C-063)",
+      "items": [
+        "Evento observa, auditoría prueba, span diagnostica",
+        "Por encima del techo: solo metadatos · §5, §15"
+      ]
+    }
+  ]
+}

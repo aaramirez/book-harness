@@ -13,7 +13,7 @@ articulos_constitucionales: ["P-08", "P-23", "P-36", "INV-12", "INV-13", "INV-E1
 
 ## Navegación
 
-⬅ [[ch-44-invocacion-entre-agentes|CH-44]] · **CH-45**
+⬅ [[ch-44-invocacion-entre-agentes|CH-44]] · **CH-45** · [[ch-46-observabilidad-por-audiencia|CH-46]] ➡
 
 ## Resultado esperado
 

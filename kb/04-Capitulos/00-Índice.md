@@ -56,5 +56,6 @@ Los **39 capítulos** del libro *¿Cómo construir un arnés?* (CH-00 a CH-38).
 | CH-43 | [[ch-43-presupuestos-heredados|Presupuestos que se Heredan]] |
 | CH-44 | [[ch-44-invocacion-entre-agentes|Invocación Durable entre Agentes y A2A]] |
 | CH-45 | [[ch-45-evolucion-del-runtime|Evolución del Runtime con Sesiones Abiertas]] |
+| CH-46 | [[ch-46-observabilidad-por-audiencia|Observabilidad Acotada por Audiencia]] |
 
 Ver también: [[Index|Mapa del libro]]

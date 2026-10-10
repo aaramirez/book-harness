@@ -1815,3 +1815,35 @@ terms:
     introduced_in: CH-45
     kind: contract
     ref: C-060
+
+  - term: Capture Ceiling
+    definition: >
+      La clasificación máxima de contenido que puede llegar a un destino de telemetría desde una sesión,
+      derivada de su audiencia. Ningún destino puede capturar por encima, ni restaurar lo que el techo
+      excluyó (P-37, INV-E23, CH-46).
+    introduced_in: CH-46
+    kind: concept
+
+  - term: SessionAudience
+    definition: >
+      Quién puede ver una sesión: PUBLIC, PRIVATE o UNKNOWN. Se asigna al crearla y dentro de la sesión
+      solo se vuelve más restrictiva (C-061).
+    introduced_in: CH-46
+    kind: contract
+    ref: C-061
+
+  - term: TraceCapturePolicy
+    definition: >
+      El techo de captura para una audiencia: hasta qué clasificación llega a un destino de trazas y si
+      se capturan cuerpos (C-062).
+    introduced_in: CH-46
+    kind: contract
+    ref: C-062
+
+  - term: TelemetrySpan
+    definition: >
+      Un tramo de diagnóstico, con atributos, cuerpo opcional y clasificación. Datos de diagnóstico, no
+      estado de negocio (C-063).
+    introduced_in: CH-46
+    kind: contract
+    ref: C-063

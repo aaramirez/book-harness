@@ -201,5 +201,9 @@ Vocabulario técnico canónico del libro *¿Cómo construir un arnés?* — extr
 | **AgentCard** `C-059` | Lo que un agente anuncia que sabe hacer (skills) y cómo se lo invoca: sin endpoint si es interno, con endpoint y esquema de autenticación si es externo. | [[ch-44-invocacion-entre-agentes|CH-44]] | contrato |
 | **Idle Boundary** | El momento en que una sesión no tiene trabajo vivo: ninguna espera estacionada, ningún paso sin confirmar y ninguna invocación de agente activa. Es el único momento en que puede pasar a una versión nueva del runtime (P-36, INV-E22). | [[ch-45-evolucion-del-runtime|CH-45]] | concepto |
 | **RuntimeVersionSnapshot** `C-060` | Las versiones con que corre una sesión: agente, política, configuración de modelo, modelo elegido, versión traducida de cada conexión y formato de sesión. | [[ch-45-evolucion-del-runtime|CH-45]] | contrato |
+| **Capture Ceiling** | La clasificación máxima de contenido que puede llegar a un destino de telemetría desde una sesión, derivada de su audiencia. Ningún destino puede capturar por encima, ni restaurar lo que el techo excluyó (P-37, INV-E23). | [[ch-46-observabilidad-por-audiencia|CH-46]] | concepto |
+| **SessionAudience** `C-061` | Quién puede ver una sesión: PUBLIC, PRIVATE o UNKNOWN. Se asigna al crearla y dentro de la sesión solo se vuelve más restrictiva. | [[ch-46-observabilidad-por-audiencia|CH-46]] | contrato |
+| **TraceCapturePolicy** `C-062` | El techo de captura para una audiencia: hasta qué clasificación llega a un destino de trazas y si se capturan cuerpos. | [[ch-46-observabilidad-por-audiencia|CH-46]] | contrato |
+| **TelemetrySpan** `C-063` | Un tramo de diagnóstico, con atributos, cuerpo opcional y clasificación. Datos de diagnóstico, no estado de negocio. | [[ch-46-observabilidad-por-audiencia|CH-46]] | contrato |
 
 Ver también: [[Index|Mapa del libro]]

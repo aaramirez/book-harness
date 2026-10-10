@@ -106,3 +106,5 @@ chapters:
     file: chapters/44-invocacion-entre-agentes/chapter.md
   - id: CH-45
     file: chapters/45-evolucion-del-runtime/chapter.md
+  - id: CH-46
+    file: chapters/46-observabilidad-por-audiencia/chapter.md

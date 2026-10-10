@@ -70,5 +70,8 @@ Los **48 contratos** canónicos del libro, en orden de introducción.
 | C-058 | [[C-058-agentinvocation|AgentInvocation]] | [[ch-44-invocacion-entre-agentes|CH-44]] |
 | C-059 | [[C-059-agentcard|AgentCard]] | [[ch-44-invocacion-entre-agentes|CH-44]] |
 | C-060 | [[C-060-runtimeversionsnapshot|RuntimeVersionSnapshot]] | [[ch-45-evolucion-del-runtime|CH-45]] |
+| C-061 | [[C-061-sessionaudience|SessionAudience]] | [[ch-46-observabilidad-por-audiencia|CH-46]] |
+| C-062 | [[C-062-tracecapturepolicy|TraceCapturePolicy]] | [[ch-46-observabilidad-por-audiencia|CH-46]] |
+| C-063 | [[C-063-telemetryspan|TelemetrySpan]] | [[ch-46-observabilidad-por-audiencia|CH-46]] |
 
 Ver también: [[Index|Mapa del libro]]

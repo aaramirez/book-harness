@@ -66,5 +66,6 @@ Los **48 contratos** canónicos del libro, en orden de introducción.
 | C-054 | [[C-054-connectiondescriptor|ConnectionDescriptor]] | [[ch-41-conexiones|CH-41]] |
 | C-055 | [[C-055-datasourcedescriptor|DataSourceDescriptor]] | [[ch-42-fuentes-de-datos|CH-42]] |
 | C-056 | [[C-056-retrievedcandidate|RetrievedCandidate]] | [[ch-42-fuentes-de-datos|CH-42]] |
+| C-057 | [[C-057-executionusage|ExecutionUsage]] | [[ch-43-presupuestos-heredados|CH-43]] |
 
 Ver también: [[Index|Mapa del libro]]

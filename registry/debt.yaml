@@ -193,8 +193,8 @@ debts:
   - id: D-026
     title: "Límites de CPU, memoria y disco del entorno aislado"
     origin: CH-35
-    status: open
-    target: CH-43
+    status: resolved
+    resolved_in: CH-43
 
   # --- resolved ---------------------------------------------------------------------------------
 

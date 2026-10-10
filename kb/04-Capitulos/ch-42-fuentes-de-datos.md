@@ -13,7 +13,7 @@ articulos_constitucionales: ["P-01", "P-14", "P-22", "P-31", "P-38", "INV-E07", 
 
 ## Navegación
 
-⬅ [[ch-41-conexiones|CH-41]] · **CH-42**
+⬅ [[ch-41-conexiones|CH-41]] · **CH-42** · [[ch-43-presupuestos-heredados|CH-43]] ➡
 
 ## Resultado esperado
 

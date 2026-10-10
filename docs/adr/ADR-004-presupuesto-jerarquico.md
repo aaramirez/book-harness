@@ -2,7 +2,7 @@
 
 - **ADR-ID:** ADR-004
 - **Title:** El presupuesto es jerárquico
-- **Status:** Proposed (2026-09-24). Pasa a `Accepted` con CH-43, con aprobación humana.
+- **Status:** **Accepted** (2026-10-10, aprobado por el autor; aplicado en CH-43), con dos ajustes aprobados en la misma decisión (puntos 4 y 5).
 
 ## Context
 
@@ -15,6 +15,8 @@ INV-E06 exige que "delegation depth, child runs and delegated cost are bounded b
 1. **Promover C-057 `ExecutionUsage`** a contrato en CH-43, porque ahora cruza la frontera padre-hijo.
 2. **C-012 `ExecutionBudget` v2:** agrega `parentRunId: Optional<RunId>` y `consumed: ExecutionUsage`.
 3. `ExecutionController` gana `allocateChildBudget(parent, fanout)`, que reparte el saldo restante del padre entre los hijos de un mismo lote (INV-E21).
+4. **Ajuste aprobado: `consumed` es `Optional<ExecutionUsage>`**, no obligatorio. Un campo obligatorio habría invalidado todo `ExecutionBudget` construido en CH-00..CH-42; así se sigue la misma regla de compatibilidad que el resto de las versiones v2/v3.
+5. **Ajuste aprobado (D-026): `sandboxLimits: Optional<SandboxLimits>`** (CPU, memoria y disco del entorno aislado de CH-35). ExecutionController decide si un uso los supera; un hijo los hereda sin poder ampliarlos.
 
 ## Alternatives
 
@@ -33,4 +35,4 @@ INV-09, INV-E06, INV-E21 (Amendment v1.2).
 ## Migration Strategy
 
 - `parentRunId` es `Optional`: un run raíz conserva exactamente su semántica actual.
-- `registry/contracts.yaml`: C-012 pasa a `version: v2` con `modified_by: [CH-43]`.
+- `registry/contracts.yaml`: C-012 pasa a `version: v2` con `modified_by: [CH-43]`. Los tres campos nuevos son `Optional`.

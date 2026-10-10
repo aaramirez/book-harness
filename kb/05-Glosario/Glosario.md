@@ -194,5 +194,7 @@ Vocabulario técnico canónico del libro *¿Cómo construir un arnés?* — extr
 | **Derived Data Label** | La etiqueta de un dato producido a partir de otros (un resumen): hereda la clasificación más restrictiva, la preservación legal y la retención más corta de sus fuentes (INV-E11). | [[ch-42-fuentes-de-datos|CH-42]] | concepto |
 | **DataSourceDescriptor** `C-055` | Una fuente de datos declarada, de solo lectura: tipo, clasificación (RESTRICTED si falta), regla de alcance por llamante, conexión si son recursos MCP, y frescura. | [[ch-42-fuentes-de-datos|CH-42]] | contrato |
 | **RetrievedCandidate** `C-056` | Un candidato recuperado: contenido, procedencia, clasificación de la fuente, puntaje y etiqueta de gobierno. | [[ch-42-fuentes-de-datos|CH-42]] | contrato |
+| **Inherited Budget** | El presupuesto de un run hijo, asignado a partir del saldo de su padre y repartido entre los hijos de un mismo lote. Un hijo nunca recibe más de lo que le queda al padre, y lo que consume se descuenta del padre (INV-E21). | [[ch-43-presupuestos-heredados|CH-43]] | concepto |
+| **ExecutionUsage** `C-057` | El uso acumulado de un run contra su presupuesto: tool calls, tokens, costo, tiempo y concurrencia. Contrato porque cruza la frontera padre-hijo. | [[ch-43-presupuestos-heredados|CH-43]] | contrato |
 
 Ver también: [[Index|Mapa del libro]]

@@ -216,9 +216,13 @@ contracts:
     modified_by: []
     constitutional_impact: [INV-20]
 
+  # C-012 v2 (CH-43, ADR-004 Accepted 2026-10-10): agrega parentRunId (Optional<RunId>), consumed
+  # (Optional<ExecutionUsage>, C-057; opcional por decisión del autor, para que CH-00..CH-42 sigan
+  # válidos) y sandboxLimits (Optional<SandboxLimits>: CPU, memoria y disco del entorno aislado, D-026).
+  # Un run raíz (parentRunId NULL) conserva exactamente la semántica de v1.
   - id: C-012
     name: ExecutionBudget
-    version: v1
+    version: v2
     introduced_in: CH-00
     current_definition: |
       STRUCT ExecutionBudget
@@ -229,9 +233,12 @@ contracts:
           maxCost: Number
           maxRuntimeMs: Integer
           maxConcurrentTools: Integer
+          parentRunId: Optional<RunId>
+          consumed: Optional<ExecutionUsage>
+          sandboxLimits: Optional<SandboxLimits>
       END
     used_by: [CMP-007, CMP-011]
-    modified_by: []
+    modified_by: [CH-43]
     constitutional_impact: [P-10, INV-09]
 
   # C-013: de los cinco ids que CH-01 §7 dejó reservados (C-005..C-009), los cinco ya están
@@ -1332,3 +1339,23 @@ contracts:
     used_by: [CMP-029, CMP-004]
     modified_by: []
     constitutional_impact: [P-14, INV-E11, INV-E26]
+
+  # C-057 (ExecutionUsage): el uso acumulado de un run contra su presupuesto. Era una estructura
+  # embebida desde CH-07; se promueve a contrato porque ahora cruza la frontera padre-hijo: el uso de un
+  # hijo se suma al del padre, y el saldo del padre limita al hijo (INV-E21). CH-43.
+  - id: C-057
+    name: ExecutionUsage
+    version: v1
+    introduced_in: CH-43
+    current_definition: |
+      STRUCT ExecutionUsage
+          toolCallsUsed: Integer
+          inputTokensUsed: Integer
+          outputTokensUsed: Integer
+          costUsed: Number
+          runtimeMsElapsed: Integer
+          concurrentToolsInFlight: Integer
+      END
+    used_by: [CMP-007]
+    modified_by: []
+    constitutional_impact: [INV-09, INV-E06, INV-E21]

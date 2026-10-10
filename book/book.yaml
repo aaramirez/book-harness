@@ -100,3 +100,5 @@ chapters:
     file: chapters/41-conexiones/chapter.md
   - id: CH-42
     file: chapters/42-fuentes-de-datos/chapter.md
+  - id: CH-43
+    file: chapters/43-presupuestos-heredados/chapter.md

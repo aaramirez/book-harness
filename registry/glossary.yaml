@@ -1759,3 +1759,19 @@ terms:
     introduced_in: CH-42
     kind: contract
     ref: C-056
+
+  - term: Inherited Budget
+    definition: >
+      El presupuesto de un run hijo, asignado a partir del saldo de su padre y repartido entre los hijos
+      de un mismo lote. Un hijo nunca recibe más de lo que le queda al padre, y lo que consume se descuenta
+      del padre (INV-E21, CH-43).
+    introduced_in: CH-43
+    kind: concept
+
+  - term: ExecutionUsage
+    definition: >
+      El uso acumulado de un run contra su presupuesto: tool calls, tokens, costo, tiempo y concurrencia.
+      Contrato desde CH-43, porque cruza la frontera padre-hijo (C-057).
+    introduced_in: CH-43
+    kind: contract
+    ref: C-057

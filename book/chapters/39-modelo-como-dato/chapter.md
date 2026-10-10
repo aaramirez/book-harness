@@ -101,7 +101,7 @@ retrieval_set:
     - id: RQ-CH39-03
       text: |
         ¿Con qué fórmula calcula calculateUsageCost el costo de una llamada, qué suma accumulateUsage al
-        ExecutionUsage, y qué exige costForOutcome sobre la moneda?
+        uso acumulado del run, y qué exige costForOutcome sobre la moneda?
     - id: RQ-CH39-04
       text: |
         ¿Qué devuelve effectiveToolCallProposals para una respuesta v1 y para una v2, y qué deuda quedó
@@ -889,7 +889,7 @@ auditoría de versiones y el costo por resultado usen el mismo número.
 2. ¿Qué compara `fitsContextWindow`, y qué devuelve `effectiveCacheRetention` cuando el modelo no
    tiene la capacidad `PROMPT_CACHE`? *(pregunta guía 2)*
 3. ¿Con qué fórmula calcula `calculateUsageCost` el costo de una llamada, qué suma `accumulateUsage`
-   al `ExecutionUsage`, y qué exige `costForOutcome` sobre la moneda? *(pregunta guía 3)*
+   al uso acumulado del run, y qué exige `costForOutcome` sobre la moneda? *(pregunta guía 3)*
 4. ¿Qué devuelve `effectiveToolCallProposals` para una respuesta v1 y para una v2, y qué deuda quedó
    registrada para el journal? *(pregunta guía 4)*
 

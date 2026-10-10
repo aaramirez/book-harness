@@ -238,6 +238,9 @@ digraph BookMindMap {
   "CMP-029" [label="RetrievalEngine", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-42.html#CMP-029", style="filled,rounded"];
   "CONCEPT-governed-retrieval" [label="Governed Retrieval", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-42.html#CONCEPT-governed-retrieval", style="filled"];
   "CONCEPT-derived-data-label" [label="Derived Data Label", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-42.html#CONCEPT-derived-data-label", style="filled"];
+  "CH-43" [label="Presupuestos que se Heredan", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-43.html", style="filled,bold"];
+  "C-057" [label="ExecutionUsage", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-43.html#C-057", style="filled"];
+  "CONCEPT-inherited-budget" [label="Inherited Budget", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-43.html#CONCEPT-inherited-budget", style="filled"];
   "CH-00" -> "C-001" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-002" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-003" [label="INTRODUCES", color="#2a5fa5", style="bold"];
@@ -599,4 +602,7 @@ digraph BookMindMap {
   "C-040" -> "CMP-029" [label="CONSUMES", color="#7a3fa0", style="solid"];
   "C-054" -> "CMP-029" [label="CONSUMES", color="#7a3fa0", style="solid"];
   "C-055" -> "CMP-029" [label="CONSUMES", color="#7a3fa0", style="solid"];
+  "CH-43" -> "C-057" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-43" -> "CONCEPT-inherited-budget" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-43" -> "C-012" [label="MODIFIES", color="#c77c00", style="dashed"];
 }

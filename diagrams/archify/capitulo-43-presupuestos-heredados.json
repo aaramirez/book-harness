@@ -1,0 +1,259 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 43 — Presupuestos Heredados",
+    "output": "capitulo-43-presupuestos-heredados.html",
+    "viewBox": [
+      1080,
+      570
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "reparto",
+        "label": "Cada hijo recibe una parte del saldo",
+        "focus": [
+          "integracion",
+          "controller",
+          "hijo"
+        ],
+        "note": "allocateChildBudget divide lo que le queda al padre: lote de 3, costo 10 − 4 = 6 → 2 por hijo; tool calls 30 − 12 = 18 → 6."
+      },
+      {
+        "id": "entorno",
+        "label": "Un límite del entorno falla la tool, no el run",
+        "focus": [
+          "hijo",
+          "entorno",
+          "controller"
+        ],
+        "note": "sandboxLimitsExceeded devuelve SANDBOX_LIMIT_EXCEEDED: la tool falla como observación y el hijo sigue con su presupuesto."
+      },
+      {
+        "id": "devolver",
+        "label": "El gasto de los hijos vuelve al padre",
+        "focus": [
+          "controller",
+          "integracion"
+        ],
+        "note": "rollUpChildUsage suma tokens, costo y tool calls al padre, no tiempo ni concurrencia: el lote siguiente reparte menos."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "integracion",
+      "type": "frontend",
+      "label": "Integración",
+      "sublabel": "el run padre"
+    },
+    {
+      "id": "controller",
+      "type": "backend",
+      "label": "ExecutionController",
+      "sublabel": "CMP-007, budgets"
+    },
+    {
+      "id": "hijo",
+      "type": "cloud",
+      "label": "Run hijo",
+      "sublabel": "uno de un lote de 3"
+    },
+    {
+      "id": "entorno",
+      "type": "security",
+      "label": "Entorno aislado",
+      "sublabel": "CPU, memoria y disco"
+    }
+  ],
+  "segments": [
+    {
+      "from": 172,
+      "to": 282,
+      "label": "Repartir el saldo"
+    },
+    {
+      "from": 298,
+      "to": 432,
+      "label": "El hijo corre"
+    },
+    {
+      "from": 446,
+      "to": 500,
+      "label": "Devolver el gasto"
+    }
+  ],
+  "messages": [
+    {
+      "id": "allocate",
+      "from": "integracion",
+      "to": "controller",
+      "y": 185,
+      "label": "allocateChildBudget(padre, uso, lote de 3)",
+      "variant": "emphasis",
+      "note": "el padre tiene maxCost 10 y costUsed 4, maxToolCalls 30 y toolCallsUsed 12; decidir SI delegar es de la integración, no de ExecutionController (§8, §10)"
+    },
+    {
+      "id": "allocated",
+      "from": "controller",
+      "to": "integracion",
+      "y": 213,
+      "label": "cada hijo: costo 2, 6 tool calls + CHILD_BUDGET_ALLOCATED",
+      "variant": "return",
+      "note": "se dividen tool calls, tokens y costo; el tiempo es el restante del padre; turnos, concurrencia y entorno se copian como techo; un reparto en 0 → FANOUT_EXCEEDS_REMAINING_BUDGET (§5, §11, §13)"
+    },
+    {
+      "id": "require",
+      "from": "integracion",
+      "to": "controller",
+      "y": 241,
+      "label": "requireChildWithinParent(hijo, padre, uso)",
+      "variant": "security",
+      "note": "si el hijo excede el saldo del padre en alguna dimensión → CHILD_BUDGET_EXCEEDS_PARENT (INV-E21); también lo usará la invocación entre agentes (CH-44) (§9, §11)"
+    },
+    {
+      "id": "launch",
+      "from": "integracion",
+      "to": "hijo",
+      "y": 269,
+      "label": "lanza el hijo con ExecutionBudget v2 (parentRunId)",
+      "variant": "default",
+      "note": "el presupuesto del hijo lleva parentRunId y los sandboxLimits del padre; consumed queda en NULL (C-012 v2, ADR-004) (§6, §11)"
+    },
+    {
+      "id": "continue",
+      "from": "hijo",
+      "to": "controller",
+      "y": 311,
+      "label": "evaluateExecutionContinuation (CH-07), con lo suyo",
+      "variant": "default",
+      "note": "el hijo se evalúa con su propio presupuesto, sin cambios: si agota lo suyo se detiene con STOP y su uso igual se suma al padre (§9, §13)"
+    },
+    {
+      "id": "tool",
+      "from": "hijo",
+      "to": "entorno",
+      "y": 339,
+      "label": "ejecuta una tool en el entorno aislado",
+      "variant": "default",
+      "note": "hacer cumplir físicamente los límites es de la infraestructura del aislamiento (CH-35), no de ExecutionController (§8)"
+    },
+    {
+      "id": "usage",
+      "from": "entorno",
+      "to": "hijo",
+      "y": 367,
+      "label": "SandboxUsage: la memoria supera maxMemoryMb",
+      "variant": "return",
+      "note": "SandboxUsage (cpuMillis, memoryMb, diskMb) se compara con los SandboxLimits embebidos en el presupuesto (§6)"
+    },
+    {
+      "id": "sandbox",
+      "from": "hijo",
+      "to": "controller",
+      "y": 395,
+      "label": "sandboxLimitsExceeded(presupuesto, uso)",
+      "variant": "emphasis",
+      "note": "dentro de \"runtime limits\" de CMP-007; sin sandboxLimits devuelve NULL, como en CH-00..CH-42 (§8, §11)"
+    },
+    {
+      "id": "failed",
+      "from": "controller",
+      "to": "hijo",
+      "y": 423,
+      "label": "SANDBOX_LIMIT_EXCEEDED: la tool falla, el run sigue",
+      "variant": "return",
+      "note": "recoverable TRUE, retryable FALSE: vuelve al modelo como observación de una tool fallida (INV-07) y puede intentar algo más chico (§12, §13)"
+    },
+    {
+      "id": "rollup",
+      "from": "integracion",
+      "to": "controller",
+      "y": 459,
+      "label": "rollUpChildUsage × 3 (costos 1,5 · 2 · 0,8)",
+      "variant": "emphasis",
+      "note": "suma tool calls, tokens y costo; no el tiempo (el reloj del padre) ni la concurrencia (un valor del momento) (§11)"
+    },
+    {
+      "id": "remaining",
+      "from": "controller",
+      "to": "integracion",
+      "y": 487,
+      "label": "padre: costUsed 8,3 → le quedan 1,7",
+      "variant": "return",
+      "note": "el uso del padre pasa a evaluateExecutionContinuation del padre; el lote siguiente se reparte ese saldo más chico (§9, §10, §12)"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "controller",
+      "from": 181,
+      "to": 217,
+      "type": "backend"
+    },
+    {
+      "participant": "controller",
+      "from": 237,
+      "to": 245,
+      "type": "backend"
+    },
+    {
+      "participant": "hijo",
+      "from": 265,
+      "to": 273,
+      "type": "cloud"
+    },
+    {
+      "participant": "controller",
+      "from": 307,
+      "to": 315,
+      "type": "backend"
+    },
+    {
+      "participant": "entorno",
+      "from": 335,
+      "to": 371,
+      "type": "security"
+    },
+    {
+      "participant": "controller",
+      "from": 391,
+      "to": 427,
+      "type": "backend"
+    },
+    {
+      "participant": "controller",
+      "from": 455,
+      "to": 491,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "ExecutionUsage (C-057)",
+      "items": [
+        "Tool calls, tokens, costo, tiempo y concurrencia",
+        "El uso de CH-07, ahora dato que cruza entre runs"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "ExecutionBudget v2 (C-012)",
+      "items": [
+        "+ parentRunId, consumed y sandboxLimits",
+        "Los tres en NULL: un run raíz, como antes · ADR-004"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "INV-E21: el hijo no excede al padre",
+      "items": [
+        "Todo lo que recibe sale del saldo del padre",
+        "requireChildWithinParent lo exige · chapter.md §8, §11"
+      ]
+    }
+  ]
+}

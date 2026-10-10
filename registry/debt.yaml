@@ -326,3 +326,11 @@ debts:
     origin: CH-39
     status: open
     target: CH-49
+
+  # --- registradas en CH-40 -------------------------------------------------------------------
+
+  - id: D-045
+    title: "Correr extensiones PROJECT en el entorno aislado y apagarlas (DISABLED) por comando operacional"
+    origin: CH-40
+    status: open
+    target: CH-49

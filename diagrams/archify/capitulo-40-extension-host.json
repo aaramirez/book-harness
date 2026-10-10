@@ -1,0 +1,259 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 40 — Extensiones",
+    "output": "capitulo-40-extension-host.html",
+    "viewBox": [
+      1080,
+      570
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "confianza",
+        "label": "Clonar no es confiar",
+        "focus": [
+          "persona",
+          "host"
+        ],
+        "note": "Una extensión de proyecto solo se carga si una persona verificada confía en ese contenido: otro hash, REJECTED."
+      },
+      {
+        "id": "bloqueo",
+        "label": "Un hook solo puede detener lo permitido",
+        "focus": [
+          "policy",
+          "runtime",
+          "host",
+          "extension"
+        ],
+        "note": "BEFORE_TOOL corre tras un ALLOW: ToolRuntime ejecuta el hook, ExtensionHost lo valida y BLOCK detiene la tool (INV-07)."
+      },
+      {
+        "id": "rechazo",
+        "label": "Ningún hook autoriza (INV-E24)",
+        "focus": [
+          "runtime",
+          "host"
+        ],
+        "note": "No existe un resultado \"aprobado\" y BEFORE_TOOL no admite TRANSFORM: lo no admitido se rechaza y no se aplica."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "persona",
+      "type": "external",
+      "label": "Persona",
+      "sublabel": "verificada, decide confianza"
+    },
+    {
+      "id": "host",
+      "type": "security",
+      "label": "ExtensionHost",
+      "sublabel": "CMP-027, registro y validación"
+    },
+    {
+      "id": "policy",
+      "type": "security",
+      "label": "PolicyEngine",
+      "sublabel": "CMP-005, autoriza"
+    },
+    {
+      "id": "runtime",
+      "type": "backend",
+      "label": "ToolRuntime",
+      "sublabel": "CMP-002, ejecuta hooks"
+    },
+    {
+      "id": "extension",
+      "type": "external",
+      "label": "Extensión",
+      "sublabel": "código del proyecto"
+    }
+  ],
+  "segments": [
+    {
+      "from": 172,
+      "to": 282,
+      "label": "Confianza"
+    },
+    {
+      "from": 298,
+      "to": 432,
+      "label": "Hook tras ALLOW"
+    },
+    {
+      "from": 446,
+      "to": 500,
+      "label": "Lo que no admite"
+    }
+  ],
+  "messages": [
+    {
+      "id": "trust",
+      "from": "persona",
+      "to": "host",
+      "y": 185,
+      "label": "ResourceTrustDecision(TRUSTED, sourceRef, h1)",
+      "variant": "emphasis",
+      "note": "la decide un Principal verificado y se ata a sourceRef + contentHash; clonar el repositorio no es confiar (§5, §15)"
+    },
+    {
+      "id": "register",
+      "from": "persona",
+      "to": "host",
+      "y": 213,
+      "label": "registerExtension(PROJECT, h1, [BEFORE_TOOL], trust)",
+      "variant": "default",
+      "note": "registra \"guardas-del-proyecto\" con su origen, su hash y la decisión que la cubre; sus capabilities van a CapabilityRegistry como cualquier otra (§9)"
+    },
+    {
+      "id": "active",
+      "from": "host",
+      "to": "persona",
+      "y": 241,
+      "label": "ACTIVE (la confianza cubre h1)",
+      "variant": "return",
+      "note": "trustCovers: misma sourceRef, mismo contentHash, outcome TRUSTED; BUILT_IN no necesita confianza y queda ACTIVE directamente (§12)"
+    },
+    {
+      "id": "rejected",
+      "from": "host",
+      "to": "persona",
+      "y": 269,
+      "label": "código cambiado, hash h2 → REJECTED",
+      "variant": "return",
+      "note": "la confianza es sobre un contenido, no sobre un nombre: trust(h1) no cubre h2; fail-closed hasta que alguien vuelva a decidir (§15)"
+    },
+    {
+      "id": "policy",
+      "from": "runtime",
+      "to": "policy",
+      "y": 311,
+      "label": "evaluatePolicyForToolCall(\"shell: rm -rf build\")",
+      "variant": "emphasis",
+      "note": "la política decide primero; runBeforeToolHooks exige un ALLOW de la misma tool call (si no, HOOKS_REQUIRE_AN_ALLOW)"
+    },
+    {
+      "id": "allow",
+      "from": "policy",
+      "to": "runtime",
+      "y": 339,
+      "label": "ALLOW",
+      "variant": "return",
+      "note": "PolicyDecision (C-014): el hook no puede ampliar este permiso, solo detener la llamada ya autorizada"
+    },
+    {
+      "id": "hooks",
+      "from": "runtime",
+      "to": "host",
+      "y": 367,
+      "label": "hooksFor(BEFORE_TOOL) → [guardas-del-proyecto]",
+      "variant": "default",
+      "note": "ExtensionHost decide QUÉ hooks corren: solo extensiones ACTIVE que declararon este punto (§8)"
+    },
+    {
+      "id": "invoke",
+      "from": "runtime",
+      "to": "extension",
+      "y": 395,
+      "label": "invoca el hook → HookOutcome(BLOCK, motivo)",
+      "variant": "default",
+      "note": "el dueño del punto (ToolRuntime, desde CH-02) ejecuta el hook; ExtensionHost nunca ejecuta código de extensión"
+    },
+    {
+      "id": "blocked",
+      "from": "runtime",
+      "to": "host",
+      "y": 423,
+      "label": "runBeforeToolHooks → EXTENSION_BLOCKED_TOOL",
+      "variant": "emphasis",
+      "note": "validateHookOutcome: BLOCK admitido en BEFORE_TOOL; la tool no se ejecuta y el modelo recibe el motivo como observación de tool fallida (INV-07), no como fallo del run"
+    },
+    {
+      "id": "transform",
+      "from": "runtime",
+      "to": "host",
+      "y": 459,
+      "label": "validateHookOutcome(BEFORE_TOOL, TRANSFORM, args nuevos)",
+      "variant": "emphasis",
+      "note": "un hook intenta cambiar argumentos ya autorizados: BEFORE_TOOL solo admite CONTINUE o BLOCK (§5)"
+    },
+    {
+      "id": "notallowed",
+      "from": "host",
+      "to": "runtime",
+      "y": 487,
+      "label": "HOOK_OUTCOME_REJECTED + HOOK_OUTCOME_NOT_ALLOWED",
+      "variant": "return",
+      "note": "el resultado no se aplica y el dueño sigue como si fuera CONTINUE; no existe un resultado \"autorizado\" (INV-E24) (§12, §13)"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "host",
+      "from": 181,
+      "to": 273,
+      "type": "security"
+    },
+    {
+      "participant": "policy",
+      "from": 307,
+      "to": 343,
+      "type": "security"
+    },
+    {
+      "participant": "host",
+      "from": 363,
+      "to": 371,
+      "type": "security"
+    },
+    {
+      "participant": "extension",
+      "from": 391,
+      "to": 399,
+      "type": "external"
+    },
+    {
+      "participant": "host",
+      "from": 419,
+      "to": 427,
+      "type": "security"
+    },
+    {
+      "participant": "host",
+      "from": 455,
+      "to": 491,
+      "type": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "HookPoint (C-052)",
+      "items": [
+        "8 puntos fijos, cada uno con su dueño y sus resultados admitidos",
+        "BEFORE_TOOL: CONTINUE/BLOCK · AFTER_TOOL: CONTINUE/TRANSFORM · BEFORE_REQUEST: los tres"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "ResourceTrustDecision (C-053)",
+      "items": [
+        "Atada a sourceRef + contentHash: otro hash exige decidir otra vez",
+        "La decide un Principal verificado; es la trazabilidad del registro"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Frontera ExtensionHost / dueño del punto",
+      "items": [
+        "ExtensionHost decide qué hooks corren y qué pueden devolver",
+        "El dueño (ToolRuntime, ModelGateway, ContextEngine…) los ejecuta · chapter.md §8, §11"
+      ]
+    }
+  ]
+}

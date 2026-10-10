@@ -1190,3 +1190,69 @@ contracts:
     used_by: [CMP-003, CMP-020]
     modified_by: []
     constitutional_impact: [P-29, INV-09, INV-E10]
+
+  # C-051 (ExtensionRegistration): una extensión registrada — de dónde viene, qué puntos de hook y qué
+  # capabilities aporta, qué decisión de confianza la cubre y en qué estado quedó. Una extensión de
+  # proyecto u organización sin confianza vigente queda REJECTED (EVO-10). CH-40.
+  - id: C-051
+    name: ExtensionRegistration
+    version: v1
+    introduced_in: CH-40
+    current_definition: |
+      STRUCT ExtensionRegistration
+          extensionId: Text
+          version: Text
+          source: ExtensionSource
+          sourceRef: Text
+          contentHash: Text
+          hookPoints: List<HookPoint>
+          capabilities: List<CapabilityId>
+          trustDecisionId: Optional<ResourceTrustDecisionId>
+          status: ExtensionStatus
+          registeredAt: Timestamp
+      END
+    used_by: [CMP-027]
+    modified_by: []
+    constitutional_impact: [P-12, INV-E24]
+
+  # C-052 (HookPoint): el catálogo cerrado de puntos del ciclo de vida donde un hook puede intervenir
+  # (P-12). Cada punto tiene un conjunto permitido de resultados, y ninguno es una autorización
+  # (INV-E24). CH-40.
+  - id: C-052
+    name: HookPoint
+    version: v1
+    introduced_in: CH-40
+    current_definition: |
+      ENUM HookPoint
+          BEFORE_RUN
+          TRANSFORM_CONTEXT
+          BEFORE_REQUEST
+          AFTER_RESPONSE
+          BEFORE_TOOL
+          AFTER_TOOL
+          BEFORE_COMPACTION
+          BEFORE_NAVIGATION
+      END
+    used_by: [CMP-027]
+    modified_by: []
+    constitutional_impact: [P-12, INV-E24]
+
+  # C-053 (ResourceTrustDecision): la decisión explícita de confiar o no en el código de un recurso
+  # (una extensión de proyecto u organización), atada al hash de su contenido: si el código cambia, la
+  # confianza ya no lo cubre. Decide un Principal verificado (CH-31). CH-40.
+  - id: C-053
+    name: ResourceTrustDecision
+    version: v1
+    introduced_in: CH-40
+    current_definition: |
+      STRUCT ResourceTrustDecision
+          decisionId: ResourceTrustDecisionId
+          sourceRef: Text
+          contentHash: Text
+          outcome: TrustOutcome
+          decidedBy: Principal
+          decidedAt: Timestamp
+      END
+    used_by: [CMP-027]
+    modified_by: []
+    constitutional_impact: [P-13, INV-19]

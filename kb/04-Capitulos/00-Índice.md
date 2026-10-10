@@ -50,5 +50,6 @@ Los **39 capítulos** del libro *¿Cómo construir un arnés?* (CH-00 a CH-38).
 | CH-37 | [[ch-37-esperas-credenciales-canales|Esperas, Credenciales y Canales Completos]] |
 | CH-38 | [[ch-38-identidad-auditoria-retencion|Identidad, Auditoría y Retención en Todo el Turno]] |
 | CH-39 | [[ch-39-modelo-como-dato|El Modelo como Dato: Catálogo, Costo y Cache]] |
+| CH-40 | [[ch-40-extension-host|Extensiones que No Pueden Saltarse la Constitución]] |
 
 Ver también: [[Index|Mapa del libro]]

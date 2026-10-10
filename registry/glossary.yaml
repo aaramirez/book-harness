@@ -1664,3 +1664,42 @@ terms:
     introduced_in: CH-39
     kind: contract
     ref: C-050
+
+  - term: Extension
+    definition: >
+      Código de terceros (del proyecto, de la organización o incorporado) que aporta hooks y
+      capabilities al arnés. Nunca puede saltarse ToolRuntime, PolicyEngine ni el ciclo de vida
+      (EVO-10, CH-40).
+    introduced_in: CH-40
+    kind: concept
+
+  - term: Hook Outcome
+    definition: >
+      Lo que un hook puede devolver en su punto: CONTINUE, BLOCK o TRANSFORM, según lo que ese punto
+      admite. No existe un resultado "autorizado": un hook puede restringir o transformar, nunca
+      conceder (INV-E24, CH-40).
+    introduced_in: CH-40
+    kind: concept
+
+  - term: ExtensionRegistration
+    definition: >
+      Una extensión registrada: origen, hash, puntos de hook, capabilities, decisión de confianza y
+      estado (C-051, CH-40).
+    introduced_in: CH-40
+    kind: contract
+    ref: C-051
+
+  - term: HookPoint
+    definition: >
+      El catálogo cerrado de puntos del ciclo de vida donde un hook puede intervenir (C-052, CH-40).
+    introduced_in: CH-40
+    kind: contract
+    ref: C-052
+
+  - term: ResourceTrustDecision
+    definition: >
+      La decisión explícita de confiar o no en el código de un recurso, atada al hash de su contenido
+      y tomada por un Principal verificado (C-053, CH-40).
+    introduced_in: CH-40
+    kind: contract
+    ref: C-053

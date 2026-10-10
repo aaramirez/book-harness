@@ -13,7 +13,7 @@ articulos_constitucionales: ["P-02", "P-29", "INV-09", "INV-E10"]
 
 ## Navegación
 
-⬅ [[ch-38-identidad-auditoria-retencion|CH-38]] · **CH-39**
+⬅ [[ch-38-identidad-auditoria-retencion|CH-38]] · **CH-39** · [[ch-40-extension-host|CH-40]] ➡
 
 ## Resultado esperado
 

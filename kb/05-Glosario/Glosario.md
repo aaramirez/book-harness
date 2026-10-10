@@ -182,5 +182,10 @@ Vocabulario técnico canónico del libro *¿Cómo construir un arnés?* — extr
 | **Model Catalog** | La lista de ModelDescriptor que ModelGateway puede seleccionar, cada uno con proveedor, ventana, salida máxima, precios, capacidades y versión exacta. Un modelo fuera del catálogo, o sin la capacidad pedida, no se usa. | [[ch-39-modelo-como-dato|CH-39]] | concepto |
 | **ModelDescriptor** `C-049` | El modelo como dato: modelId, provider, descriptorVersion, contextWindow, maxOutputTokens, pricing y capabilities. | [[ch-39-modelo-como-dato|CH-39]] | contrato |
 | **UsageRecord** `C-050` | Uso y costo de una llamada al modelo: tokens de entrada, salida y cache, y costo según el precio del ModelDescriptor. | [[ch-39-modelo-como-dato|CH-39]] | contrato |
+| **Extension** | Código de terceros (del proyecto, de la organización o incorporado) que aporta hooks y capabilities. Nunca puede saltarse ToolRuntime, PolicyEngine ni el ciclo de vida (EVO-10). | [[ch-40-extension-host|CH-40]] | concepto |
+| **Hook Outcome** | Lo que un hook puede devolver en su punto: CONTINUE, BLOCK o TRANSFORM, según lo que ese punto admite. No existe un resultado "autorizado" (INV-E24). | [[ch-40-extension-host|CH-40]] | concepto |
+| **ExtensionRegistration** `C-051` | Una extensión registrada: origen, hash, puntos de hook, capabilities, decisión de confianza y estado. | [[ch-40-extension-host|CH-40]] | contrato |
+| **HookPoint** `C-052` | El catálogo cerrado de puntos del ciclo de vida donde un hook puede intervenir. | [[ch-40-extension-host|CH-40]] | contrato |
+| **ResourceTrustDecision** `C-053` | La decisión explícita de confiar o no en el código de un recurso, atada al hash de su contenido y tomada por un Principal verificado. | [[ch-40-extension-host|CH-40]] | contrato |
 
 Ver también: [[Index|Mapa del libro]]

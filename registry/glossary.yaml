@@ -1799,3 +1799,19 @@ terms:
     introduced_in: CH-44
     kind: contract
     ref: C-059
+
+  - term: Idle Boundary
+    definition: >
+      El momento en que una sesión no tiene trabajo vivo: ninguna espera estacionada, ningún paso sin
+      confirmar y ninguna invocación de agente activa. Es el único momento en que puede pasar a una
+      versión nueva del runtime (P-36, INV-E22, CH-45).
+    introduced_in: CH-45
+    kind: concept
+
+  - term: RuntimeVersionSnapshot
+    definition: >
+      Las versiones con que corre una sesión: agente, política, configuración de modelo, modelo elegido,
+      versión traducida de cada conexión y formato de sesión (C-060).
+    introduced_in: CH-45
+    kind: contract
+    ref: C-060

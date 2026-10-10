@@ -13,7 +13,7 @@ articulos_constitucionales: ["P-18", "P-19", "P-20", "P-21", "INV-E03", "INV-E04
 
 ## Navegación
 
-⬅ [[ch-43-presupuestos-heredados|CH-43]] · **CH-44**
+⬅ [[ch-43-presupuestos-heredados|CH-43]] · **CH-44** · [[ch-45-evolucion-del-runtime|CH-45]] ➡
 
 ## Resultado esperado
 

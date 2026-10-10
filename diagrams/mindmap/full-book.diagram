@@ -245,6 +245,9 @@ digraph BookMindMap {
   "C-058" [label="AgentInvocation", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-44.html#C-058", style="filled"];
   "C-059" [label="AgentCard", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-44.html#C-059", style="filled"];
   "CONCEPT-durable-agent-invocation" [label="Durable Agent Invocation", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-44.html#CONCEPT-durable-agent-invocation", style="filled"];
+  "CH-45" [label="Evolución del Runtime con Sesiones Abiertas", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-45.html", style="filled,bold"];
+  "C-060" [label="RuntimeVersionSnapshot", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-45.html#C-060", style="filled"];
+  "CONCEPT-idle-boundary" [label="Idle Boundary", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-45.html#CONCEPT-idle-boundary", style="filled"];
   "CH-00" -> "C-001" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-002" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-003" [label="INTRODUCES", color="#2a5fa5", style="bold"];
@@ -613,4 +616,7 @@ digraph BookMindMap {
   "CH-44" -> "C-059" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-44" -> "CONCEPT-durable-agent-invocation" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-44" -> "C-024" [label="MODIFIES", color="#c77c00", style="dashed"];
+  "CH-45" -> "C-060" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-45" -> "CONCEPT-idle-boundary" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-45" -> "C-020" [label="MODIFIES", color="#c77c00", style="dashed"];
 }

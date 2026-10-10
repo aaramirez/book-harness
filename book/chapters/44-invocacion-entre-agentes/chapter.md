@@ -8,7 +8,7 @@ introduces_contracts: [C-058, C-059]
 modifies_contracts: [C-024]
 constitutional_articles: [P-18, P-19, P-20, P-21, INV-E03, INV-E04, INV-E05, INV-E06, INV-E21]
 previous_chapter: CH-43
-next_chapter: null
+next_chapter: CH-45
 retrieval_set:
   expected_outcome:
     id: EO-CH44

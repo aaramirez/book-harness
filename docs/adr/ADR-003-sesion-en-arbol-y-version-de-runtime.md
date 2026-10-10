@@ -2,7 +2,7 @@
 
 - **ADR-ID:** ADR-003
 - **Title:** La sesión es un árbol navegable con versión de runtime
-- **Status:** **Accepted — parte v2** (2026-09-25, aprobado por el autor; aplicada en CH-29). La parte v3 sigue `Proposed` y se acepta con CH-45.
+- **Status:** **Accepted** — parte v2 (2026-09-25, aplicada en CH-29) y parte v3 (2026-10-10, aprobada por el autor con un ajuste; aplicada en CH-45).
 
 ## Context
 
@@ -20,6 +20,7 @@
 2. **v3 (CH-45):**
    - `SessionState` agrega `runtimeVersion: Optional<RuntimeVersionSnapshot>` (C-060), que incluye la versión del **formato** de sesión;
    - la migración solo ocurre en una frontera inactiva (INV-E22).
+   - **Ajuste aprobado:** una sesión sin `runtimeVersion` es de versión **desconocida**, no de la inicial. Solo migra sin trabajo vivo y con un migrador de formato explícito desde "desconocido" (fail-closed, como RESTRICTED en CH-42).
 
 ## Alternatives
 
@@ -37,5 +38,5 @@ P-08, P-23, P-36 (Amendment v1.2), INV-12, INV-13, INV-E10, INV-E22 (Amendment v
 
 ## Migration Strategy
 
-- `activeCheckpointId` es `Optional` y `branchSummaries` se lee como vacía si falta. Una sesión sin `runtimeVersion` (v3) se trata como de la versión inicial.
+- `activeCheckpointId` es `Optional` y `branchSummaries` se lee como vacía si falta. Una sesión sin `runtimeVersion` (v3) se trata como de versión desconocida (ajuste aprobado): sigue funcionando como hasta CH-44, y migra solo con un migrador explícito.
 - `registry/contracts.yaml`: C-020 queda en `v2` con `modified_by: [CH-29]` y luego en `v3` con `modified_by: [CH-29, CH-45]`.

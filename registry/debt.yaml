@@ -137,8 +137,8 @@ debts:
   - id: D-017
     title: "runtimeVersion en SessionState (ADR-003 parte v3)"
     origin: CH-29
-    status: open
-    target: CH-45
+    status: resolved
+    resolved_in: CH-45
 
   - id: D-018
     title: "Las conexiones (MCP/OpenAPI) usan execution.caller.current"
@@ -169,8 +169,8 @@ debts:
   - id: D-022
     title: "sessionMayMigrate lee los pasos sin comprometer (INV-E22)"
     origin: CH-32
-    status: open
-    target: CH-45
+    status: resolved
+    resolved_in: CH-45
 
   - id: D-023
     title: "Esperas de un run hijo reenviadas al padre"
@@ -340,8 +340,8 @@ debts:
   - id: D-046
     title: "Volver a traducir las tools de una conexión cuando el servidor cambia, sin romper sesiones abiertas"
     origin: CH-41
-    status: open
-    target: CH-45
+    status: resolved
+    resolved_in: CH-45
 
   - id: D-047
     title: "Recursos y prompts publicados por servidores MCP como fuente de datos gobernada"
@@ -354,5 +354,5 @@ debts:
   - id: D-048
     title: "Registrar el cambio de modelo a mitad de un run como entrada de sesión"
     origin: CH-39
-    status: open
-    target: CH-45
+    status: resolved
+    resolved_in: CH-45

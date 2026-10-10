@@ -433,9 +433,12 @@ contracts:
   # contrato en el libro. Agrega activeCheckpointId (desde dónde continúa el próximo turno; NULL
   # = latestCheckpoint, como hasta CH-28) y branchSummaries (resúmenes de ramas abandonadas al
   # navegar). Ambos compatibles: CH-10..CH-28 siguen válidos sin tocarlos. Navegar no borra nada.
+  # C-020 v3 (CH-45, ADR-003 parte v3 Accepted 2026-10-10): agrega runtimeVersion
+  # (Optional<RuntimeVersionSnapshot>, C-060). NULL = versión DESCONOCIDA (ajuste aprobado): esa sesión
+  # solo migra sin trabajo vivo y con un migrador de formato explícito desde "desconocido".
   - id: C-020
     name: SessionState
-    version: v2
+    version: v3
     introduced_in: CH-10
     current_definition: |
       STRUCT SessionState
@@ -447,9 +450,10 @@ contracts:
           branchSummaries: List<BranchSummary>
           createdAt: Timestamp
           updatedAt: Timestamp
+          runtimeVersion: Optional<RuntimeVersionSnapshot>
       END
     used_by: [CMP-010]
-    modified_by: [CH-29]
+    modified_by: [CH-29, CH-45]
     constitutional_impact: [P-08, P-23, INV-12, INV-13]
 
   # C-021 (AgentActivationRequest): octavo id verdaderamente NUEVO del libro (el correlativo
@@ -1413,3 +1417,22 @@ contracts:
     used_by: [CMP-013]
     modified_by: []
     constitutional_impact: [P-19, P-20, INV-E04, INV-E05]
+
+  # C-060 (RuntimeVersionSnapshot): con qué versiones corre una sesión — las de INV-E10 (VersionSnapshot,
+  # CH-19), el modelo elegido, la versión traducida de cada conexión y la versión del formato de sesión
+  # (aporte de pi). Solo cambia en una frontera inactiva (P-36, INV-E22). CH-45.
+  - id: C-060
+    name: RuntimeVersionSnapshot
+    version: v1
+    introduced_in: CH-45
+    current_definition: |
+      STRUCT RuntimeVersionSnapshot
+          versions: VersionSnapshot
+          modelId: Text
+          connectionVersions: Map<ConnectionId, Text>
+          sessionFormatVersion: Integer
+          adoptedAt: Timestamp
+      END
+    used_by: [CMP-010, CMP-028]
+    modified_by: []
+    constitutional_impact: [P-36, INV-13, INV-E10, INV-E22]

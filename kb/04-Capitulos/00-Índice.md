@@ -55,5 +55,6 @@ Los **39 capítulos** del libro *¿Cómo construir un arnés?* (CH-00 a CH-38).
 | CH-42 | [[ch-42-fuentes-de-datos|Fuentes de Datos Gobernadas: Recuperar sin Tirarlo Todo al Contexto]] |
 | CH-43 | [[ch-43-presupuestos-heredados|Presupuestos que se Heredan]] |
 | CH-44 | [[ch-44-invocacion-entre-agentes|Invocación Durable entre Agentes y A2A]] |
+| CH-45 | [[ch-45-evolucion-del-runtime|Evolución del Runtime con Sesiones Abiertas]] |
 
 Ver también: [[Index|Mapa del libro]]

@@ -199,5 +199,7 @@ Vocabulario técnico canónico del libro *¿Cómo construir un arnés?* — extr
 | **Durable Agent Invocation** | Invocar a otro agente como un registro con dueño, estado, profundidad y presupuesto heredado, que sobrevive a un reinicio sin repetirse. Dentro del arnés corre como un run hijo; afuera, a través de un adaptador de protocolo como A2A. | [[ch-44-invocacion-entre-agentes|CH-44]] | concepto |
 | **AgentInvocation** `C-058` | El registro de una invocación entre agentes: quién la pidió, a qué agente y skill, con qué presupuesto, en qué estado está y qué espera tiene pendiente. | [[ch-44-invocacion-entre-agentes|CH-44]] | contrato |
 | **AgentCard** `C-059` | Lo que un agente anuncia que sabe hacer (skills) y cómo se lo invoca: sin endpoint si es interno, con endpoint y esquema de autenticación si es externo. | [[ch-44-invocacion-entre-agentes|CH-44]] | contrato |
+| **Idle Boundary** | El momento en que una sesión no tiene trabajo vivo: ninguna espera estacionada, ningún paso sin confirmar y ninguna invocación de agente activa. Es el único momento en que puede pasar a una versión nueva del runtime (P-36, INV-E22). | [[ch-45-evolucion-del-runtime|CH-45]] | concepto |
+| **RuntimeVersionSnapshot** `C-060` | Las versiones con que corre una sesión: agente, política, configuración de modelo, modelo elegido, versión traducida de cada conexión y formato de sesión. | [[ch-45-evolucion-del-runtime|CH-45]] | contrato |
 
 Ver también: [[Index|Mapa del libro]]

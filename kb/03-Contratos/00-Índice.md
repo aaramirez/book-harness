@@ -69,5 +69,6 @@ Los **48 contratos** canónicos del libro, en orden de introducción.
 | C-057 | [[C-057-executionusage|ExecutionUsage]] | [[ch-43-presupuestos-heredados|CH-43]] |
 | C-058 | [[C-058-agentinvocation|AgentInvocation]] | [[ch-44-invocacion-entre-agentes|CH-44]] |
 | C-059 | [[C-059-agentcard|AgentCard]] | [[ch-44-invocacion-entre-agentes|CH-44]] |
+| C-060 | [[C-060-runtimeversionsnapshot|RuntimeVersionSnapshot]] | [[ch-45-evolucion-del-runtime|CH-45]] |
 
 Ver también: [[Index|Mapa del libro]]

@@ -104,3 +104,5 @@ chapters:
     file: chapters/43-presupuestos-heredados/chapter.md
   - id: CH-44
     file: chapters/44-invocacion-entre-agentes/chapter.md
+  - id: CH-45
+    file: chapters/45-evolucion-del-runtime/chapter.md

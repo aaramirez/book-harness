@@ -125,14 +125,14 @@ debts:
   - id: D-015
     title: "Provenance propia del bloque de resumen en assembleContextSnapshot"
     origin: CH-29
-    status: open
-    target: CH-42
+    status: resolved
+    resolved_in: CH-42
 
   - id: D-016
     title: "Etiqueta de gobierno del dato para el resumen de compactación"
     origin: CH-29
-    status: open
-    target: CH-42
+    status: resolved
+    resolved_in: CH-42
 
   - id: D-017
     title: "runtimeVersion en SessionState (ADR-003 parte v3)"
@@ -149,8 +149,8 @@ debts:
   - id: D-019
     title: "Datos y memoria usan execution.caller.current"
     origin: CH-31
-    status: open
-    target: CH-42
+    status: resolved
+    resolved_in: CH-42
 
   - id: D-020
     title: "Reenvío de identidad entre agentes (forwardPrincipal)"
@@ -181,8 +181,8 @@ debts:
   - id: D-024
     title: "Lectura de eventos de stream como fuente de datos"
     origin: CH-34
-    status: open
-    target: CH-42
+    status: resolved
+    resolved_in: CH-42
 
   - id: D-025
     title: "Tipo de capability en CapabilityDescriptor (reemplaza la lista isolatedCapabilities)"
@@ -346,8 +346,8 @@ debts:
   - id: D-047
     title: "Recursos y prompts publicados por servidores MCP como fuente de datos gobernada"
     origin: CH-41
-    status: open
-    target: CH-42
+    status: resolved
+    resolved_in: CH-42
 
   # --- registradas al ajustar validate-debt (2026-10-10) -----------------------------------------
 

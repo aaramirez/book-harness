@@ -1727,3 +1727,35 @@ terms:
     introduced_in: CH-41
     kind: contract
     ref: C-054
+
+  - term: Governed Retrieval
+    definition: >
+      Recuperar de una fuente declarada solo lo que una consulta acotada devuelve para el llamante
+      verificado, con procedencia, clasificación y frescura, para que ContextEngine decida qué entra al
+      contexto. Nunca volcar una fuente entera (P-14, CH-42).
+    introduced_in: CH-42
+    kind: concept
+
+  - term: Derived Data Label
+    definition: >
+      La etiqueta de gobierno de un dato producido a partir de otros (un resumen, por ejemplo): hereda la
+      clasificación más restrictiva, la preservación legal y el plazo de retención más corto de sus
+      fuentes (INV-E11, CH-42).
+    introduced_in: CH-42
+    kind: concept
+
+  - term: DataSourceDescriptor
+    definition: >
+      Una fuente de datos declarada, de solo lectura: tipo, clasificación (RESTRICTED si falta), regla de
+      alcance por llamante, conexión si son recursos MCP, y frescura (C-055, CH-42).
+    introduced_in: CH-42
+    kind: contract
+    ref: C-055
+
+  - term: RetrievedCandidate
+    definition: >
+      Un candidato recuperado: contenido, procedencia, clasificación de la fuente, puntaje y etiqueta de
+      gobierno (C-056, CH-42).
+    introduced_in: CH-42
+    kind: contract
+    ref: C-056

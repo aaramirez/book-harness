@@ -13,7 +13,7 @@ articulos_constitucionales: ["P-03", "P-27", "P-38", "INV-04", "INV-05", "INV-06
 
 ## Navegación
 
-⬅ [[ch-40-extension-host|CH-40]] · **CH-41**
+⬅ [[ch-40-extension-host|CH-40]] · **CH-41** · [[ch-42-fuentes-de-datos|CH-42]] ➡
 
 ## Resultado esperado
 

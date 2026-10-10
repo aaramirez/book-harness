@@ -98,3 +98,5 @@ chapters:
     file: chapters/40-extension-host/chapter.md
   - id: CH-41
     file: chapters/41-conexiones/chapter.md
+  - id: CH-42
+    file: chapters/42-fuentes-de-datos/chapter.md

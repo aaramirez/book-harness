@@ -190,5 +190,9 @@ Vocabulario técnico canónico del libro *¿Cómo construir un arnés?* — extr
 | **Declared Connection** | Un proveedor externo de capabilities (servidor MCP o especificación OpenAPI) registrado con un ConnectionDescriptor. Una tool externa solo entra por una conexión declarada, traducida a CapabilityDescriptor (P-38). | [[ch-41-conexiones|CH-41]] | concepto |
 | **Provided Argument** | Un argumento que la conexión fija y el modelo nunca ve: se quita del schema y se agrega al preparar la invocación; si el modelo intenta fijarlo, la tool call se rechaza. | [[ch-41-conexiones|CH-41]] | concepto |
 | **ConnectionDescriptor** `C-054` | Una conexión declarada: tipo (MCP, OPENAPI), transporte, filtro de tools, argumentos provistos, credencial (compartida o por llamante) y aprobación por defecto. | [[ch-41-conexiones|CH-41]] | contrato |
+| **Governed Retrieval** | Recuperar de una fuente declarada solo lo que una consulta acotada devuelve para el llamante verificado, con procedencia, clasificación y frescura, para que ContextEngine decida qué entra al contexto (P-14). | [[ch-42-fuentes-de-datos|CH-42]] | concepto |
+| **Derived Data Label** | La etiqueta de un dato producido a partir de otros (un resumen): hereda la clasificación más restrictiva, la preservación legal y la retención más corta de sus fuentes (INV-E11). | [[ch-42-fuentes-de-datos|CH-42]] | concepto |
+| **DataSourceDescriptor** `C-055` | Una fuente de datos declarada, de solo lectura: tipo, clasificación (RESTRICTED si falta), regla de alcance por llamante, conexión si son recursos MCP, y frescura. | [[ch-42-fuentes-de-datos|CH-42]] | contrato |
+| **RetrievedCandidate** `C-056` | Un candidato recuperado: contenido, procedencia, clasificación de la fuente, puntaje y etiqueta de gobierno. | [[ch-42-fuentes-de-datos|CH-42]] | contrato |
 
 Ver también: [[Index|Mapa del libro]]

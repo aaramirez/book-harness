@@ -1286,3 +1286,49 @@ contracts:
     used_by: [CMP-028]
     modified_by: []
     constitutional_impact: [P-38, INV-E08, INV-E25]
+
+  # C-055 (DataSourceDescriptor): una fuente de datos declarada — SQL, archivos, HTTP, un stream o los
+  # recursos de una conexión MCP —, de solo lectura, con su clasificación (sin clasificación es
+  # RESTRICTED, INV-E26), su regla de alcance por llamante y su frescura (EVO-09). CH-42.
+  - id: C-055
+    name: DataSourceDescriptor
+    version: v1
+    introduced_in: CH-42
+    current_definition: |
+      STRUCT DataSourceDescriptor
+          sourceId: DataSourceId
+          kind: DataSourceKind
+          endpointRef: Text
+          classification: Optional<DataClassificationLevel>
+          access: DataAccessMode
+          scopeRule: DataScopeRule
+          connectionId: Optional<ConnectionId>
+          credentialName: Optional<Text>
+          freshnessSeconds: Optional<Integer>
+      END
+    used_by: [CMP-029]
+    modified_by: []
+    constitutional_impact: [P-22, P-38, INV-E07, INV-E26]
+
+  # C-056 (RetrievedCandidate): un candidato recuperado de una fuente, con su procedencia, la
+  # clasificación de la fuente, el puntaje que informó la fuente y, cuando ya se gobernó, la
+  # DataGovernanceLabel (C-030) que lo acompaña por todo el arnés (INV-E11). ContextEngine decide si
+  # entra al contexto. CH-42.
+  - id: C-056
+    name: RetrievedCandidate
+    version: v1
+    introduced_in: CH-42
+    current_definition: |
+      STRUCT RetrievedCandidate
+          candidateId: RetrievedCandidateId
+          sourceId: DataSourceId
+          content: Value
+          provenance: Text
+          classification: DataClassificationLevel
+          score: Number
+          observedAt: Timestamp
+          label: Optional<DataGovernanceLabel>
+      END
+    used_by: [CMP-029, CMP-004]
+    modified_by: []
+    constitutional_impact: [P-14, INV-E11, INV-E26]

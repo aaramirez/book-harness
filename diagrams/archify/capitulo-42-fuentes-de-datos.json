@@ -1,0 +1,267 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 42 — Fuentes de Datos",
+    "output": "capitulo-42-fuentes-de-datos.html",
+    "viewBox": [
+      1080,
+      570
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "alcance",
+        "label": "Cada llamante recupera lo suyo (INV-E07)",
+        "focus": [
+          "fuente",
+          "retrieval",
+          "integracion"
+        ],
+        "note": "scopeFor fija el alcance desde el llamante verificado, no desde el prompt: con PER_TENANT el adaptador solo consulta los tickets de \"acme\"."
+      },
+      {
+        "id": "seleccionar",
+        "label": "Recuperar no es seleccionar (P-14)",
+        "focus": [
+          "retrieval",
+          "governance",
+          "context",
+          "integracion"
+        ],
+        "note": "RetrievalEngine trae lo que el llamante puede ver; ContextEngine decide qué entra, bajo el techo de clasificación y el presupuesto."
+      },
+      {
+        "id": "resumen",
+        "label": "Un resumen no lava la clasificación",
+        "focus": [
+          "governance",
+          "context",
+          "integracion"
+        ],
+        "note": "classifyDerivedData hace que el resumen herede la clasificación más restrictiva de lo resumido, y su bloque entra con su propia procedencia."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "fuente",
+      "type": "external",
+      "label": "Fuente",
+      "sublabel": "adaptador SQL/HTTP/stream/MCP"
+    },
+    {
+      "id": "retrieval",
+      "type": "backend",
+      "label": "RetrievalEngine",
+      "sublabel": "CMP-029, alcance y frescura"
+    },
+    {
+      "id": "governance",
+      "type": "security",
+      "label": "DataGovernanceEngine",
+      "sublabel": "CMP-018, clasifica"
+    },
+    {
+      "id": "context",
+      "type": "database",
+      "label": "ContextEngine",
+      "sublabel": "CMP-004, selecciona"
+    },
+    {
+      "id": "integracion",
+      "type": "frontend",
+      "label": "Integración",
+      "sublabel": "el turno"
+    }
+  ],
+  "segments": [
+    {
+      "from": 172,
+      "to": 282,
+      "label": "Alcance"
+    },
+    {
+      "from": 298,
+      "to": 432,
+      "label": "Recuperar y seleccionar"
+    },
+    {
+      "from": 446,
+      "to": 500,
+      "label": "Resumen"
+    }
+  ],
+  "messages": [
+    {
+      "id": "scope",
+      "from": "integracion",
+      "to": "retrieval",
+      "y": 185,
+      "label": "scopeFor(fuente \"tickets\" PER_TENANT)",
+      "variant": "emphasis",
+      "note": "el tenant sale del llamante verificado (CH-31), nunca del prompt; PER_PRINCIPAL sin llamante → CALLER_REQUIRED_FOR_SOURCE, fail-closed (§11, §15)"
+    },
+    {
+      "id": "datascope",
+      "from": "retrieval",
+      "to": "integracion",
+      "y": 213,
+      "label": "DataScope(tenantId = \"acme\")",
+      "variant": "return",
+      "note": "la fuente declara su clasificación en el DataSourceDescriptor; si no la declara, cuenta como RESTRICTED (INV-E26) (§6, §8)"
+    },
+    {
+      "id": "query",
+      "from": "integracion",
+      "to": "fuente",
+      "y": 241,
+      "label": "adaptador consulta solo los tickets de \"acme\"",
+      "variant": "default",
+      "note": "el adaptador habla el protocolo de la fuente (SQL, archivos, HTTP, stream o recursos MCP de CH-41); la fuente es READ_ONLY: escribir es una tool (§5, §9)"
+    },
+    {
+      "id": "records",
+      "from": "fuente",
+      "to": "integracion",
+      "y": 269,
+      "label": "40 SourceRecord (ref, content, score, observedAt)",
+      "variant": "return",
+      "note": "SourceRecord es lo que el adaptador devolvió para la consulta, ya acotada por el DataScope (INV-E07) (§6)"
+    },
+    {
+      "id": "retrieve",
+      "from": "integracion",
+      "to": "retrieval",
+      "y": 311,
+      "label": "retrieveCandidates(fuente, 40 registros)",
+      "variant": "emphasis",
+      "note": "cada registro más viejo que la frescura de la fuente se descarta; los demás pasan a RetrievedCandidate con procedencia y clasificación (EVO-09) (§5, §11)"
+    },
+    {
+      "id": "candidates",
+      "from": "retrieval",
+      "to": "integracion",
+      "y": 339,
+      "label": "37 candidatos (3 viejos fuera) + DATA_RETRIEVED",
+      "variant": "return",
+      "note": "el evento DATA_RETRIEVED registra qué se recuperó y de dónde; recuperar no autoriza ni selecciona (§10, §14)"
+    },
+    {
+      "id": "govern",
+      "from": "integracion",
+      "to": "governance",
+      "y": 367,
+      "label": "governRetrievedCandidate × 37 (classifyData)",
+      "variant": "default",
+      "note": "la integración pide a DataGovernanceEngine (CH-20) la etiqueta de cada candidato con sus reglas de gobierno (§9, §11)"
+    },
+    {
+      "id": "restrictive",
+      "from": "governance",
+      "to": "integracion",
+      "y": 395,
+      "label": "etiqueta: la clasificación más restrictiva gana",
+      "variant": "return",
+      "note": "moreRestrictive entre la clasificación de la fuente y la de la etiqueta: lo que nadie clasificó es lo más sensible (§11, §15)"
+    },
+    {
+      "id": "select",
+      "from": "integracion",
+      "to": "context",
+      "y": 423,
+      "label": "selectRetrievedCandidates(CONFIDENTIAL, 6000) → 9",
+      "variant": "emphasis",
+      "note": "por puntaje, dentro del techo CONFIDENTIAL (lo fija PolicyEngine) y de 6000 tokens → 9 ContextBlock; los RESTRICTED quedan fuera aunque sean los más relevantes (P-14) (§10, §11)"
+    },
+    {
+      "id": "derived",
+      "from": "integracion",
+      "to": "governance",
+      "y": 459,
+      "label": "classifyDerivedData(resumen) → CONFIDENTIAL",
+      "variant": "emphasis",
+      "note": "de [INTERNAL, CONFIDENTIAL, PUBLIC] hereda CONFIDENTIAL, la preservación legal y la retención más corta (INV-E11) (§5, §11)"
+    },
+    {
+      "id": "summary",
+      "from": "integracion",
+      "to": "context",
+      "y": 487,
+      "label": "summaryContextBlock → procedencia del resumen",
+      "variant": "default",
+      "note": "ContextBlock(provenance = \"compaction:run-12:7\"), ya no \"conversation_history\": se paga la deuda D-015 (§1, §10)"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "retrieval",
+      "from": 181,
+      "to": 217,
+      "type": "backend"
+    },
+    {
+      "participant": "fuente",
+      "from": 237,
+      "to": 273,
+      "type": "external"
+    },
+    {
+      "participant": "retrieval",
+      "from": 307,
+      "to": 343,
+      "type": "backend"
+    },
+    {
+      "participant": "governance",
+      "from": 363,
+      "to": 399,
+      "type": "security"
+    },
+    {
+      "participant": "context",
+      "from": 419,
+      "to": 427,
+      "type": "database"
+    },
+    {
+      "participant": "governance",
+      "from": 455,
+      "to": 463,
+      "type": "security"
+    },
+    {
+      "participant": "context",
+      "from": 483,
+      "to": 491,
+      "type": "database"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "DataSourceDescriptor (C-055)",
+      "items": [
+        "kind, clasificación (o RESTRICTED), access READ_ONLY",
+        "scopeRule SHARED/PER_TENANT/PER_PRINCIPAL · frescura"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "RetrievedCandidate (C-056)",
+      "items": [
+        "Procedencia, clasificación, puntaje y etiqueta",
+        "Es un candidato: ContextEngine decide si entra"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Frontera RetrievalEngine / ContextEngine",
+      "items": [
+        "Uno decide qué puede recuperarse, el otro qué entra",
+        "El techo lo fija PolicyEngine · chapter.md §8, §11"
+      ]
+    }
+  ]
+}

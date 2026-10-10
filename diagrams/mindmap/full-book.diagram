@@ -232,6 +232,12 @@ digraph BookMindMap {
   "CMP-028" [label="ConnectionManager", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-41.html#CMP-028", style="filled,rounded"];
   "CONCEPT-declared-connection" [label="Declared Connection", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-41.html#CONCEPT-declared-connection", style="filled"];
   "CONCEPT-provided-argument" [label="Provided Argument", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-41.html#CONCEPT-provided-argument", style="filled"];
+  "CH-42" [label="Fuentes de Datos Gobernadas: Recuperar sin Tirarlo Todo al Contexto", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-42.html", style="filled,bold"];
+  "C-055" [label="DataSourceDescriptor", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-42.html#C-055", style="filled"];
+  "C-056" [label="RetrievedCandidate", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-42.html#C-056", style="filled"];
+  "CMP-029" [label="RetrievalEngine", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-42.html#CMP-029", style="filled,rounded"];
+  "CONCEPT-governed-retrieval" [label="Governed Retrieval", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-42.html#CONCEPT-governed-retrieval", style="filled"];
+  "CONCEPT-derived-data-label" [label="Derived Data Label", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-42.html#CONCEPT-derived-data-label", style="filled"];
   "CH-00" -> "C-001" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-002" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-003" [label="INTRODUCES", color="#2a5fa5", style="bold"];
@@ -581,4 +587,16 @@ digraph BookMindMap {
   "C-004" -> "CMP-028" [label="CONSUMES", color="#7a3fa0", style="solid"];
   "C-008" -> "CMP-028" [label="CONSUMES", color="#7a3fa0", style="solid"];
   "C-018" -> "CMP-028" [label="CONSUMES", color="#7a3fa0", style="solid"];
+  "CH-42" -> "C-055" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-42" -> "C-056" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-42" -> "CMP-029" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-42" -> "CONCEPT-governed-retrieval" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-42" -> "CONCEPT-derived-data-label" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CMP-029" -> "C-010" [label="PRODUCES", color="#2a8f4b", style="solid"];
+  "CMP-029" -> "C-011" [label="PRODUCES", color="#2a8f4b", style="solid"];
+  "CMP-029" -> "C-056" [label="PRODUCES", color="#2a8f4b", style="solid"];
+  "C-004" -> "CMP-029" [label="CONSUMES", color="#7a3fa0", style="solid"];
+  "C-040" -> "CMP-029" [label="CONSUMES", color="#7a3fa0", style="solid"];
+  "C-054" -> "CMP-029" [label="CONSUMES", color="#7a3fa0", style="solid"];
+  "C-055" -> "CMP-029" [label="CONSUMES", color="#7a3fa0", style="solid"];
 }

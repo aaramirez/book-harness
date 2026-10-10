@@ -774,9 +774,11 @@ contracts:
   # certificación vigente, no el resultado de una decisión —; `outcome` es un ENUM de tres valores
   # (CERTIFIED/REJECTED/NEEDS_REVIEW, nunca reducido a dos) — la interacción entre los cuatro campos
   # documentada con cuidado en el propio capítulo (seccion 6/11).
+  # C-032 v2 (CH-47): agrega evidence (List<LiftReportId>, C-064): los informes de lift en los que se
+  # apoya el resultado. Un EvaluationReport sin el campo se lee con evidence vacía, como en v1.
   - id: C-032
     name: EvaluationReport
-    version: v1
+    version: v2
     introduced_in: CH-22
     current_definition: |
       STRUCT EvaluationReport
@@ -786,9 +788,10 @@ contracts:
           certificationRequired: Boolean
           outcome: EvaluationOutcome
           evaluatedAt: Timestamp
+          evidence: List<LiftReportId>
       END
     used_by: [CMP-020]
-    modified_by: []
+    modified_by: [CH-47]
     constitutional_impact: [P-28, INV-E13, INV-19]
 
   # C-033 (BusinessOutcomeCorrelation): vigésimo id verdaderamente NUEVO del libro (el correlativo
@@ -1496,3 +1499,27 @@ contracts:
     used_by: [CMP-009, CMP-018]
     modified_by: []
     constitutional_impact: [P-04, P-25, INV-E23]
+
+  # C-064 (LiftReport): cuánto mejora (o empeora) un tratamiento frente a una línea base en la misma
+  # métrica y los mismos casos, con cada corrida en su propio entorno aislado (CH-35). Es la evidencia de
+  # un EvaluationReport v2. CH-47.
+  - id: C-064
+    name: LiftReport
+    version: v1
+    introduced_in: CH-47
+    current_definition: |
+      STRUCT LiftReport
+          reportId: LiftReportId
+          baselineRef: Text
+          treatmentRef: Text
+          metric: Text
+          scores: List<CaseScore>
+          lift: Number
+          minimumLift: Number
+          verdict: LiftVerdict
+          isolationRef: Text
+          producedAt: Timestamp
+      END
+    used_by: [CMP-020]
+    modified_by: []
+    constitutional_impact: [P-28, INV-19, INV-E07, INV-E13]

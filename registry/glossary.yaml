@@ -1847,3 +1847,19 @@ terms:
     introduced_in: CH-46
     kind: contract
     ref: C-063
+
+  - term: Lift
+    definition: >
+      La diferencia entre el puntaje medio de un tratamiento y el de su línea base, en la misma métrica y
+      sobre los mismos casos. Solo cuenta como mejora si supera un umbral mínimo y hay casos suficientes
+      (CH-47).
+    introduced_in: CH-47
+    kind: concept
+
+  - term: LiftReport
+    definition: >
+      El informe de una comparación línea base / tratamiento: puntajes por caso, lift, umbral, veredicto
+      (IMPROVED, INCONCLUSIVE, REGRESSED) y los entornos aislados de cada corrida (C-064).
+    introduced_in: CH-47
+    kind: contract
+    ref: C-064

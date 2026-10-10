@@ -253,6 +253,9 @@ digraph BookMindMap {
   "C-062" [label="TraceCapturePolicy", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-46.html#C-062", style="filled"];
   "C-063" [label="TelemetrySpan", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-46.html#C-063", style="filled"];
   "CONCEPT-capture-ceiling" [label="Capture Ceiling", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-46.html#CONCEPT-capture-ceiling", style="filled"];
+  "CH-47" [label="Medir el Aporte de un Cambio: Evaluación con Lift", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-47.html", style="filled,bold"];
+  "C-064" [label="LiftReport", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-47.html#C-064", style="filled"];
+  "CONCEPT-lift" [label="Lift", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-47.html#CONCEPT-lift", style="filled"];
   "CH-00" -> "C-001" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-002" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-003" [label="INTRODUCES", color="#2a5fa5", style="bold"];
@@ -628,4 +631,7 @@ digraph BookMindMap {
   "CH-46" -> "C-062" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-46" -> "C-063" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-46" -> "CONCEPT-capture-ceiling" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-47" -> "C-064" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-47" -> "CONCEPT-lift" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-47" -> "C-032" [label="MODIFIES", color="#c77c00", style="dashed"];
 }

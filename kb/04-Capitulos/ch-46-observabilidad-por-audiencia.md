@@ -13,7 +13,7 @@ articulos_constitucionales: ["P-04", "P-22", "P-25", "P-37", "INV-E11", "INV-E23
 
 ## Navegación
 
-⬅ [[ch-45-evolucion-del-runtime|CH-45]] · **CH-46**
+⬅ [[ch-45-evolucion-del-runtime|CH-45]] · **CH-46** · [[ch-47-evaluacion-con-lift|CH-47]] ➡
 
 ## Resultado esperado
 

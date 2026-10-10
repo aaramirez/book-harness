@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 47 — Evaluación con Lift",
+    "output": "capitulo-47-evaluacion-con-lift.html",
+    "viewBox": [
+      1080,
+      570
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "aislar",
+        "label": "Cada corrida en su propio entorno aislado",
+        "focus": [
+          "ejecutor",
+          "iee",
+          "harness"
+        ],
+        "note": "Cada puntaje lleva su SandboxId; uno repetido da SHARED_EVALUATION_ENVIRONMENT e invalida el informe entero."
+      },
+      {
+        "id": "lift",
+        "label": "El lift decide solo con casos suficientes",
+        "focus": [
+          "ejecutor",
+          "harness",
+          "bus"
+        ],
+        "note": "Lift 0,03 ≥ 0,02 con 200 casos: IMPROVED. Con 3 casos ningún lift alcanza: INCONCLUSIVE → NEEDS_REVIEW."
+      },
+      {
+        "id": "certificar",
+        "label": "La certificación se apoya en la evidencia",
+        "focus": [
+          "harness",
+          "cert",
+          "bus"
+        ],
+        "note": "Todos IMPROVED → CERTIFIED con evidence [lr-1]. Algún REGRESSED → REJECTED: una regresión nunca se certifica."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "ejecutor",
+      "type": "external",
+      "label": "Ejecutor",
+      "sublabel": "de evaluaciones · adaptador"
+    },
+    {
+      "id": "iee",
+      "type": "cloud",
+      "label": "Entornos aislados",
+      "sublabel": "IsolatedExecution · CMP-026"
+    },
+    {
+      "id": "harness",
+      "type": "backend",
+      "label": "EvaluationHarness",
+      "sublabel": "CMP-020"
+    },
+    {
+      "id": "bus",
+      "type": "messagebus",
+      "label": "EventBus",
+      "sublabel": "CMP-009"
+    },
+    {
+      "id": "cert",
+      "type": "security",
+      "label": "Certificación",
+      "sublabel": "CH-22 · decisor"
+    }
+  ],
+  "segments": [
+    {
+      "from": 172,
+      "to": 282,
+      "label": "400 corridas, un entorno cada una"
+    },
+    {
+      "from": 298,
+      "to": 432,
+      "label": "Lift y certificación"
+    },
+    {
+      "from": 446,
+      "to": 500,
+      "label": "El veredicto con evidencia"
+    }
+  ],
+  "messages": [
+    {
+      "id": "abrir",
+      "from": "ejecutor",
+      "to": "iee",
+      "y": 185,
+      "label": "openSandboxSession × 400 (prompt-v3, prompt-v4)",
+      "variant": "default",
+      "note": "200 casos × 2 versiones; cada corrida, de cada versión, en cada caso, abre su propia sesión de evaluación (CH-35) (§5, §9, §10)"
+    },
+    {
+      "id": "sandboxes",
+      "from": "iee",
+      "to": "ejecutor",
+      "y": 213,
+      "label": "= un SandboxSession por corrida · sb-1 … sb-400",
+      "variant": "return",
+      "note": "abrir los entornos no es del EvaluationHarness: lo hace IsolatedExecutionEnvironment; el harness solo lo verifica (§8, §11)"
+    },
+    {
+      "id": "puntuar",
+      "from": "ejecutor",
+      "to": "iee",
+      "y": 241,
+      "label": "corre y puntúa: \"factura bien clasificada\"",
+      "variant": "emphasis",
+      "note": "misma métrica, caso por caso; una corrida que falla al ejecutarse es un puntaje (por ejemplo, 0), no se omite (§5, §8, §13)"
+    },
+    {
+      "id": "puntajes",
+      "from": "iee",
+      "to": "ejecutor",
+      "y": 269,
+      "label": "= 200 CaseScore, cada puntaje con su SandboxId",
+      "variant": "return",
+      "note": "CaseScore guarda baselineSandboxId y treatmentSandboxId: el aislamiento queda como dato, no como promesa (§6)"
+    },
+    {
+      "id": "computar",
+      "from": "ejecutor",
+      "to": "harness",
+      "y": 311,
+      "label": "computeLift(prompt-v3, prompt-v4, 200 CaseScore)",
+      "variant": "default",
+      "note": "minimumLift 0,02 y mínimo de 100 casos; baseline igual a treatment da SAME_BASELINE_AND_TREATMENT, sin casos EMPTY_EVALUATION (§11, §13)"
+    },
+    {
+      "id": "aislado",
+      "from": "harness",
+      "to": "iee",
+      "y": 339,
+      "label": "requireIsolatedCase × 200 · SandboxIds sin repetir",
+      "variant": "security",
+      "note": "si un caso, o dos casos distintos, comparten entorno (c-7 en sb-9): SHARED_EVALUATION_ENVIRONMENT; no se descarta el caso en silencio (§10, §13)"
+    },
+    {
+      "id": "informe",
+      "from": "harness",
+      "to": "bus",
+      "y": 367,
+      "label": "LIFT_REPORT_PRODUCED · lr-1, lift 0,03, IMPROVED",
+      "variant": "emphasis",
+      "note": "media 0,81 vs 0,84 → lift 0,03 ≥ minimumLift 0,02 y 200 ≥ 100 casos: liftVerdict IMPROVED; LiftReport C-064 (§6, §10, §11)"
+    },
+    {
+      "id": "pedir",
+      "from": "ejecutor",
+      "to": "harness",
+      "y": 395,
+      "label": "evaluateCandidateWithLift(prompt-v4, HIGH, requerida, [lr-1])",
+      "variant": "default",
+      "note": "cada informe debe evaluar este candidato como treatment; si no, LIFT_REPORT_NOT_OF_SUBJECT (§10, §11, §13)"
+    },
+    {
+      "id": "senal",
+      "from": "harness",
+      "to": "cert",
+      "y": 423,
+      "label": "certificationSignalFromLift = TRUE → evaluateCandidateForPromotion",
+      "variant": "emphasis",
+      "note": "todos IMPROVED → TRUE; algún REGRESSED → FALSE; algún INCONCLUSIVE o sin informes → NULL; CH-22 no cambia (§11, §12)"
+    },
+    {
+      "id": "certificado",
+      "from": "cert",
+      "to": "harness",
+      "y": 459,
+      "label": "= CERTIFIED (HIGH, certificación requerida)",
+      "variant": "return",
+      "note": "con 3 casos la señal sería NULL → NEEDS_REVIEW; con un REGRESSED, REJECTED: solo una regresión decide sola (§10, §12)"
+    },
+    {
+      "id": "evidencia",
+      "from": "harness",
+      "to": "bus",
+      "y": 487,
+      "label": "EVALUATION_REPORT_PRODUCED · v2, evidence [lr-1]",
+      "variant": "security",
+      "note": "EvaluationReport v2 (C-032) cita los informes de lift en que se apoya; nadie promueve aquí: es evidencia para quien decide (§6, §11)"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "iee",
+      "from": 181,
+      "to": 273,
+      "type": "cloud"
+    },
+    {
+      "participant": "harness",
+      "from": 307,
+      "to": 427,
+      "type": "backend"
+    },
+    {
+      "participant": "iee",
+      "from": 335,
+      "to": 343,
+      "type": "cloud"
+    },
+    {
+      "participant": "cert",
+      "from": 419,
+      "to": 463,
+      "type": "security"
+    },
+    {
+      "participant": "harness",
+      "from": 455,
+      "to": 491,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "LiftReport (C-064)",
+      "items": [
+        "Baseline vs treatment, misma métrica, caso a caso",
+        "IMPROVED, REGRESSED o INCONCLUSIVE"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "EvaluationReport v2 (C-032)",
+      "items": [
+        "+ evidence: List<LiftReportId>",
+        "Sin evidence se lee como lista vacía"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "INV-E13 · P-28",
+      "items": [
+        "Evaluar todo candidato antes de promover",
+        "Certificar con evidencia; si no, NEEDS_REVIEW · §15"
+      ]
+    }
+  ]
+}

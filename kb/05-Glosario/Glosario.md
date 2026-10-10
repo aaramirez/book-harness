@@ -205,5 +205,7 @@ Vocabulario técnico canónico del libro *¿Cómo construir un arnés?* — extr
 | **SessionAudience** `C-061` | Quién puede ver una sesión: PUBLIC, PRIVATE o UNKNOWN. Se asigna al crearla y dentro de la sesión solo se vuelve más restrictiva. | [[ch-46-observabilidad-por-audiencia|CH-46]] | contrato |
 | **TraceCapturePolicy** `C-062` | El techo de captura para una audiencia: hasta qué clasificación llega a un destino de trazas y si se capturan cuerpos. | [[ch-46-observabilidad-por-audiencia|CH-46]] | contrato |
 | **TelemetrySpan** `C-063` | Un tramo de diagnóstico, con atributos, cuerpo opcional y clasificación. Datos de diagnóstico, no estado de negocio. | [[ch-46-observabilidad-por-audiencia|CH-46]] | contrato |
+| **Lift** | La diferencia entre el puntaje medio de un tratamiento y el de su línea base, en la misma métrica y sobre los mismos casos. Solo cuenta como mejora si supera un umbral mínimo y hay casos suficientes. | [[ch-47-evaluacion-con-lift|CH-47]] | concepto |
+| **LiftReport** `C-064` | El informe de una comparación línea base / tratamiento: puntajes por caso, lift, umbral, veredicto (IMPROVED, INCONCLUSIVE, REGRESSED) y los entornos aislados de cada corrida. | [[ch-47-evaluacion-con-lift|CH-47]] | contrato |
 
 Ver también: [[Index|Mapa del libro]]

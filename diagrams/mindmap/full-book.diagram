@@ -260,6 +260,8 @@ digraph BookMindMap {
   "C-065" [label="AgentManifest", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-48.html#C-065", style="filled"];
   "C-066" [label="AuthoringDiagnostic", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-48.html#C-066", style="filled"];
   "CONCEPT-filesystem-first-authoring" [label="Filesystem-First Authoring", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-48.html#CONCEPT-filesystem-first-authoring", style="filled"];
+  "CH-49" [label="Integración: el Arnés Conectado", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-49.html", style="filled,bold"];
+  "CONCEPT-connected-governed-turn" [label="Connected Governed Turn", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-49.html#CONCEPT-connected-governed-turn", style="filled"];
   "CH-00" -> "C-001" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-002" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-003" [label="INTRODUCES", color="#2a5fa5", style="bold"];
@@ -641,4 +643,5 @@ digraph BookMindMap {
   "CH-48" -> "C-065" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-48" -> "C-066" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-48" -> "CONCEPT-filesystem-first-authoring" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-49" -> "CONCEPT-connected-governed-turn" [label="INTRODUCES", color="#2a5fa5", style="bold"];
 }

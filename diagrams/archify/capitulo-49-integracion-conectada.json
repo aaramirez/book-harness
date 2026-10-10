@@ -1,0 +1,259 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 49 — El Arnés Conectado",
+    "output": "capitulo-49-integracion-conectada.html",
+    "viewBox": [
+      1080,
+      570
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "entrada",
+        "label": "Entrada y contexto gobernados",
+        "focus": [
+          "integracion",
+          "core",
+          "controles"
+        ],
+        "note": "D-041: manifiesto sin ERROR, admisión por principal y techo de contexto por audiencia; el paso usa lo de CH-37 y CH-38."
+      },
+      {
+        "id": "journal",
+        "label": "El journal antes que el modelo",
+        "focus": [
+          "integracion",
+          "journal"
+        ],
+        "note": "D-044: tras el reinicio, nextProposalFromJournal toma cotizar-proveedor del journal sin volver a llamar al modelo."
+      },
+      {
+        "id": "aprobacion",
+        "label": "Aviso dirigido y extensión aislada",
+        "focus": [
+          "integracion",
+          "controles",
+          "aprobadora"
+        ],
+        "note": "D-042: WAIT_NOTICE a la dirección de la jefa. D-045: extensión PROJECT aislada; DISABLE_CAPABILITY la deja DISABLED."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "core",
+      "type": "security",
+      "label": "AgentCore + Admisión",
+      "sublabel": "manifiesto · CMP-011 · CMP-012"
+    },
+    {
+      "id": "integracion",
+      "type": "external",
+      "label": "Integración",
+      "sublabel": "turno conectado"
+    },
+    {
+      "id": "journal",
+      "type": "database",
+      "label": "ExecutionJournal",
+      "sublabel": "CMP-023, pasos del turno"
+    },
+    {
+      "id": "controles",
+      "type": "backend",
+      "label": "Controles",
+      "sublabel": "PolicyEngine · ExtensionHost · trazas"
+    },
+    {
+      "id": "aprobadora",
+      "type": "cloud",
+      "label": "Aprobadora",
+      "sublabel": "la jefa, por su canal"
+    }
+  ],
+  "segments": [
+    {
+      "from": 172,
+      "to": 282,
+      "label": "Entrada, contexto y paso 1"
+    },
+    {
+      "from": 298,
+      "to": 432,
+      "label": "Reinicio, journal y aprobación"
+    },
+    {
+      "from": 446,
+      "to": 500,
+      "label": "Respuesta y trazas recortadas"
+    }
+  ],
+  "messages": [
+    {
+      "id": "entrar",
+      "from": "integracion",
+      "to": "core",
+      "y": 191,
+      "label": "enterConnectedTurn: manifiesto sin ERROR → admitWithPrincipalRules",
+      "variant": "default",
+      "note": "requireActivatableManifest (CH-48) va primero; luego admisión por principal (CH-38) y propiedad de la sesión (CH-31) (§9, §11)"
+    },
+    {
+      "id": "abrir",
+      "from": "core",
+      "to": "integracion",
+      "y": 219,
+      "label": "= ADMIT · techo PUBLIC → INTERNAL",
+      "variant": "return",
+      "note": "openConnectedGovernedTurn: sesión PUBLIC, el historial CONFIDENTIAL del proveedor no entra; solo el resumen INTERNAL (CH-42, CH-46) (§10)"
+    },
+    {
+      "id": "paso1",
+      "from": "integracion",
+      "to": "journal",
+      "y": 247,
+      "label": "paso 1: modelo → 3 propuestas · recordModelResponse",
+      "variant": "default",
+      "note": "contratos.buscar, cotizar-proveedor y emitir-orden quedan en la respuesta registrada del turno (CH-32, CH-39) (§10)"
+    },
+    {
+      "id": "buscar",
+      "from": "integracion",
+      "to": "controles",
+      "y": 275,
+      "label": "contratos.buscar: ALLOW · hook del proyecto en el entorno aislado · commit",
+      "variant": "security",
+      "note": "el hook PROJECT corre en el entorno aislado de la sesión, o no corre (D-045, CH-40); credencial del llamante (CH-38) (§5, §11)"
+    },
+    {
+      "id": "reinicio",
+      "from": "journal",
+      "to": "integracion",
+      "y": 312,
+      "label": "reinicio · nextProposalFromJournal → cotizar-proveedor (sin modelo)",
+      "variant": "emphasis",
+      "note": "D-044: hay propuestas sin ejecutar en el turno, así que el paso toma la siguiente y no vuelve a llamar al modelo (§5, §11)"
+    },
+    {
+      "id": "agente",
+      "from": "integracion",
+      "to": "journal",
+      "y": 340,
+      "label": "invokeAgentDurably (CH-44) · presupuesto del saldo · commit",
+      "variant": "default",
+      "note": "una herramienta de agente reemplaza a executeToolCallIsolated; el orden de los controles es el mismo (§9, §11)"
+    },
+    {
+      "id": "politica",
+      "from": "integracion",
+      "to": "controles",
+      "y": 368,
+      "label": "paso 3: nextProposalFromJournal → emitir-orden · evaluatePolicyForCaller",
+      "variant": "default",
+      "note": "si fuera DENY, la tool call se registra como fallida (POLICY_DENIED) y se confirma: el journal no la vuelve a ofrecer (§11)"
+    },
+    {
+      "id": "aparcar",
+      "from": "controles",
+      "to": "integracion",
+      "y": 396,
+      "label": "= REQUIRE_APPROVAL → parkRun (aprobadora designada)",
+      "variant": "security",
+      "note": "beginToolApprovalPauseForDecision (CH-13) y parkRun con DESIGNATED_PRINCIPAL (CH-33); el run queda aparcado (§9, §11)"
+    },
+    {
+      "id": "aviso",
+      "from": "integracion",
+      "to": "aprobadora",
+      "y": 424,
+      "label": "approverNoticeFor → WAIT_NOTICE a la dirección de la jefa",
+      "variant": "emphasis",
+      "note": "D-042: el aviso va a la dirección del aprobador designado, distinta de la de la sesión, con el waitId de la espera (§5, §11)"
+    },
+    {
+      "id": "responde",
+      "from": "aprobadora",
+      "to": "integracion",
+      "y": 459,
+      "label": "= responde por su canal → la espera se resuelve por waitId",
+      "variant": "return",
+      "note": "la respuesta no necesita la sesión original: la espera se identifica por waitId (CH-33) y el run se reanuda (§10)"
+    },
+    {
+      "id": "trazas",
+      "from": "integracion",
+      "to": "controles",
+      "y": 487,
+      "label": "traceConnectedStep → trazas sin el contenido CONFIDENTIAL",
+      "variant": "security",
+      "note": "después de cada paso: captureCeilingFor por audiencia y fanOutSpan a los destinos (CH-46) (§9, §11)"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "core",
+      "from": 187,
+      "to": 223,
+      "type": "security"
+    },
+    {
+      "participant": "journal",
+      "from": 243,
+      "to": 251,
+      "type": "database"
+    },
+    {
+      "participant": "journal",
+      "from": 308,
+      "to": 344,
+      "type": "database"
+    },
+    {
+      "participant": "controles",
+      "from": 364,
+      "to": 400,
+      "type": "backend"
+    },
+    {
+      "participant": "aprobadora",
+      "from": 420,
+      "to": 463,
+      "type": "cloud"
+    },
+    {
+      "participant": "controles",
+      "from": 483,
+      "to": 491,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Orden fijo del turno",
+      "items": [
+        "Manifiesto → admisión → contexto → journal/modelo",
+        "Política → aprobación → hooks → aislada → trazas"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "El journal antes que el modelo (D-044)",
+      "items": [
+        "Propuesta sin ejecutar: se toma sin el modelo",
+        "La denegada también se registra (POLICY_DENIED)"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "0 deudas abiertas",
+      "items": [
+        "D-041, D-042, D-044, D-045 resueltas",
+        "Sin componentes, contratos ni eventos nuevos"
+      ]
+    }
+  ]
+}

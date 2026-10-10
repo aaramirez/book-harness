@@ -301,14 +301,14 @@ debts:
   - id: D-041
     title: "Reescribir enterDurableTurn y runDurableGovernedStep con las funciones de CH-37 y CH-38"
     origin: CH-38
-    status: open
-    target: CH-49
+    status: resolved
+    resolved_in: CH-49
 
   - id: D-042
     title: "Avisar a un aprobador por un canal distinto del de la sesión"
     origin: CH-37
-    status: open
-    target: CH-49
+    status: resolved
+    resolved_in: CH-49
 
   - id: D-043
     title: "Reglas de política más ricas por Principal (atributos, horarios, jerarquías)"
@@ -324,16 +324,16 @@ debts:
   - id: D-044
     title: "Registrar en el journal una respuesta con varias tool calls sin volver a llamar al modelo"
     origin: CH-39
-    status: open
-    target: CH-49
+    status: resolved
+    resolved_in: CH-49
 
   # --- registradas en CH-40 -------------------------------------------------------------------
 
   - id: D-045
     title: "Correr extensiones PROJECT en el entorno aislado y apagarlas (DISABLED) por comando operacional"
     origin: CH-40
-    status: open
-    target: CH-49
+    status: resolved
+    resolved_in: CH-49
 
   # --- registradas en CH-41 -------------------------------------------------------------------
 

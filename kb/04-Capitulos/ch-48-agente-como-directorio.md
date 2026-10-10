@@ -13,7 +13,7 @@ articulos_constitucionales: ["P-06", "P-39", "INV-09", "INV-E27"]
 
 ## Navegación
 
-⬅ [[ch-47-evaluacion-con-lift|CH-47]] · **CH-48**
+⬅ [[ch-47-evaluacion-con-lift|CH-47]] · **CH-48** · [[ch-49-integracion-conectada|CH-49]] ➡
 
 ## Resultado esperado
 

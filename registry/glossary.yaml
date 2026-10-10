@@ -1887,3 +1887,12 @@ terms:
     introduced_in: CH-48
     kind: contract
     ref: C-066
+
+  - term: Connected Governed Turn
+    definition: >
+      Un turno que recorre todo lo de la versión 0.3: manifiesto sin errores, admisión por principal,
+      contexto recuperado con el techo de la audiencia, política por llamante, hooks que solo restringen,
+      herramientas de conexiones con credencial del llamante, pasos del journal que no repiten al modelo y
+      trazas recortadas por audiencia (CH-49).
+    introduced_in: CH-49
+    kind: concept

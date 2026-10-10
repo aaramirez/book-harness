@@ -210,5 +210,6 @@ Vocabulario técnico canónico del libro *¿Cómo construir un arnés?* — extr
 | **Filesystem-First Authoring** | Escribir un agente como archivos en ubicaciones convencionales, donde la ruta determina la identidad de cada parte. Un adaptador de autoría descubre el directorio y produce un manifiesto; el runtime no infiere nada que no esté declarado (P-39). | [[ch-48-agente-como-directorio|CH-48]] | concepto |
 | **AgentManifest** `C-065` | Lo que se descubrió en el directorio de un agente: cada fuente con ranura, nombre, ruta y origen, y los diagnósticos de autoría. | [[ch-48-agente-como-directorio|CH-48]] | contrato |
 | **AuthoringDiagnostic** `C-066` | Un problema de autoría con nivel (ERROR, WARNING, INFO), código y ruta. Un ERROR impide activar el agente (INV-E27). | [[ch-48-agente-como-directorio|CH-48]] | contrato |
+| **Connected Governed Turn** | Un turno que recorre todo lo de la versión 0.3 en un orden fijo: manifiesto, admisión por principal, contexto con techo de audiencia, journal antes que el modelo, política por llamante, aprobación, hooks aislados, credencial del llamante, ejecución aislada y trazas recortadas. | [[ch-49-integracion-conectada|CH-49]] | concepto |
 
 Ver también: [[Index|Mapa del libro]]

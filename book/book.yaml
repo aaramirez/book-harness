@@ -112,3 +112,5 @@ chapters:
     file: chapters/47-evaluacion-con-lift/chapter.md
   - id: CH-48
     file: chapters/48-agente-como-directorio/chapter.md
+  - id: CH-49
+    file: chapters/49-integracion-conectada/chapter.md

@@ -59,5 +59,6 @@ Los **39 capítulos** del libro *¿Cómo construir un arnés?* (CH-00 a CH-38).
 | CH-46 | [[ch-46-observabilidad-por-audiencia|Observabilidad Acotada por Audiencia]] |
 | CH-47 | [[ch-47-evaluacion-con-lift|Medir el Aporte de un Cambio: Evaluación con Lift]] |
 | CH-48 | [[ch-48-agente-como-directorio|El Agente como Directorio: Autoría por Convención]] |
+| CH-49 | [[ch-49-integracion-conectada|Integración: el Arnés Conectado]] |
 
 Ver también: [[Index|Mapa del libro]]

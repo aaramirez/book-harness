@@ -402,7 +402,8 @@ Cada ficha es el **Paso 2 ("Alcance decidido")** del plan propio del capítulo. 
            registry/contracts.yaml   (nuevos con introduced_in: CH-NN; modificados: version++, current_definition, modified_by += CH-NN)
            registry/glossary.yaml
            registry/debt.yaml        (deuda con target CH-NN: resolved / retargeted_from / out_of_scope;
-                                      la deuda nueva de §18 entra con su destino)
+                                      la deuda nueva de §18 entra con su destino; la sección "Deuda" del
+                                      plan del capítulo cita cada D-NNN o dice "no es deuda" — validate-debt lo exige)
            node scripts/validate-components && node scripts/validate-contracts && node scripts/validate-debt   → OK
 4. CAPÍTULO: secciones 0–21 con las skills write-technical-chapter, define-component, define-contract,
            write-pseudocode (sin entidades mágicas), analyze-constitutional-impact (§4 y §17),
@@ -486,3 +487,4 @@ Cada ficha es el **Paso 2 ("Alcance decidido")** del plan propio del capítulo. 
 | CH-39 | 2026-10-08 | rama `cap-39-modelo-como-dato` → `main` | ✅ exit 0, 40/40 capítulos | C-049 `ModelDescriptor`, C-050 `UsageRecord`; **C-006 y C-007 → v2** (`cacheRetention`; `proposedToolCalls`, `usage`). ModelGateway: catálogo fail-closed, cache efectiva, costo calculado con el precio del catálogo, `effectiveToolCallProposals`. D-021 resuelta en el contrato; D-044 (journal de varias propuestas) → CH-49 |
 | CH-40 | 2026-10-10 | rama `cap-40-extension-host` → `main` | ✅ exit 0, 41/41 capítulos | **CMP-027 ExtensionHost**, C-051 `ExtensionRegistration`, C-052 `HookPoint`, C-053 `ResourceTrustDecision`. EVO-10 verificable: confianza atada al hash del contenido, catálogo cerrado de puntos con resultados admitidos, `HookOutcomeKind` sin valor de autorización (INV-E24); `BEFORE_TOOL` corre tras un ALLOW y solo bloquea |
 | CH-41 | 2026-10-10 | rama `cap-41-conexiones` → `main` | ✅ exit 0, 42/42 capítulos | **CMP-028 ConnectionManager**, C-054 `ConnectionDescriptor`; **C-018 → v3** (`sourceConnectionId`, `executionKind`; ADR-005 Accepted con la ampliación de D-025). Tools externas traducidas a capabilities `<conexión>__<tool>` con filtro y argumentos provistos ocultos; mismo camino que una local (INV-E25). D-018 y D-025 resueltas |
+| Tooling deuda en planes | 2026-10-10 | rama `tooling-deuda-en-planes` → `main` | ✅ exit 0, 42/42 | `validate-debt` revisa la sección "Deuda" de cada plan de capítulo: toda línea que nombra un capítulo no escrito cita un D-NNN registrado o dice "no es deuda". Encontró 12 líneas: 11 sin cita (anotadas) y 1 pendiente nunca registrado (D-048 → CH-45) |

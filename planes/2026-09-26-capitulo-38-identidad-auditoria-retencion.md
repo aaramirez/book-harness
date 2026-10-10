@@ -72,7 +72,7 @@ Completar la otra mitad de la deuda de v0.2:
 ## 8. Deuda
 
 - Sin deuda nueva con destino en v0.2.1.
-- **Reescribir `enterDurableTurn` y `runDurableGovernedStep` (CH-36) con las funciones de CH-37 y CH-38:** CH-38 §9 dice dónde entra cada una. Lo toma el turno conectado de v0.3 (CH-49), porque volver a abrir CH-36 no agrega un comportamiento nuevo.
+- **Reescribir `enterDurableTurn` y `runDurableGovernedStep` (CH-36) con las funciones de CH-37 y CH-38:** CH-38 §9 dice dónde entra cada una. Lo toma el turno conectado de v0.3 (CH-49), porque volver a abrir CH-36 no agrega un comportamiento nuevo. (registrada: D-041)
 - Candidatas a registrar al abrir v0.3:
   - avisar a un aprobador por otro canal (de CH-37 §18);
   - reglas de política más ricas por Principal (de CH-38 §18).

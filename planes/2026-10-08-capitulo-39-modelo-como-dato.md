@@ -66,4 +66,4 @@ Que el modelo sea un **dato** que ModelGateway selecciona de un catálogo (venta
 ## 8. Deuda
 
 - **D-044** (registrada): registrar en el journal una respuesta con varias tool calls sin volver a llamar al modelo → CH-49.
-- Registrar el cambio de modelo a mitad de un run como entrada de sesión: se cubre con `RuntimeVersionSnapshot` en CH-45 (ya planeado; no se registra deuda aparte).
+- **D-048** (registrada al ajustar el validador, 2026-10-10): registrar el cambio de modelo a mitad de un run como entrada de sesión → CH-45, con `RuntimeVersionSnapshot`. Antes decía "no se registra deuda aparte"; el validador nuevo lo detectó.

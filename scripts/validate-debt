@@ -14,7 +14,13 @@
  *       · vX.Y.Z: book.version todavía no alcanzó esa release (si la alcanzó, quedó vencida)
  *   - resolved: resolved_in existe en book/book.yaml y no es anterior al origen
  *   - out_of_scope: rationale no vacío
+ *
+ * Y, en los planes de capítulo (planes/*-capitulo-NN-*.md), que toda línea de la sección "Deuda"
+ * que nombre un capítulo todavía no escrito cite un D-NNN registrado o declare "no es deuda"
+ * (planes/2026-10-10-tooling-deuda-en-planes.md).
  */
+const fs = require('fs');
+const path = require('path');
 const reg = require('./lib/registries.js');
 
 const STATUSES = new Set(['open', 'resolved', 'out_of_scope']);
@@ -115,6 +121,8 @@ function main() {
     }
   }
 
+  checkPlanDebtSections(order, seen, errors);
+
   if (errors.length) {
     console.error('validate-debt: FALLÓ\n');
     for (const e of errors) console.error('  - ' + e);
@@ -126,6 +134,42 @@ function main() {
   console.log(`validate-debt: OK (${debts.length} deuda(s): ${counts.open} open, ${counts.resolved} resolved, ${counts.out_of_scope} out_of_scope)`);
   if (targets) console.log(`  destinos abiertos: ${targets}`);
   process.exit(0);
+}
+
+/**
+ * Planes de capítulo (planes/*-capitulo-NN-*.md): en la sección "## N. Deuda…", toda línea que
+ * nombre un capítulo que todavía no existe en book/book.yaml debe citar un D-NNN registrado en
+ * registry/debt.yaml, o declarar explícitamente "no es deuda". Así un pendiente con destino futuro
+ * no puede quedar solo en la prosa de un plan (planes/2026-10-10-tooling-deuda-en-planes.md).
+ */
+function checkPlanDebtSections(order, knownIds, errors) {
+  const planDir = path.join(reg.ROOT, 'planes');
+  const files = fs.readdirSync(planDir).filter((f) => /-capitulo-\d{2}-.*\.md$/.test(f)).sort();
+  let checkedLines = 0;
+  for (const file of files) {
+    const lines = fs.readFileSync(path.join(planDir, file), 'utf8').replace(/\r\n/g, '\n').split('\n');
+    let inDebt = false;
+    lines.forEach((line, i) => {
+      if (/^## /.test(line)) {
+        inDebt = /^## \d+\.\s*Deuda/i.test(line);
+        return;
+      }
+      if (!inDebt) return;
+      const future = [...line.matchAll(/\bCH-(\d{2})\b/g)].map((m) => m[0]).filter((ch) => reg.chapterIndex(order, ch) === -1);
+      if (future.length === 0) return;
+      checkedLines += 1;
+      if (/no es deuda/i.test(line)) return;
+      const cited = [...line.matchAll(/\bD-\d{3}\b/g)].map((m) => m[0]);
+      if (cited.length === 0) {
+        errors.push(`planes/${file}:${i + 1}: la sección Deuda nombra ${[...new Set(future)].join(', ')} (capítulo no escrito) sin citar un D-NNN de registry/debt.yaml ni declarar "no es deuda"`);
+        return;
+      }
+      for (const id of cited) {
+        if (!knownIds.has(id)) errors.push(`planes/${file}:${i + 1}: cita ${id}, que no existe en registry/debt.yaml`);
+      }
+    });
+  }
+  return checkedLines;
 }
 
 main();

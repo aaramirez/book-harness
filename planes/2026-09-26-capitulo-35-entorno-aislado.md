@@ -71,5 +71,5 @@ Octavo capítulo del Tramo 4 y último componente de v0.2. Darle dueño al entor
 - Mecanismo real de aislamiento y proxy de egress: infraestructura de borde.
 - Tipo de capability en `CapabilityDescriptor` (hoy, lista configurada `isolatedCapabilities`): candidato para C-018 v3 en CH-41.
 - Transformaciones de egress más ricas (rutas, métodos): sin modelar.
-- Límites de CPU/memoria/disco del entorno: presupuesto jerárquico (CH-43).
+- Límites de CPU/memoria/disco del entorno: presupuesto jerárquico (CH-43). (registrada: D-026)
 - Detección de la credencial faltante del `caller.current` y recepción del token del callback (deuda de CH-33): siguen pendientes para CH-36.

@@ -348,3 +348,11 @@ debts:
     origin: CH-41
     status: open
     target: CH-42
+
+  # --- registradas al ajustar validate-debt (2026-10-10) -----------------------------------------
+
+  - id: D-048
+    title: "Registrar el cambio de modelo a mitad de un run como entrada de sesión"
+    origin: CH-39
+    status: open
+    target: CH-45

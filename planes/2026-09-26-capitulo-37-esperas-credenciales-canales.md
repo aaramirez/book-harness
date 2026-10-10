@@ -69,5 +69,5 @@ Completar los cuatro tipos de espera de CH-33 y la mitad de salida de los canale
 
 ## 8. Deuda nueva (registrada al cerrar v0.2.1 si no la resuelve CH-38)
 
-- Avisar a un aprobador por un canal distinto del de la sesión: requiere una dirección propia del aprobador. Fuera de v0.2.1; candidata para CH-46 (observabilidad por audiencia) o una versión posterior.
+- Avisar a un aprobador por un canal distinto del de la sesión: requiere una dirección propia del aprobador. Fuera de v0.2.1. Registrada como **D-042**, con destino CH-49 (al cerrar v0.2.1).
 - El protocolo OAuth y el adaptador de callback: infraestructura, fuera de alcance, igual que D-039.

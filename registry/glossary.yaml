@@ -1775,3 +1775,27 @@ terms:
     introduced_in: CH-43
     kind: contract
     ref: C-057
+
+  - term: Durable Agent Invocation
+    definition: >
+      Invocar a otro agente como un registro con dueño, estado, profundidad y presupuesto heredado, que
+      sobrevive a un reinicio sin repetirse. Dentro del arnés corre como un run hijo; afuera, a través de
+      un adaptador de protocolo como A2A (CH-44).
+    introduced_in: CH-44
+    kind: concept
+
+  - term: AgentInvocation
+    definition: >
+      El registro de una invocación entre agentes: quién la pidió, a qué agente y habilidad, con qué
+      presupuesto, en qué estado está y qué espera tiene pendiente (C-058).
+    introduced_in: CH-44
+    kind: contract
+    ref: C-058
+
+  - term: AgentCard
+    definition: >
+      Lo que un agente anuncia que sabe hacer (skills) y cómo se lo invoca: sin endpoint si es interno,
+      con endpoint y esquema de autenticación si es externo (C-059).
+    introduced_in: CH-44
+    kind: contract
+    ref: C-059

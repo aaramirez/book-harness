@@ -155,8 +155,8 @@ debts:
   - id: D-020
     title: "Reenvío de identidad entre agentes (forwardPrincipal)"
     origin: CH-31
-    status: open
-    target: CH-44
+    status: resolved
+    resolved_in: CH-44
 
   - id: D-021
     title: "Varias tool calls por respuesta del modelo"
@@ -175,8 +175,8 @@ debts:
   - id: D-023
     title: "Esperas de un run hijo reenviadas al padre"
     origin: CH-33
-    status: open
-    target: CH-44
+    status: resolved
+    resolved_in: CH-44
 
   - id: D-024
     title: "Lectura de eventos de stream como fuente de datos"

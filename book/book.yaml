@@ -102,3 +102,5 @@ chapters:
     file: chapters/42-fuentes-de-datos/chapter.md
   - id: CH-43
     file: chapters/43-presupuestos-heredados/chapter.md
+  - id: CH-44
+    file: chapters/44-invocacion-entre-agentes/chapter.md

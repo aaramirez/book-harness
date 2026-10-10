@@ -536,9 +536,11 @@ contracts:
   # EXTERNAL, cita literal de INV-E03), deliberadamente sin ningún campo de protocolo o transporte
   # (INV-E04), y un token de autoridad delegada scoped/time-bounded/auditable (P-21) cuyo budget
   # reutiliza ExecutionBudget (C-012, CH-00) sin modificarlo (INV-E06).
+  # C-024 v2 (CH-44): agrega invocationId (Optional<AgentInvocationId>), para que un mensaje
+  # pertenezca a una invocación durable (C-058). NULL = mensaje suelto, como en v1.
   - id: C-024
     name: AgentCommunicationMessage
-    version: v1
+    version: v2
     introduced_in: CH-15
     current_definition: |
       STRUCT AgentCommunicationMessage
@@ -550,9 +552,10 @@ contracts:
           delegationGrantId: Optional<DelegationGrantId>
           traceId: TraceId
           sentAt: Timestamp
+          invocationId: Optional<AgentInvocationId>
       END
     used_by: [CMP-013]
-    modified_by: []
+    modified_by: [CH-44]
     constitutional_impact: [P-18, P-20, INV-E03, INV-E04]
 
   - id: C-025
@@ -1359,3 +1362,54 @@ contracts:
     used_by: [CMP-007]
     modified_by: []
     constitutional_impact: [INV-09, INV-E06, INV-E21]
+
+  # C-058 (AgentInvocation): una invocación de otro agente con dueño, estado, profundidad y
+  # presupuesto heredado (INV-E06, INV-E21). Sobrevive a un reinicio: su id se deriva del paso que la
+  # abrió, así que recuperar el paso encuentra la invocación en vez de repetirla. Sus estados siguen la
+  # forma de una tarea A2A, pero el contrato es del arnés; el adaptador traduce (INV-E04). CH-44.
+  - id: C-058
+    name: AgentInvocation
+    version: v1
+    introduced_in: CH-44
+    current_definition: |
+      STRUCT AgentInvocation
+          invocationId: AgentInvocationId
+          boundary: AgentCommunicationBoundary
+          parentRunId: RunId
+          targetAgentRef: Text
+          skill: Text
+          owner: Principal
+          depth: Integer
+          childRunId: Optional<RunId>
+          remoteTaskRef: Optional<Text>
+          status: AgentInvocationStatus
+          budget: ExecutionBudget
+          pendingWaitId: Optional<WaitId>
+          result: Optional<Value>
+          error: Optional<HarnessError>
+          openedAt: Timestamp
+          expiresAt: Optional<Timestamp>
+      END
+    used_by: [CMP-013]
+    modified_by: []
+    constitutional_impact: [P-20, P-21, INV-E03, INV-E06, INV-E21]
+
+  # C-059 (AgentCard): lo que un agente anuncia que sabe hacer y cómo se lo invoca. Un agente interno
+  # no tiene endpoint; uno externo declara endpoint y esquema de autenticación, que resuelve un
+  # adaptador (P-19, INV-E05). CH-44.
+  - id: C-059
+    name: AgentCard
+    version: v1
+    introduced_in: CH-44
+    current_definition: |
+      STRUCT AgentCard
+          agentRef: Text
+          description: Text
+          skills: List<Text>
+          boundary: AgentCommunicationBoundary
+          endpointRef: Optional<Text>
+          authScheme: Optional<Text>
+      END
+    used_by: [CMP-013]
+    modified_by: []
+    constitutional_impact: [P-19, P-20, INV-E04, INV-E05]

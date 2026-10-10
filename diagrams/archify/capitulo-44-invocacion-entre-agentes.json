@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 44 — Invocación entre Agentes",
+    "output": "capitulo-44-invocacion-entre-agentes.html",
+    "viewBox": [
+      1080,
+      570
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "abrir",
+        "label": "Invocar es abrir un registro durable",
+        "focus": [
+          "padre",
+          "gateway",
+          "hijo"
+        ],
+        "note": "El id sale del paso: tras un reinicio, invocationIdForStep(s-7, c-2) vuelve a dar inv-1 y se devuelve, sin un segundo hijo."
+      },
+      {
+        "id": "esperas",
+        "label": "La pregunta del hijo sale por el canal del padre",
+        "focus": [
+          "hijo",
+          "gateway",
+          "padre",
+          "canal"
+        ],
+        "note": "surfaceChildWait expone w-9 como INPUT_REQUIRED; la respuesta va a la espera del hijo con acceptDelivery (CH-33)."
+      },
+      {
+        "id": "terminar",
+        "label": "El resultado vuelve como ToolResult",
+        "focus": [
+          "padre",
+          "gateway"
+        ],
+        "note": "Con un agente externo, forwardedCallerFor da NULL y un adaptador A2A traduce: el núcleo no conoce A2A (INV-E05)."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "padre",
+      "type": "frontend",
+      "label": "Padre",
+      "sublabel": "agente de compras"
+    },
+    {
+      "id": "gateway",
+      "type": "backend",
+      "label": "Gateway (CMP-013)",
+      "sublabel": "AgentCommunicationGateway"
+    },
+    {
+      "id": "hijo",
+      "type": "cloud",
+      "label": "Run hijo",
+      "sublabel": "agente de proveedores"
+    },
+    {
+      "id": "canal",
+      "type": "security",
+      "label": "Canal / usuario",
+      "sublabel": "el canal del padre"
+    }
+  ],
+  "segments": [
+    {
+      "from": 172,
+      "to": 282,
+      "label": "Abrir la invocación"
+    },
+    {
+      "from": 298,
+      "to": 432,
+      "label": "El hijo pregunta"
+    },
+    {
+      "from": 446,
+      "to": 500,
+      "label": "Devolver el resultado"
+    }
+  ],
+  "messages": [
+    {
+      "id": "invoke",
+      "from": "padre",
+      "to": "gateway",
+      "y": 185,
+      "label": "invokeAgentDurably(s-7, c-2) → inv-1",
+      "variant": "emphasis",
+      "note": "invocationIdForStep(s-7, c-2) = inv-1, aún no existe; tras un reinicio el mismo id encuentra inv-1 y se devuelve: no hay segundo hijo (§5, §10, §11)"
+    },
+    {
+      "id": "checks",
+      "from": "padre",
+      "to": "gateway",
+      "y": 213,
+      "label": "skill + grant (CH-15) + saldo (CH-43)",
+      "variant": "security",
+      "note": "requireAdvertisedSkill, authorizeAgentCommunicationMessage (CH-15) y requireChildWithinParent (CH-43, INV-E21); si falla, ToolResult fallido (INV-07) (§9, §11, §13)"
+    },
+    {
+      "id": "opened",
+      "from": "gateway",
+      "to": "padre",
+      "y": 241,
+      "label": "openAgentInvocation: inv-1 WORKING, depth 1",
+      "variant": "return",
+      "note": "emite AGENT_INVOCATION_OPENED; owner = execution.caller.current; sin llamante → INVOCATION_OWNER_REQUIRED; sobre el techo → DELEGATION_DEPTH_EXCEEDED (§11, §13, §14)"
+    },
+    {
+      "id": "start",
+      "from": "padre",
+      "to": "hijo",
+      "y": 269,
+      "label": "arranca el hijo con forwardedCallerFor: el mismo CallerSnapshot",
+      "variant": "default",
+      "note": "interno: el mismo usuario con la autoridad del DelegationGrant (P-21). Externo: forwardedCallerFor = NULL y el adaptador A2A envía la tarea (INV-E05) (§10, §15)"
+    },
+    {
+      "id": "park",
+      "from": "hijo",
+      "to": "gateway",
+      "y": 311,
+      "label": "se estaciona: ParkedWait w-9 (QUESTION)",
+      "variant": "default",
+      "note": "estacionar y resolver esperas sigue siendo de CH-33; el Gateway solo expone la espera del hijo en la invocación (§8, §9)"
+    },
+    {
+      "id": "surface",
+      "from": "gateway",
+      "to": "padre",
+      "y": 339,
+      "label": "surfaceChildWait: inv-1 INPUT_REQUIRED (w-9)",
+      "variant": "emphasis",
+      "note": "una espera AUTHORIZATION daría AUTHORIZATION_REQUIRED; una espera de otro run → CHILD_WAIT_NOT_OF_INVOCATION; emite AGENT_INVOCATION_UPDATED (§11, §13, §14)"
+    },
+    {
+      "id": "publish",
+      "from": "padre",
+      "to": "canal",
+      "y": 367,
+      "label": "publica la pregunta en su canal (CH-37)",
+      "variant": "default",
+      "note": "exponer la espera en el canal del padre no le da a nadie más derecho a contestarla (§9, §15)"
+    },
+    {
+      "id": "answer",
+      "from": "canal",
+      "to": "hijo",
+      "y": 395,
+      "label": "responde a w-9: acceptDelivery (CH-33)",
+      "variant": "security",
+      "note": "el usuario contesta con la regla de quien responde de siempre; ninguna función nueva resuelve esperas (§11, §15)"
+    },
+    {
+      "id": "finished",
+      "from": "hijo",
+      "to": "gateway",
+      "y": 423,
+      "label": "InvocationUpdate: inv-1 COMPLETED",
+      "variant": "return",
+      "note": "el hijo sigue (inv-1 WORKING) y termina; applyInvocationUpdate exige resultado en COMPLETED; un hijo que falla deja inv-1 en FAILED (§6, §11, §13)"
+    },
+    {
+      "id": "complete",
+      "from": "padre",
+      "to": "gateway",
+      "y": 459,
+      "label": "completeAgentInvocation(inv-1, COMPLETED)",
+      "variant": "emphasis",
+      "note": "solo un estado terminal produce el resultado; si no → INVOCATION_NOT_FINISHED (§11, §13)"
+    },
+    {
+      "id": "result",
+      "from": "gateway",
+      "to": "padre",
+      "y": 487,
+      "label": "ToolResult del padre (c-2) · rollUpChildUsage",
+      "variant": "return",
+      "note": "parentUsageAfterInvocation suma el uso del hijo interno (CH-43); el de un agente externo lo cuenta su capability (CH-39) (§9, §11)"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "gateway",
+      "from": 181,
+      "to": 245,
+      "type": "backend"
+    },
+    {
+      "participant": "hijo",
+      "from": 265,
+      "to": 273,
+      "type": "cloud"
+    },
+    {
+      "participant": "gateway",
+      "from": 307,
+      "to": 343,
+      "type": "backend"
+    },
+    {
+      "participant": "canal",
+      "from": 363,
+      "to": 371,
+      "type": "security"
+    },
+    {
+      "participant": "hijo",
+      "from": 391,
+      "to": 427,
+      "type": "cloud"
+    },
+    {
+      "participant": "gateway",
+      "from": 455,
+      "to": 491,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "AgentInvocation (C-058)",
+      "items": [
+        "Dueño, estado, profundidad y presupuesto",
+        "Id derivado del paso: un reinicio no la repite"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "AgentCard (C-059)",
+      "items": [
+        "Las skills que un agente anuncia y cómo invocarlo",
+        "endpointRef y authScheme: referencias, sin credencial"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "P-20 / INV-E05: A2A es adaptador",
+      "items": [
+        "Interno ≠ externo: el externo no recibe el Principal",
+        "El núcleo no conoce A2A · chapter.md §11, §15"
+      ]
+    }
+  ]
+}

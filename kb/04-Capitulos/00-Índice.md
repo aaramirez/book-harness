@@ -54,5 +54,6 @@ Los **39 capítulos** del libro *¿Cómo construir un arnés?* (CH-00 a CH-38).
 | CH-41 | [[ch-41-conexiones|Conexiones: MCP y OpenAPI como Fuentes de Capabilities]] |
 | CH-42 | [[ch-42-fuentes-de-datos|Fuentes de Datos Gobernadas: Recuperar sin Tirarlo Todo al Contexto]] |
 | CH-43 | [[ch-43-presupuestos-heredados|Presupuestos que se Heredan]] |
+| CH-44 | [[ch-44-invocacion-entre-agentes|Invocación Durable entre Agentes y A2A]] |
 
 Ver también: [[Index|Mapa del libro]]

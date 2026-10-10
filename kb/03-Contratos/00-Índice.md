@@ -67,5 +67,7 @@ Los **48 contratos** canónicos del libro, en orden de introducción.
 | C-055 | [[C-055-datasourcedescriptor|DataSourceDescriptor]] | [[ch-42-fuentes-de-datos|CH-42]] |
 | C-056 | [[C-056-retrievedcandidate|RetrievedCandidate]] | [[ch-42-fuentes-de-datos|CH-42]] |
 | C-057 | [[C-057-executionusage|ExecutionUsage]] | [[ch-43-presupuestos-heredados|CH-43]] |
+| C-058 | [[C-058-agentinvocation|AgentInvocation]] | [[ch-44-invocacion-entre-agentes|CH-44]] |
+| C-059 | [[C-059-agentcard|AgentCard]] | [[ch-44-invocacion-entre-agentes|CH-44]] |
 
 Ver también: [[Index|Mapa del libro]]

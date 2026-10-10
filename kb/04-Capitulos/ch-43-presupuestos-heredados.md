@@ -13,7 +13,7 @@ articulos_constitucionales: ["P-09", "P-35", "INV-09", "INV-E06", "INV-E21"]
 
 ## Navegación
 
-⬅ [[ch-42-fuentes-de-datos|CH-42]] · **CH-43**
+⬅ [[ch-42-fuentes-de-datos|CH-42]] · **CH-43** · [[ch-44-invocacion-entre-agentes|CH-44]] ➡
 
 ## Resultado esperado
 

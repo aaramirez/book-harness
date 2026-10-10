@@ -196,5 +196,8 @@ Vocabulario técnico canónico del libro *¿Cómo construir un arnés?* — extr
 | **RetrievedCandidate** `C-056` | Un candidato recuperado: contenido, procedencia, clasificación de la fuente, puntaje y etiqueta de gobierno. | [[ch-42-fuentes-de-datos|CH-42]] | contrato |
 | **Inherited Budget** | El presupuesto de un run hijo, asignado a partir del saldo de su padre y repartido entre los hijos de un mismo lote. Un hijo nunca recibe más de lo que le queda al padre, y lo que consume se descuenta del padre (INV-E21). | [[ch-43-presupuestos-heredados|CH-43]] | concepto |
 | **ExecutionUsage** `C-057` | El uso acumulado de un run contra su presupuesto: tool calls, tokens, costo, tiempo y concurrencia. Contrato porque cruza la frontera padre-hijo. | [[ch-43-presupuestos-heredados|CH-43]] | contrato |
+| **Durable Agent Invocation** | Invocar a otro agente como un registro con dueño, estado, profundidad y presupuesto heredado, que sobrevive a un reinicio sin repetirse. Dentro del arnés corre como un run hijo; afuera, a través de un adaptador de protocolo como A2A. | [[ch-44-invocacion-entre-agentes|CH-44]] | concepto |
+| **AgentInvocation** `C-058` | El registro de una invocación entre agentes: quién la pidió, a qué agente y skill, con qué presupuesto, en qué estado está y qué espera tiene pendiente. | [[ch-44-invocacion-entre-agentes|CH-44]] | contrato |
+| **AgentCard** `C-059` | Lo que un agente anuncia que sabe hacer (skills) y cómo se lo invoca: sin endpoint si es interno, con endpoint y esquema de autenticación si es externo. | [[ch-44-invocacion-entre-agentes|CH-44]] | contrato |
 
 Ver también: [[Index|Mapa del libro]]

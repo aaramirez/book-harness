@@ -7,17 +7,17 @@ tags: [moc, indice, libro]
 # ¿Cómo construir un arnés? — Knowledge Base
 
 > **Mapa de conocimiento** del libro *¿Cómo construir un arnés?* y su harness de producción (`book-harness`).
-> Versión 0.2.1 · Constitución v1.0 + Enmiendas v1.1 y v1.2 · 26 componentes · 48 contratos · 39 capítulos.
+> Versión 0.3 · Constitución v1.0 + Enmiendas v1.1 y v1.2 · 29 componentes · 66 contratos · 50 capítulos.
 
 ## 🗺️ Rutas de entrada
 
 | Ruta | Qué encontrarás | Entrada |
 |------|----------------|---------|
 | **Cimientos** | Constitución, artículos, enmienda | [[Architecture-Constitution]] |
-| **El libro** | 39 capítulos en orden, con resultado esperado | [[04-Capitulos/00-Índice|Índice de capítulos]] |
-| **Runtime** | Los 26 componentes del arnés | [[02-Componentes/00-Índice|Índice de componentes]] |
-| **Contratos** | Las 48 estructuras de datos canónicas | [[03-Contratos/00-Índice|Índice de contratos]] |
-| **Vocabulario** | Los 169 términos canónicos | [[05-Glosario/Glosario]] |
+| **El libro** | 50 capítulos en orden, con resultado esperado | [[04-Capitulos/00-Índice|Índice de capítulos]] |
+| **Runtime** | Los 29 componentes del arnés | [[02-Componentes/00-Índice|Índice de componentes]] |
+| **Contratos** | Las 66 estructuras de datos canónicas | [[03-Contratos/00-Índice|Índice de contratos]] |
+| **Vocabulario** | Los 201 términos canónicos | [[05-Glosario/Glosario]] |
 | **Harness** | Agents, skills y planes del proyecto | [[06-Harness/00-Índice]] |
 
 ## 🏛️ Constitución (los cimientos)
@@ -54,11 +54,11 @@ tags: [moc, indice, libro]
 | [[CMP-009-eventbus|CMP-009]] | EventBus | Distribución desacoplada de eventos |
 | [[CMP-010-sessionmanager|CMP-010]] | SessionManager | Persistencia durable de sesiones |
 | [[CMP-011-agentcore|CMP-011]] | AgentCore | Identidad y nacimiento de un AgentState |
-| ... | (CH-14..CH-24: componentes enterprise; CH-32..CH-35: operación durable) | [[02-Componentes/00-Índice|Ver los 26]] |
+| ... | (CH-14..CH-24: componentes enterprise; CH-32..CH-35: operación durable; CH-40..CH-42: conectividad) | [[02-Componentes/00-Índice|Ver los 29]] |
 
-[^1]: La lista completa con los 26 componentes está en [[02-Componentes/00-Índice|Índice de componentes]].
+[^1]: La lista completa con los 29 componentes está en [[02-Componentes/00-Índice|Índice de componentes]].
 
-## 📚 Los 39 capítulos de un vistazo
+## 📚 Los 50 capítulos de un vistazo
 
 | Tramo | Capítulos | Tema |
 |-------|-----------|------|
@@ -70,6 +70,7 @@ tags: [moc, indice, libro]
 | **Enterprise II** | CH-26..CH-27 | Integración enterprise: camino feliz y control/traspaso |
 | **Operación durable** (v0.2) | CH-28..CH-36 | Enmienda v1.2: steering, compactación, replay, identidad, pasos durables, esperas, canales y continuación, entorno aislado, y el turno durable integrado |
 | **Cierre de deuda** (v0.2.1) | CH-37..CH-38 | Esperas, credenciales y canales completos; identidad, auditoría y retención en todo el turno (`registry/debt.yaml`) |
+| **Conectividad** (v0.3) | CH-39..CH-49 | El modelo como dato, extensiones, conexiones, fuentes de datos, presupuestos heredados, invocación entre agentes, evolución del runtime, observabilidad por audiencia, evaluación con lift, el agente como directorio y el arnés conectado |
 
 Ver [[04-Capitulos/00-Índice|índice completo de capítulos]].
 

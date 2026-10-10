@@ -379,6 +379,27 @@ ni contratos nuevos, cierran la deuda que el Tramo 4 dejó pendiente (`registry/
 (esperas, credenciales y canales completos) y CH-38 (identidad, auditoría y retención en todo el
 turno). Los capítulos de la versión 0.3 pasaron a CH-39..CH-49.
 
+**Actualización (cierre de v0.3, 2026-10-10).** El Tramo 5 conecta el arnés con modelos, extensiones,
+herramientas, datos y otros agentes:
+
+```text
+Tramo 5 — Conectividad, Amendment v1.2 (CH-39..CH-49, once capítulos) — versión 0.3
+    CH-39  el modelo como dato                 (C-049, C-050; C-006 v2, C-007 v2)
+    CH-40  ExtensionHost                       (CMP-027; C-051..C-053)
+    CH-41  ConnectionManager                   (CMP-028; C-054; C-018 v3)
+    CH-42  RetrievalEngine                     (CMP-029; C-055, C-056)
+    CH-43  presupuestos que se heredan         (C-057; C-012 v2)
+    CH-44  invocación durable entre agentes    (C-058, C-059; C-024 v2) — la segunda pieza multi-agente
+    CH-45  evolución del runtime               (C-060; C-020 v3)
+    CH-46  observabilidad por audiencia        (C-061..C-063)
+    CH-47  evaluación con lift                 (C-064; C-032 v2)
+    CH-48  el agente como directorio           (C-065, C-066)
+    CH-49  el arnés conectado                  (integración; cierra la deuda: 0 abiertas)
+```
+
+La invocación entre agentes llegó en CH-44, después de los presupuestos que se heredan (CH-43), como
+pedía `P-09`.
+
 ## 2. El Problema (Problem)
 
 `P-09` no es un descuido editorial: es la única regla de las sesenta y cuatro que, por su propia
@@ -813,6 +834,10 @@ contratos (`C-001`..`C-048`), 37 capítulos (`CH-00`..`CH-36`). El Amendment v1.
 `P-31`..`P-39` e `INV-E15`..`INV-E27`; la versión 0.2 cita con código real `P-31`..`P-35` e
 `INV-E15`..`INV-E20`. El resto (`P-36`..`P-39`, `INV-E21`..`INV-E27`) corresponde a la
 versión 0.3.
+
+**Actualización (cierre de v0.3).** Después de CH-49: 29 componentes (`CMP-001`..`CMP-029`), 66
+contratos (`C-001`..`C-066`), 50 capítulos (`CH-00`..`CH-49`). Todo el Amendment v1.2 tiene código
+real, y `registry/debt.yaml` no tiene deudas abiertas.
 
 ## 18. Lo Que Deliberadamente No Resolvemos Todavía (What We Deliberately Do Not Solve Yet)
 

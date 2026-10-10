@@ -187,5 +187,8 @@ Vocabulario técnico canónico del libro *¿Cómo construir un arnés?* — extr
 | **ExtensionRegistration** `C-051` | Una extensión registrada: origen, hash, puntos de hook, capabilities, decisión de confianza y estado. | [[ch-40-extension-host|CH-40]] | contrato |
 | **HookPoint** `C-052` | El catálogo cerrado de puntos del ciclo de vida donde un hook puede intervenir. | [[ch-40-extension-host|CH-40]] | contrato |
 | **ResourceTrustDecision** `C-053` | La decisión explícita de confiar o no en el código de un recurso, atada al hash de su contenido y tomada por un Principal verificado. | [[ch-40-extension-host|CH-40]] | contrato |
+| **Declared Connection** | Un proveedor externo de capabilities (servidor MCP o especificación OpenAPI) registrado con un ConnectionDescriptor. Una tool externa solo entra por una conexión declarada, traducida a CapabilityDescriptor (P-38). | [[ch-41-conexiones|CH-41]] | concepto |
+| **Provided Argument** | Un argumento que la conexión fija y el modelo nunca ve: se quita del schema y se agrega al preparar la invocación; si el modelo intenta fijarlo, la tool call se rechaza. | [[ch-41-conexiones|CH-41]] | concepto |
+| **ConnectionDescriptor** `C-054` | Una conexión declarada: tipo (MCP, OPENAPI), transporte, filtro de tools, argumentos provistos, credencial (compartida o por llamante) y aprobación por defecto. | [[ch-41-conexiones|CH-41]] | contrato |
 
 Ver también: [[Index|Mapa del libro]]

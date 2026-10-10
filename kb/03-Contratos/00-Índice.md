@@ -63,5 +63,6 @@ Los **48 contratos** canónicos del libro, en orden de introducción.
 | C-051 | [[C-051-extensionregistration|ExtensionRegistration]] | [[ch-40-extension-host|CH-40]] |
 | C-052 | [[C-052-hookpoint|HookPoint]] | [[ch-40-extension-host|CH-40]] |
 | C-053 | [[C-053-resourcetrustdecision|ResourceTrustDecision]] | [[ch-40-extension-host|CH-40]] |
+| C-054 | [[C-054-connectiondescriptor|ConnectionDescriptor]] | [[ch-41-conexiones|CH-41]] |
 
 Ver también: [[Index|Mapa del libro]]

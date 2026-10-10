@@ -1703,3 +1703,27 @@ terms:
     introduced_in: CH-40
     kind: contract
     ref: C-053
+
+  - term: Declared Connection
+    definition: >
+      Un proveedor externo de capabilities (servidor MCP o especificación OpenAPI) registrado con un
+      ConnectionDescriptor. Una tool externa solo entra por una conexión declarada, traducida a
+      CapabilityDescriptor (P-38, CH-41).
+    introduced_in: CH-41
+    kind: concept
+
+  - term: Provided Argument
+    definition: >
+      Un argumento que la conexión fija y el modelo nunca ve: se quita del schema que recibe el modelo
+      y se agrega al preparar la invocación. Si el modelo intenta fijarlo, la tool call se rechaza
+      (CH-41).
+    introduced_in: CH-41
+    kind: concept
+
+  - term: ConnectionDescriptor
+    definition: >
+      Una conexión declarada: tipo (MCP, OPENAPI), transporte, filtro de tools, argumentos provistos,
+      credencial (compartida o por llamante) y aprobación por defecto (C-054, CH-41).
+    introduced_in: CH-41
+    kind: contract
+    ref: C-054

@@ -227,6 +227,11 @@ digraph BookMindMap {
   "CMP-027" [label="ExtensionHost", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-40.html#CMP-027", style="filled,rounded"];
   "CONCEPT-extension" [label="Extension", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-40.html#CONCEPT-extension", style="filled"];
   "CONCEPT-hook-outcome" [label="Hook Outcome", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-40.html#CONCEPT-hook-outcome", style="filled"];
+  "CH-41" [label="Conexiones: MCP y OpenAPI como Fuentes de Capabilities", shape=folder, fillcolor="#e2e2e2", URL="chapters/CH-41.html", style="filled,bold"];
+  "C-054" [label="ConnectionDescriptor", shape=note, fillcolor="#c9f2cf", URL="chapters/CH-41.html#C-054", style="filled"];
+  "CMP-028" [label="ConnectionManager", shape=box, fillcolor="#bfe0ff", URL="chapters/CH-41.html#CMP-028", style="filled,rounded"];
+  "CONCEPT-declared-connection" [label="Declared Connection", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-41.html#CONCEPT-declared-connection", style="filled"];
+  "CONCEPT-provided-argument" [label="Provided Argument", shape=ellipse, fillcolor="#fff3a3", URL="chapters/CH-41.html#CONCEPT-provided-argument", style="filled"];
   "CH-00" -> "C-001" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-002" [label="INTRODUCES", color="#2a5fa5", style="bold"];
   "CH-00" -> "C-003" [label="INTRODUCES", color="#2a5fa5", style="bold"];
@@ -564,4 +569,16 @@ digraph BookMindMap {
   "CMP-027" -> "C-053" [label="PRODUCES", color="#2a8f4b", style="solid"];
   "C-004" -> "CMP-027" [label="CONSUMES", color="#7a3fa0", style="solid"];
   "C-040" -> "CMP-027" [label="CONSUMES", color="#7a3fa0", style="solid"];
+  "CH-41" -> "C-054" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-41" -> "CMP-028" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-41" -> "CONCEPT-declared-connection" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-41" -> "CONCEPT-provided-argument" [label="INTRODUCES", color="#2a5fa5", style="bold"];
+  "CH-41" -> "C-018" [label="MODIFIES", color="#c77c00", style="dashed"];
+  "CMP-028" -> "C-010" [label="PRODUCES", color="#2a8f4b", style="solid"];
+  "CMP-028" -> "C-011" [label="PRODUCES", color="#2a8f4b", style="solid"];
+  "CMP-028" -> "C-018" [label="PRODUCES", color="#2a8f4b", style="solid"];
+  "CMP-028" -> "C-054" [label="PRODUCES", color="#2a8f4b", style="solid"];
+  "C-004" -> "CMP-028" [label="CONSUMES", color="#7a3fa0", style="solid"];
+  "C-008" -> "CMP-028" [label="CONSUMES", color="#7a3fa0", style="solid"];
+  "C-018" -> "CMP-028" [label="CONSUMES", color="#7a3fa0", style="solid"];
 }

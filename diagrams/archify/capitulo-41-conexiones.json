@@ -1,0 +1,266 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Capítulo 41 — Conexiones",
+    "output": "capitulo-41-conexiones.html",
+    "viewBox": [
+      1080,
+      570
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "traducir",
+        "label": "Una tool externa es una capability más (P-38)",
+        "focus": [
+          "servidor",
+          "connections",
+          "registry"
+        ],
+        "note": "ConnectionManager filtra las tools del servidor y traduce las permitidas a CapabilityDescriptor v3 con espacio de nombres."
+      },
+      {
+        "id": "camino",
+        "label": "El mismo camino que una local (INV-E25)",
+        "focus": [
+          "registry",
+          "policy",
+          "runtime",
+          "connections"
+        ],
+        "note": "tickets__search se resuelve, se autoriza y se ejecuta como cualquier tool: la aprobación por defecto de la conexión solo restringe."
+      },
+      {
+        "id": "provisto",
+        "label": "El modelo no fija lo provisto",
+        "focus": [
+          "runtime",
+          "connections"
+        ],
+        "note": "accountId lo fija la conexión y no está en el schema: si el modelo lo envía, PROVIDED_ARGUMENT_FROM_MODEL y la tool no se invoca."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "servidor",
+      "type": "external",
+      "label": "Servidor externo",
+      "sublabel": "MCP / OpenAPI, vía adaptador"
+    },
+    {
+      "id": "connections",
+      "type": "backend",
+      "label": "ConnectionManager",
+      "sublabel": "CMP-028, traduce y prepara"
+    },
+    {
+      "id": "registry",
+      "type": "database",
+      "label": "CapabilityRegistry",
+      "sublabel": "CMP-008, resuelve y valida"
+    },
+    {
+      "id": "policy",
+      "type": "security",
+      "label": "PolicyEngine",
+      "sublabel": "CMP-005, autoriza"
+    },
+    {
+      "id": "runtime",
+      "type": "backend",
+      "label": "ToolRuntime",
+      "sublabel": "CMP-002, ejecuta"
+    }
+  ],
+  "segments": [
+    {
+      "from": 172,
+      "to": 282,
+      "label": "Traducir"
+    },
+    {
+      "from": 298,
+      "to": 432,
+      "label": "Mismo camino"
+    },
+    {
+      "from": 446,
+      "to": 500,
+      "label": "Lo provisto"
+    }
+  ],
+  "messages": [
+    {
+      "id": "list",
+      "from": "servidor",
+      "to": "connections",
+      "y": 185,
+      "label": "adaptador lista 20 tools (ExternalToolSpec)",
+      "variant": "default",
+      "note": "el adaptador habla el protocolo (MCP por STDIO/HTTP, u OpenAPI); ConnectionManager no lo habla (P-38) (§8, §9)"
+    },
+    {
+      "id": "translate",
+      "from": "connections",
+      "to": "registry",
+      "y": 213,
+      "label": "translateConnectionTools(\"tickets\", ALLOW_LIST)",
+      "variant": "emphasis",
+      "note": "ALLOW_LIST [search, create] deja pasar 2 de 20: una tool fuera de la lista no existe para el agente; un nombre que choca con una capability local → CAPABILITY_NAME_COLLISION, fail-closed (§11, §15)"
+    },
+    {
+      "id": "register",
+      "from": "connections",
+      "to": "registry",
+      "y": 241,
+      "label": "registra [tickets__search, tickets__create]",
+      "variant": "default",
+      "note": "CapabilityDescriptor v3: schema sin \"accountId\" (provisto por la conexión), replay NEVER (CH-30), sourceConnectionId \"tickets\", executionKind CONNECTION (§6, §9)"
+    },
+    {
+      "id": "registered",
+      "from": "registry",
+      "to": "connections",
+      "y": 269,
+      "label": "en registeredCapabilities, como cualquier otra",
+      "variant": "return",
+      "note": "la misma lista que CapabilityRegistry resuelve desde CH-08: ConnectionManager produce descriptores, CapabilityRegistry los resuelve (INV-E25) (§8)"
+    },
+    {
+      "id": "resolve",
+      "from": "runtime",
+      "to": "registry",
+      "y": 311,
+      "label": "resolveModelProposedToolCall(tickets__search)",
+      "variant": "emphasis",
+      "note": "el modelo propone tickets__search(query = \"factura 42\"); CH-08 la resuelve y valida los argumentos contra el schema traducido → ToolCall (§9, §10)"
+    },
+    {
+      "id": "evaluate",
+      "from": "runtime",
+      "to": "policy",
+      "y": 339,
+      "label": "evaluatePolicyForToolCall(tickets__search)",
+      "variant": "default",
+      "note": "la política de CH-05, con las reglas por llamante de CH-38 si las hay; que el servidor tenga sus propios permisos no exime de PolicyEngine (§15)"
+    },
+    {
+      "id": "approval",
+      "from": "policy",
+      "to": "runtime",
+      "y": 367,
+      "label": "ALLOW → aprobación por defecto → REQUIRE_APPROVAL",
+      "variant": "return",
+      "note": "applyConnectionApprovalDefault solo restringe: con requiresApprovalByDefault convierte ALLOW en REQUIRE_APPROVAL, nunca al revés; la aprobación sigue CH-36 (§8, §11)"
+    },
+    {
+      "id": "prepare",
+      "from": "runtime",
+      "to": "connections",
+      "y": 395,
+      "label": "credencial PER_CALLER + prepareConnectionCall",
+      "variant": "default",
+      "note": "resolveConnectionCredential: PER_CALLER → la credencial del usuario vía CredentialBroker (CH-38); si le falta, la espera de CH-37; prepareConnectionCall agrega accountId (§9, §11)"
+    },
+    {
+      "id": "invoke",
+      "from": "runtime",
+      "to": "servidor",
+      "y": 423,
+      "label": "ConnectionInvocation(query, accountId) vía adaptador",
+      "variant": "emphasis",
+      "note": "effectiveExecutionKind = CONNECTION: ToolRuntime ejecuta con el adaptador; un fallo del servidor es un ToolResult fallido que vuelve al modelo (INV-07) (§9, §13)"
+    },
+    {
+      "id": "provided",
+      "from": "runtime",
+      "to": "connections",
+      "y": 459,
+      "label": "tickets__search(accountId = \"otra-cuenta\")",
+      "variant": "emphasis",
+      "note": "un prompt manipulado intenta cambiar la cuenta contra la que trabaja la tool; prepareConnectionCall lo detecta: el argumento provisto no se negocia (§10, §15)"
+    },
+    {
+      "id": "rejected",
+      "from": "connections",
+      "to": "runtime",
+      "y": 487,
+      "label": "PROVIDED_ARGUMENT_FROM_MODEL (no se invoca)",
+      "variant": "return",
+      "note": "HarnessError VALIDATION, recoverable FALSE, retryable FALSE; la tool no llega al servidor (§11, §13)"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "connections",
+      "from": 181,
+      "to": 273,
+      "type": "backend"
+    },
+    {
+      "participant": "registry",
+      "from": 209,
+      "to": 273,
+      "type": "database"
+    },
+    {
+      "participant": "registry",
+      "from": 307,
+      "to": 315,
+      "type": "database"
+    },
+    {
+      "participant": "policy",
+      "from": 335,
+      "to": 371,
+      "type": "security"
+    },
+    {
+      "participant": "connections",
+      "from": 391,
+      "to": 399,
+      "type": "backend"
+    },
+    {
+      "participant": "servidor",
+      "from": 419,
+      "to": 427,
+      "type": "external"
+    },
+    {
+      "participant": "connections",
+      "from": 455,
+      "to": 491,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "ConnectionDescriptor (C-054)",
+      "items": [
+        "kind, transport, toolFilter, providedArguments",
+        "credentialScope SHARED/PER_CALLER · requiresApprovalByDefault"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "CapabilityDescriptor v3 (C-018)",
+      "items": [
+        "sourceConnectionId + executionKind LOCAL/ISOLATED/CONNECTION (ADR-005)",
+        "Reemplaza isolatedCapabilities de CH-35 para quien lo declare"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Frontera ConnectionManager / CapabilityRegistry",
+      "items": [
+        "Uno traduce, el otro resuelve; nadie autoriza salvo PolicyEngine",
+        "El protocolo es un adaptador · chapter.md §8, §11"
+      ]
+    }
+  ]
+}

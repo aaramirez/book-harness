@@ -364,9 +364,13 @@ contracts:
   # C-018 v2 (CH-30, ADR-002 Accepted 2026-09-25): agrega replayPolicy (Optional<ReplayPolicy>).
   # NULL equivale a NEVER (fail-closed) vía effectiveReplayPolicy: ningún descriptor ya registrado
   # cambia de comportamiento. Vuelve a cambiar en CH-41 (sourceConnectionId, ADR-005).
+  # C-018 v3 (CH-41, ADR-005 Accepted 2026-10-10): agrega sourceConnectionId (Optional<ConnectionId>):
+  # de qué conexión viene una capability externa (NULL = local), y executionKind
+  # (Optional<ExecutionKind>: LOCAL | ISOLATED | CONNECTION), que reemplaza la lista configurada
+  # isolatedCapabilities de CH-35 (D-025). NULL se deriva: CONNECTION si hay sourceConnectionId, si no LOCAL.
   - id: C-018
     name: CapabilityDescriptor
-    version: v2
+    version: v3
     introduced_in: CH-08
     current_definition: |
       STRUCT CapabilityDescriptor
@@ -376,9 +380,11 @@ contracts:
           inputSchema: Value
           implementationRef: Text
           replayPolicy: Optional<ReplayPolicy>
+          sourceConnectionId: Optional<ConnectionId>
+          executionKind: Optional<ExecutionKind>
       END
-    used_by: [CMP-008, CMP-015]
-    modified_by: [CH-30]
+    used_by: [CMP-008, CMP-015, CMP-026, CMP-028]
+    modified_by: [CH-30, CH-41]
     constitutional_impact: [P-03, P-26, INV-04, INV-20]
 
   # C-019 (EventSubscription): sexto id verdaderamente NUEVO del libro (el correlativo continúa
@@ -1256,3 +1262,27 @@ contracts:
     used_by: [CMP-027]
     modified_by: []
     constitutional_impact: [P-13, INV-19]
+
+  # C-054 (ConnectionDescriptor): una conexión declarada a un proveedor externo de capabilities — un
+  # servidor MCP o una especificación OpenAPI —: transporte, filtro de tools, argumentos provistos
+  # (ocultos al modelo), credencial (compartida o por llamante) y aprobación por defecto. Solo por una
+  # conexión declarada entra una capability externa (P-38). CH-41.
+  - id: C-054
+    name: ConnectionDescriptor
+    version: v1
+    introduced_in: CH-41
+    current_definition: |
+      STRUCT ConnectionDescriptor
+          connectionId: ConnectionId
+          kind: ConnectionKind
+          transport: ConnectionTransport
+          endpointRef: Text
+          toolFilter: ToolFilter
+          providedArguments: Map<Text, Value>
+          credentialName: Optional<Text>
+          credentialScope: CredentialScope
+          requiresApprovalByDefault: Boolean
+      END
+    used_by: [CMP-028]
+    modified_by: []
+    constitutional_impact: [P-38, INV-E08, INV-E25]

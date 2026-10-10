@@ -96,3 +96,5 @@ chapters:
     file: chapters/39-modelo-como-dato/chapter.md
   - id: CH-40
     file: chapters/40-extension-host/chapter.md
+  - id: CH-41
+    file: chapters/41-conexiones/chapter.md

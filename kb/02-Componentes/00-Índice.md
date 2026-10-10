@@ -37,5 +37,6 @@ Los **26 componentes** del runtime del arnés, en orden de introducción.
 | CMP-025 | [[CMP-025-continuationregistry|ContinuationRegistry]] | [[ch-34-canales-continuacion|CH-34]] |
 | CMP-026 | [[CMP-026-isolatedexecutionenvironment|IsolatedExecutionEnvironment]] | [[ch-35-entorno-aislado|CH-35]] |
 | CMP-027 | [[CMP-027-extensionhost|ExtensionHost]] | [[ch-40-extension-host|CH-40]] |
+| CMP-028 | [[CMP-028-connectionmanager|ConnectionManager]] | [[ch-41-conexiones|CH-41]] |
 
 Ver también: [[Index|Mapa del libro]]

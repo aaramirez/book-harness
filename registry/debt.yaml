@@ -143,8 +143,8 @@ debts:
   - id: D-018
     title: "Las conexiones (MCP/OpenAPI) usan execution.caller.current"
     origin: CH-31
-    status: open
-    target: CH-41
+    status: resolved
+    resolved_in: CH-41
 
   - id: D-019
     title: "Datos y memoria usan execution.caller.current"
@@ -187,8 +187,8 @@ debts:
   - id: D-025
     title: "Tipo de capability en CapabilityDescriptor (reemplaza la lista isolatedCapabilities)"
     origin: CH-35
-    status: open
-    target: CH-41
+    status: resolved
+    resolved_in: CH-41
 
   - id: D-026
     title: "Límites de CPU, memoria y disco del entorno aislado"
@@ -334,3 +334,17 @@ debts:
     origin: CH-40
     status: open
     target: CH-49
+
+  # --- registradas en CH-41 -------------------------------------------------------------------
+
+  - id: D-046
+    title: "Volver a traducir las tools de una conexión cuando el servidor cambia, sin romper sesiones abiertas"
+    origin: CH-41
+    status: open
+    target: CH-45
+
+  - id: D-047
+    title: "Recursos y prompts publicados por servidores MCP como fuente de datos gobernada"
+    origin: CH-41
+    status: open
+    target: CH-42

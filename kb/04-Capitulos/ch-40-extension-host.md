@@ -13,7 +13,7 @@ articulos_constitucionales: ["P-07", "P-12", "P-13", "INV-05", "INV-06", "INV-E2
 
 ## Navegación
 
-⬅ [[ch-39-modelo-como-dato|CH-39]] · **CH-40**
+⬅ [[ch-39-modelo-como-dato|CH-39]] · **CH-40** · [[ch-41-conexiones|CH-41]] ➡
 
 ## Resultado esperado
 

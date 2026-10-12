@@ -14,12 +14,12 @@ El repositorio `book-harness` es el **harness de producción** del libro: los mi
 |------------|-----------|
 | `book/` | Manifiesto del libro y capítulos |
 | `constitution/` | La Architecture Constitution |
-| `registry/` | Fuentes de verdad: componentes, contratos, glosario |
+| `registry/` | Fuentes de verdad: componentes, contratos, glosario, deuda |
 | `agents/` | Agentes de producción del libro |
 | `skills/` | Skills del harness |
 | `planes/` | Planes de ejecución por capítulo |
 | `diagrams/` | Diagramas Archify + HTML |
-| `scripts/` | Build, validación (validate-chapter) |
+| `scripts/` | Build (`build-all`) y validación (`validate-chapter`, `validate-retrieval-set`, `validate-debt`, …) |
 | `evals/`, `policies/`, `docs/` | Soporte |
 
 ## Secciones de esta KB

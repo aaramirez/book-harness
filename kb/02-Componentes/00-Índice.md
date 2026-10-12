@@ -6,7 +6,7 @@ tags: [componente, indice]
 
 # Índice de Componentes
 
-Los **26 componentes** del runtime del arnés, en orden de introducción.
+Los **29 componentes** del runtime del arnés, en orden de introducción.
 
 | ID | Componente | Capítulo |
 |----|-----------|----------|

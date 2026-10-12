@@ -6,7 +6,7 @@ tags: [contrato, indice]
 
 # Índice de Contratos
 
-Los **48 contratos** canónicos del libro, en orden de introducción.
+Los **66 contratos** canónicos del libro, en orden de introducción.
 
 | ID | Contrato | Capítulo |
 |----|----------|----------|

@@ -11,10 +11,10 @@ Esta es una **Knowledge Base de Obsidian** sobre el libro *¿Cómo construir un 
 ## Flujo recomendado
 
 1. **Empieza por el mapa**: [[Index|Index]] es el punto de entrada.
-2. **Cimientos primero**: lee [[Architecture-Constitution|la Constitución]] (regla suprema, Artículos I-XII, Enmienda v1.1).
+2. **Cimientos primero**: lee [[Architecture-Constitution|la Constitución]] (regla suprema, Artículos I-XII, Enmiendas v1.1 y v1.2).
 3. **Sigue el libro en orden**: cada capítulo tiene su nota con el resultado esperado y navegación ⬅ ➡ entre capítulos.
 4. **Aterriza en contratos y componentes**: cada capítulo introduce contratos (C-XXX) y componentes (CMP-XXX) — navega desde la [[04-Capitulos/00-Índice|índice de capítulos]].
-5. **Consulta el vocabulario**: [[05-Glosario/Glosario|Glosario]] con los 134 términos canónicos.
+5. **Consulta el vocabulario**: [[05-Glosario/Glosario|Glosario]] con los 201 términos canónicos.
 
 ## Convenciones de la KB
 

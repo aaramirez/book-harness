@@ -304,7 +304,7 @@ Observability implications
 Este capítulo solo compone tipos que ya existen:
 - **por contrato:** `AgentManifest` (C-065), `ActivationRequest` (C-022), `AdmissionDecision`
   (C-023), `Principal` (C-040), `CallerSnapshot` (C-041), `ExecutionContext` (C-004), `AgentState`
-  (C-003), `StepRecord` (C-042), `ModelResponse` (C-007), `ToolCall` (C-008), `ToolResult` (C-009),
+  (C-003), `StepRecord` (C-042), `ModelResponse` (C-007), `AgentMessage` (C-001), `ToolCall` (C-008), `ToolResult` (C-009),
   `PolicyDecision` (C-014), `HumanInteractionRequest` (C-015), `ParkedWait` (C-044),
   `ContinuationAddress` (C-046), `SandboxSession` (C-047), `CapabilityDescriptor` (C-018),
   `CredentialReference` (C-026), `ControlDirective`, `ExtensionRegistration` (C-051),
@@ -739,6 +739,38 @@ END
 
 ### El paso conectado (D-041)
 
+**Revisión (2026-10-12): los bloques gobernados llegan al modelo.** En la primera versión,
+`openConnectedGovernedTurn` producía `contextBlocks`, pero `runConnectedGovernedStep` invocaba al
+modelo solo con las entradas pendientes: los bloques recuperados y recortados por audiencia no llegaban
+a la llamada. `connectedModelMessages` los convierte en mensajes con la misma convención de CH-12 y
+CH-26 (un `AgentMessage` USER por bloque, en el orden de la selección) y agrega después las entradas
+pendientes del paso. Un paso que toma su propuesta del journal no llama al modelo y no los necesita.
+
+```pseudocode
+FUNCTION connectedModelMessages(
+    contextBlocks: List<ContextBlock>,
+    selection: PendingInputSelection
+) -> List<AgentMessage>
+
+    messages: List<AgentMessage> = []
+
+    FOR EACH block IN contextBlocks
+        messages.append(AgentMessage(
+            id = newMessageId(),
+            role = USER,
+            content = block.content,
+            timestamp = now()
+        ))
+    END
+
+    FOR EACH message IN selection.messages
+        messages.append(message)
+    END
+
+    RETURN messages
+END
+```
+
 ```pseudocode
 FUNCTION runConnectedGovernedStep(
     state: AgentState,
@@ -748,6 +780,7 @@ FUNCTION runConnectedGovernedStep(
     turn: Integer,
     index: Integer,
     queue: PendingInputQueue,
+    contextBlocks: List<ContextBlock>,
     providerFinished: Boolean,
     providerProposesToolCall: Boolean,
     providerCapabilityName: Text,
@@ -790,7 +823,8 @@ FUNCTION runConnectedGovernedStep(
         selection = takePendingInputsForStep(queue, state, execution)
 
         response: ModelResponse = invokeModelForTurn(
-            state, execution, selection.messages, TRUE, providerFinished, providerProposesToolCall,
+            state, execution, connectedModelMessages(contextBlocks, selection), TRUE, providerFinished,
+            providerProposesToolCall,
             providerCapabilityName, providerRawArguments, providerContent
         )
         emitAndDistribute(MODEL_RESPONSE_RECEIVED, execution, state.agentId, response, activeSubscriptions)
@@ -985,6 +1019,8 @@ TEST AdmissionUsesPrincipalRules
 TEST ContextCeilingFollowsTheAudience
 TEST JournalProposalSkipsTheModelCall
 TEST JournalReturnsNullWhenAllProposalsRan
+TEST GovernedContextBlocksReachTheModelCall
+TEST ContextBlocksPrecedeThePendingInputsInTheModelCall
 TEST PendingInputsAreTakenOnlyBeforeAModelCall
 TEST CallerPolicyRulesApply
 TEST ApprovalNoticeGoesToTheDesignatedApproversAddress

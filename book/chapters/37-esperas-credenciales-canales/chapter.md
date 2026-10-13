@@ -380,6 +380,7 @@ STRUCT AuthorizationParking
     challenge: AuthorizationChallenge
     wait: ParkedWait
     notice: OutboundMessage
+    pausedState: AgentState
 END
 ```
 
@@ -745,6 +746,13 @@ END
 
 ### Integración: estacionar por credencial y reanudar cada tipo de espera (D-010)
 
+**Revisión (2026-10-12): el run queda PAUSED.** La primera versión de `parkForMissingCredential`
+estacionaba la espera con `parkRun` pero no cambiaba el estado del run, que seguía RUNNING mientras
+esperaba la autorización. Ahora aplica `parkedAgentState` (CH-33), que para una espera
+`AUTHORIZATION` da `PAUSED` (`runStatusForWait`), y devuelve ese estado en
+`AuthorizationParking.pausedState`. `resumeDurableAuthorization` ya construía el estado RUNNING a
+partir del estado estacionado.
+
 ```pseudocode
 FUNCTION parkForMissingCredential(
     state: AgentState,
@@ -767,7 +775,11 @@ FUNCTION parkForMissingCredential(
         claims, state.sessionId, WAIT_NOTICE, challenge.callbackRef, wait.waitId
     )
 
-    RETURN AuthorizationParking(challenge = challenge, wait = wait, notice = notice)
+    pausedState: AgentState = parkedAgentState(state, wait)
+
+    RETURN AuthorizationParking(
+        challenge = challenge, wait = wait, notice = notice, pausedState = pausedState
+    )
 END
 ```
 
@@ -961,6 +973,7 @@ ParkedWait
 
 Autorización
     tool ALLOW sin credencial del usuario → AuthorizationChallenge + ParkedWait(AUTHORIZATION)
+    run: RUNNING → PAUSED                    (parkedAgentState, CH-33; revisión 2026-10-12)
     callback válido → WaitDelivery(APPROVED | REJECTED) → RESUMED
     paso: STARTED → +toolCall → +toolResult → COMMITTED   (APPROVED)
           STARTED → COMMITTED sin toolCall                (REJECTED o EXPIRED)
@@ -1025,6 +1038,7 @@ TEST ExpiredApprovalNeverExecutesTheTool
 TEST ExpiredBudgetLimitTerminatesTheRun
 TEST ExpirySchedulerEntersAsAScheduleActivationRequest
 TEST MissingCredentialIsDetectedOnlyForUserCallers
+TEST MissingCredentialParksTheRunAsPaused
 TEST AuthorizationCallbackFromAnotherPrincipalIsRejected
 TEST AuthorizationCallbackWithWrongCallbackRefIsRejected
 TEST AuthorizationCallbackNeverCarriesTheToken

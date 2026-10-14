@@ -32,6 +32,10 @@ Primer capítulo de v0.2.1. Resuelve las deudas D-009..D-013 (`registry/debt.yam
 
 P-11, P-16, P-31, P-33, P-34, INV-14, INV-15, INV-E08, INV-E18, INV-E19
 
+## Revisión (2026-10-12)
+
+`parkForMissingCredential` aplica `parkedAgentState` (CH-33): mientras espera la autorización por una credencial faltante, el run queda PAUSED (`AuthorizationParking.pausedState`). Ver `planes/2026-10-12-revision-ch37-ch49-huecos.md`.
+
 ## Localización en el repo
 
 `book/chapters/37-esperas-credenciales-canales/chapter.md`

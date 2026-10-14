@@ -432,10 +432,7 @@
       "dot": "cyan",
       "title": "PAUSED, desde v0.2",
       "items": [
-        "RUNNING → PAUSED con parkRun; vuelve a RUNNING con acceptDelivery",
-        "CH-33: runStatusForWait da PAUSED para AUTHORIZATION y BUDGET_LIMIT",
-        "CH-37 (revisión 2026-10-12): parkForMissingCredential deja el run PAUSED",
-        "En v0.1 era el único estado que ningún pseudocódigo producía"
+        "parkRun (AUTHORIZATION / BUDGET_LIMIT) → PAUSED; acceptDelivery → RUNNING (CH-33, CH-37)"
       ]
     }
   ]

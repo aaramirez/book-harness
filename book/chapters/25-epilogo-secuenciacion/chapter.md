@@ -331,7 +331,7 @@ Tramo 2 — Integración single-agent, sin componentes nuevos (CH-12..CH-13, dos
 Tramo 3 — Amendment v1.1, nueve planos empresariales (CH-14..CH-24, once capítulos)
     CH-14  AdmissionController        (CMP-012)  — Ingress & Activation Plane
     CH-15  AgentCommunicationGateway  (CMP-013)  — Agent Interoperability Plane (ÚNICO multi-agente)
-    CH-16  CredentialBroker           (CMP-014)  — Data & Context Plane
+    CH-16  CredentialBroker           (CMP-014)  — Capability & Integration Plane
     CH-17  IdempotencyGuard           (CMP-015)  — Reliability Plane
     CH-18  OperationalController      (CMP-016)  — Control Plane
     CH-19  AuditLedger                (CMP-017)  — Observability & Governance Plane
@@ -385,9 +385,9 @@ herramientas, datos y otros agentes:
 ```text
 Tramo 5 — Conectividad, Amendment v1.2 (CH-39..CH-49, once capítulos) — versión 0.3
     CH-39  el modelo como dato                 (C-049, C-050; C-006 v2, C-007 v2)
-    CH-40  ExtensionHost                       (CMP-027; C-051..C-053)
-    CH-41  ConnectionManager                   (CMP-028; C-054; C-018 v3)
-    CH-42  RetrievalEngine                     (CMP-029; C-055, C-056)
+    CH-40  ExtensionHost                       (CMP-027; C-051..C-053) — Capability & Integration Plane
+    CH-41  ConnectionManager                   (CMP-028; C-054; C-018 v3) — Capability & Integration Plane
+    CH-42  RetrievalEngine                     (CMP-029; C-055, C-056) — Data & Context Plane
     CH-43  presupuestos que se heredan         (C-057; C-012 v2)
     CH-44  invocación durable entre agentes    (C-058, C-059; C-024 v2) — la segunda pieza multi-agente
     CH-45  evolución del runtime               (C-060; C-020 v3)
@@ -399,6 +399,10 @@ Tramo 5 — Conectividad, Amendment v1.2 (CH-39..CH-49, once capítulos) — ver
 
 La invocación entre agentes llegó en CH-44, después de los presupuestos que se heredan (CH-43), como
 pedía `P-09`.
+
+**Fe de erratas (2026-10-13).** La tabla del Tramo 3 ubicaba a `CredentialBroker` (CH-16) en el Data
+& Context Plane. CH-16 y `registry/components.yaml` lo ubican en el Capability & Integration Plane, y
+la tabla ahora dice lo mismo.
 
 ## 2. El Problema (Problem)
 
@@ -634,6 +638,14 @@ CH-00 → CH-01 → CH-02 → ... → CH-11 → CH-12 → CH-13 → CH-14 → CH
             [integración enterprise] [------------ Tramo 4: operación durable, single-agent ------------]
 ```
 
+**Actualización (cierre de v0.3):** CH-37 y CH-38 cierran la deuda del Tramo 4, y el Tramo 5 agrega
+la segunda pieza multi-agente después de los presupuestos que se heredan:
+
+```text
+… → CH-36 → CH-37 → CH-38 → CH-39 → … → CH-43 → CH-44 → CH-45 → … → CH-49
+            [cierre de deuda] [single-agent] [CH-44: segunda pieza multi-agente] [single-agent]
+```
+
 **Vista 2 — Sequence**
 
 ```text
@@ -659,6 +671,15 @@ CH-25 (este capítulo) → verifica, con scripts deterministas, que el orden ant
 CH-26, CH-27  → integración enterprise, sin componentes nuevos        (actualización, cierre de v0.2)
    ▼
 CH-28..CH-36  → Tramo 4: cuatro componentes nuevos, todos single-agent, y una integración durable
+   ▼
+CH-37, CH-38  → cierre de la deuda del Tramo 4, sin componentes nuevos   (actualización, cierre de v0.3)
+   ▼
+CH-39..CH-43  → Tramo 5: el modelo como dato, ExtensionHost, ConnectionManager, RetrievalEngine y
+   │             presupuestos que se heredan, todos single-agent
+   ▼
+CH-44         → invocación durable entre agentes — SEGUNDA pieza multi-agente, después de CH-43
+   ▼
+CH-45..CH-49  → evolución del runtime, audiencia, lift, autoría por directorio y el turno conectado
 ```
 
 **Vista 3 — Verificación (reemplaza el pseudocódigo: no hay ninguna función de componente que

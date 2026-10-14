@@ -6,7 +6,7 @@ tags: [harness, planes]
 
 # Planes de Ejecución
 
-Los planes en `planes/` documentan las decisiones de diseño y la secuencia de producción (62 planes). Cada plan de capítulo es también su **registro de ejecución**: estado, alcance decidido, resultado real del pipeline, Definition of Done y deuda.
+Los planes en `planes/` documentan las decisiones de diseño y la secuencia de producción (63 planes). Cada plan de capítulo es también su **registro de ejecución**: estado, alcance decidido, resultado real del pipeline, Definition of Done y deuda.
 
 ## Fundación (v0.1)
 
@@ -27,6 +27,7 @@ Los planes en `planes/` documentan las decisiones de diseño y la secuencia de p
 | `2026-09-26-tooling-registro-de-deuda` | `registry/debt.yaml` y `validate-debt` |
 | `2026-10-10-tooling-deuda-en-planes` | `validate-debt` también revisa la sección de deuda de los planes |
 | `2026-09-26-revision-ch13-aprobacion-expuesta` | Revisión de CH-13: la aprobación expuesta (v0.2.1) |
+| `2026-10-13-revision-ch25-diagramas-v0-3` | Revisión de CH-25 (plano de CredentialBroker, planos y secuencia de la v0.3) y de los diagramas `capa-enterprise` y `estados-de-un-run` |
 | `2026-10-12-revision-ch37-ch49-huecos` | Revisión de CH-37 (run PAUSED al esperar credencial) y CH-49 (los bloques gobernados llegan al modelo) |
 
 ## Capítulos v0.2 y v0.3

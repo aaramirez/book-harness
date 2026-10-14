@@ -5612,10 +5612,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <h3>PAUSED, desde v0.2</h3>
         </div>
         <ul>
-          <li>&bull; RUNNING → PAUSED con parkRun; vuelve a RUNNING con acceptDelivery</li>
-          <li>&bull; CH-33: runStatusForWait da PAUSED para AUTHORIZATION y BUDGET_LIMIT</li>
-          <li>&bull; CH-37 (revisión 2026-10-12): parkForMissingCredential deja el run PAUSED</li>
-          <li>&bull; En v0.1 era el único estado que ningún pseudocódigo producía</li>
+          <li>&bull; parkRun (AUTHORIZATION / BUDGET_LIMIT) → PAUSED; acceptDelivery → RUNNING (CH-33, CH-37)</li>
         </ul>
       </div>
     </div>

@@ -37,6 +37,10 @@ Resuelve D-041, D-042, D-044 y D-045. `registry/debt.yaml` queda sin deudas abie
 
 P-13, P-14, P-21, P-31, P-33, P-35, P-37, P-38, P-39, INV-E06, INV-E16, INV-E21, INV-E23, INV-E24, INV-E25, INV-E26, INV-E27
 
+## Revisión (2026-10-12)
+
+`connectedModelMessages` lleva los bloques gobernados (`ConnectedTurnStart.contextBlocks`) a la llamada al modelo, antes de las entradas pendientes. Ver `planes/2026-10-12-revision-ch37-ch49-huecos.md`.
+
 ## Localización en el repo
 
 `book/chapters/49-integracion-conectada/chapter.md`
